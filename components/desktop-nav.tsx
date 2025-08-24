@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { BookOpen, Home, MessageSquare, LogOut, ChevronLeft, ChevronRight, PenTool, FileText } from "lucide-react"
+import { BookOpen, Home, MessageSquare, LogOut, ChevronLeft, ChevronRight, PenTool, FileText, GraduationCap } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ExamSafeLink } from "@/components/exam-safe-link"
 
@@ -68,6 +68,9 @@ interface DesktopNavProps {
 
 export function DesktopNav({ isCollapsed, onToggle }: DesktopNavProps) {
   const pathname = usePathname()
+  
+  // Feature flag to hide Learning tab (set to false to show)
+  const showLearningTab = false
 
   const handleLogout = () => {
     // Clear authentication data
@@ -90,7 +93,7 @@ export function DesktopNav({ isCollapsed, onToggle }: DesktopNavProps) {
   const studentLinks = [
     { href: "/student/dashboard", label: "Dashboard", icon: Home },
     { href: "/student/tutor", label: "Personalized AI Tutor", icon: MessageSquare },
-    { href: "/student/subjects", label: "Conversation History", icon: BookOpen },
+    ...(showLearningTab ? [{ href: "/student/learning", label: "Learning", icon: GraduationCap }] : []),
     { href: "/student/practice-exam", label: "Practice Exams", icon: FileText },
   ]
 
@@ -141,10 +144,6 @@ export function DesktopNav({ isCollapsed, onToggle }: DesktopNavProps) {
                     )}
                     title={isCollapsed ? link.label : undefined}
                     onMouseEnter={() => {
-                      // Preload chat sessions when hovering over Past Sessions
-                      if (link.href === "/student/subjects") {
-                        preloadChatSessions()
-                      }
                       // Preload exam results when hovering over Practice Exams
                       if (link.href === "/student/practice-exam") {
                         preloadExamResults()

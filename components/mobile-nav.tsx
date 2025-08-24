@@ -2,11 +2,11 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
-import { Menu, Home, BookOpen, MessageSquare, User, FileText, Settings, LogOut, PenTool } from "lucide-react"
+import { Menu, Home, BookOpen, MessageSquare, User, FileText, Settings, LogOut, PenTool, GraduationCap } from "lucide-react"
 import { ExamSafeLink } from "@/components/exam-safe-link"
 
 // Preload function for chat sessions
@@ -66,6 +66,10 @@ const preloadExamResults = () => {
 export function MobileNav() {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+  
+  // Feature flag to hide Learning tab (set to false to show)
+  const showLearningTab = false
 
   const navigation = [
     {
@@ -80,12 +84,12 @@ export function MobileNav() {
       icon: MessageSquare,
       current: pathname === "/student/tutor",
     },
-    {
-      name: "Conversation History",
-      href: "/student/subjects",
-      icon: BookOpen,
-      current: pathname === "/student/subjects",
-    },
+    ...(showLearningTab ? [{
+      name: "Learning",
+      href: "/student/learning",
+      icon: GraduationCap,
+      current: pathname.startsWith("/student/learning"),
+    }] : []),
     {
       name: "Practice Exam",
       href: "/student/practice-exam",
@@ -131,10 +135,6 @@ export function MobileNav() {
                       variant={item.current ? "secondary" : "ghost"} 
                       className="w-full justify-start gap-3 h-10"
                       onMouseEnter={() => {
-                        // Preload chat sessions when hovering over Past Sessions
-                        if (item.href === "/student/subjects") {
-                          preloadChatSessions()
-                        }
                         // Preload exam results when hovering over Practice Exams
                         if (item.href === "/student/practice-exam") {
                           preloadExamResults()

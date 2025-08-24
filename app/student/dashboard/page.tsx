@@ -767,17 +767,15 @@ export default function DashboardPage() {
                 <p className="text-sm sm:text-base text-muted-foreground">{getStreakMessage()}</p>
               </div>
             </div>
-            <div className="flex gap-2 mt-4 sm:mt-0">
+            <div className="flex gap-2 mt-4 sm:mt-0 justify-center sm:justify-end">
               <Link href="/student/tutor">
-                <Button className="flex items-center gap-2 text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-2.5">
-                  <MessageSquare className="h-4 w-4" />
-                  Start Learning
+                <Button className="text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-2.5">
+                  💬 Start A Chat!
                 </Button>
               </Link>
               <Link href="/student/practice-exam">
-                <Button variant="outline" className="flex items-center gap-2 text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-2.5">
-                  <Award className="h-4 w-4" />
-                  Take Exam
+                <Button className="text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-2.5">
+                  📝 Take A Practice Exam!
                 </Button>
               </Link>
             </div>
@@ -924,10 +922,10 @@ export default function DashboardPage() {
                   </Link>
                 </div>
 
-                <div className="mt-4">
+                <div className="mt-4 flex justify-center">
                   <Link href="/student/tutor">
-                    <Button variant="outline" size="sm">
-                      Start Learning
+                    <Button size="sm">
+                      💬 Start A Chat!
                     </Button>
                   </Link>
                 </div>

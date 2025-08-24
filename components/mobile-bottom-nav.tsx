@@ -3,11 +3,14 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Home, BookOpen, MessageSquare, User, FileText } from "lucide-react"
+import { Home, BookOpen, MessageSquare, User, FileText, GraduationCap } from "lucide-react"
 import { ExamSafeLink } from "@/components/exam-safe-link"
 
 export function MobileBottomNav() {
   const pathname = usePathname()
+  
+  // Feature flag to hide Learning tab (set to false to show)
+  const showLearningTab = false
 
   const navigation = [
     {
@@ -22,12 +25,12 @@ export function MobileBottomNav() {
       icon: MessageSquare,
       current: pathname === "/student/tutor",
     },
-    {
-      name: "Sessions",
-      href: "/student/subjects",
-      icon: BookOpen,
-      current: pathname === "/student/subjects",
-    },
+    ...(showLearningTab ? [{
+      name: "Learning",
+      href: "/student/learning",
+      icon: GraduationCap,
+      current: pathname.startsWith("/student/learning"),
+    }] : []),
     {
       name: "Exams",
       href: "/student/practice-exam",

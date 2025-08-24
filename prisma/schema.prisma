@@ -8,20 +8,21 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email         String        @unique @db.VarChar(255)
-  password_hash String        @db.VarChar(255)
-  first_name    String?       @db.VarChar(100)
-  last_name     String?       @db.VarChar(100)
-  phone         String?       @db.VarChar(20)
-  grade_level   String?       @db.VarChar(50)
-  school        String?       @db.VarChar(200)
-  avatar        String?       @db.Text
-  full_image    String?       @db.Text
-  created_at    DateTime?     @default(now()) @db.Timestamp(6)
-  updated_at    DateTime?     @default(now()) @db.Timestamp(6)
-  chat_sessions ChatSession[]
-  exam_results  ExamResult[]
+  id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email            String            @unique @db.VarChar(255)
+  password_hash    String            @db.VarChar(255)
+  first_name       String?           @db.VarChar(100)
+  last_name        String?           @db.VarChar(100)
+  phone            String?           @db.VarChar(20)
+  grade_level      String?           @db.VarChar(50)
+  school           String?           @db.VarChar(200)
+  avatar           String?           @db.Text
+  full_image       String?           @db.Text
+  created_at       DateTime?         @default(now()) @db.Timestamp(6)
+  updated_at       DateTime?         @default(now()) @db.Timestamp(6)
+  chat_sessions    ChatSession[]
+  exam_results     ExamResult[]
+  learning_progress LearningProgress[]
 
   @@index([email], map: "idx_users_email")
   @@map("users")
@@ -60,4 +61,24 @@ model ExamResult {
 
   @@index([user_id], map: "idx_exam_results_user_id")
   @@map("exam_results")
+}
+
+model LearningProgress {
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id            String    @db.Uuid
+  course_id          String    @db.VarChar(100)
+  module_id          String    @db.VarChar(100)
+  completed_sections Json      @default("[]") // Array of section IDs
+  total_sections     Int       @default(0)
+  completed          Boolean   @default(false)
+  completed_at       DateTime?
+  time_spent         Int?      @default(0) // in minutes
+  created_at         DateTime  @default(now()) @db.Timestamp(6)
+  updated_at         DateTime  @default(now()) @db.Timestamp(6)
+  user               User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, course_id, module_id], map: "unique_user_course_module")
+  @@index([user_id], map: "idx_learning_progress_user_id")
+  @@index([course_id], map: "idx_learning_progress_course_id")
+  @@map("learning_progress")
 }

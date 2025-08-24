@@ -1,6 +1,7 @@
 import { CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { GraduationCap, PenTool, Apple } from "lucide-react"
+import { MatrixText } from "@/components/matrix-text"
 
 export default function Home() {
   return (
@@ -17,10 +18,14 @@ export default function Home() {
           <div className="text-lg font-code text-center">
             {/* Mobile: stacked, Desktop: inline */}
             <div className="block sm:hidden">
-              <div className="font-bold">Discover. Learn. Progress.</div>
+              <div className="font-bold">
+                <MatrixText text="<DISCOVER> <LEARN> <PROGRESS>" />
+              </div>
             </div>
             <div className="hidden sm:flex items-center gap-2">
-              <span className="font-bold">Discover. Learn. Progress.</span>
+              <span className="font-bold">
+                <MatrixText text="<DISCOVER> <LEARN> <PROGRESS>" />
+              </span>
             </div>
           </div>
         </header>
@@ -83,7 +88,7 @@ export default function Home() {
         {/* ---------- FOOTER ---------- */}
         <footer className="text-center w-full flex justify-center">
           <div className="inline-block sketch-border p-4 bg-card/80 rounded-lg">
-            <p className="font-bold text-foreground">© 2025 Nesta Technologies</p>
+            <p className="font-bold text-foreground">© 2025 Nesta Technology</p>
           </div>
         </footer>
       </div>
