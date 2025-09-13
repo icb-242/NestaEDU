@@ -3,13 +3,7 @@
 import type React from "react"
 import { useState, useEffect, useRef } from "react"
 
-// Type declarations for Web Speech API
-declare global {
-  interface Window {
-    webkitSpeechRecognition: any
-    SpeechRecognition: any
-  }
-}
+// (Removed) Web Speech API declarations and dictation features
 
 import { useChat } from "ai/react"
 import { Button } from "@/components/ui/button"
@@ -20,7 +14,15 @@ import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Send, ImageIcon, CalculatorIcon, Sigma, Bot, Loader2, X, BookOpen, FlaskConical, ArrowRight, Mic, MicOff, MessageSquare, Clock, Trash2 } from "lucide-react"
+import { Send, ImageIcon, CalculatorIcon, Sigma, Bot, Loader2, X, BookOpen, FlaskConical, ArrowRight, MessageSquare, Clock, Trash2, Mic, MicOff } from "lucide-react"
+
+// Web Speech API type declarations
+declare global {
+  interface Window {
+    webkitSpeechRecognition: any
+    SpeechRecognition: any
+  }
+}
 import { MathKeyboard } from "@/components/math-keyboard"
 import { capitalizeSubject } from "@/lib/utils"
 import { Calculator } from "@/components/calculator"
@@ -72,9 +74,14 @@ export default function AITutorPage() {
   const [userProfile, setUserProfile] = useState<any>({})
   const [isRecording, setIsRecording] = useState(false)
   const [recognition, setRecognition] = useState<any>(null)
-  const [isVoiceActive, setIsVoiceActive] = useState(false)
-  const [waveformHeights, setWaveformHeights] = useState([4, 4, 4, 4, 4])
-  const [audioLevel, setAudioLevel] = useState(0)
+  const [interimTranscript, setInterimTranscript] = useState("")
+  const [waveformHeights, setWaveformHeights] = useState(Array(16).fill(2))
+  
+  // Audio analysis refs
+  const audioContextRef = useRef<AudioContext | null>(null)
+  const analyserRef = useRef<AnalyserNode | null>(null)
+  const mediaStreamRef = useRef<MediaStream | null>(null)
+  const animationFrameRef = useRef<number | null>(null)
 
   // Chat History state
   const [chatHistory, setChatHistory] = useState<ChatSession[]>([])
@@ -83,9 +90,7 @@ export default function AITutorPage() {
   const [isInitialLoad, setIsInitialLoad] = useState(true)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const audioContextRef = useRef<AudioContext | null>(null)
-  const analyserRef = useRef<AnalyserNode | null>(null)
-  const animationFrameRef = useRef<number | null>(null)
+  // (Removed) Audio and waveform refs
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const questionPrefilledRef = useRef(false)
@@ -107,7 +112,7 @@ export default function AITutorPage() {
     },
   })
 
-  // Initialize speech recognition
+  // Initialize speech recognition after useChat hook
   useEffect(() => {
     if (typeof window !== "undefined" && ("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
@@ -127,22 +132,34 @@ export default function AITutorPage() {
 
       recognition.onresult = (event) => {
         let finalTranscript = ""
+        let interimText = ""
+        
         for (let i = event.resultIndex; i < event.results.length; i++) {
           if (event.results[i].isFinal) {
             finalTranscript += event.results[i][0].transcript
+          } else {
+            interimText += event.results[i][0].transcript
           }
         }
+        
+        // Update interim transcript for real-time display
+        setInterimTranscript(interimText)
+        
+        // Add final transcript to input
         if (finalTranscript) {
           setInput((prev) => prev + " " + finalTranscript.trim())
+          setInterimTranscript("") // Clear interim text when we have final text
         }
       }
 
       recognition.onend = () => {
         setIsRecording(false)
+        setInterimTranscript("")
       }
 
       recognition.onerror = (event) => {
         setIsRecording(false)
+        setInterimTranscript("")
         toast({
           title: "Voice Recognition Error",
           description: "There was an error with voice recognition. Please try again.",
@@ -153,6 +170,67 @@ export default function AITutorPage() {
       setRecognition(recognition)
     }
   }, [toast, setInput])
+
+  // (Removed) speech recognition initialization
+
+  // (Removed) waveform starter
+
+  // Load historical session if `resume` param is provided
+  useEffect(() => {
+    const resumeId = searchParams.get("resume")
+    if (resumeId) {
+      // Switch to new chat tab when resuming a session
+      setActiveTab("new-chat")
+      setIsLoadingSession(true)
+      try {
+        // Fetch the specific session from database
+        fetch(`/api/chat-sessions?id=${resumeId}`)
+          .then(response => response.json())
+          .then(session => {
+            console.log('Resuming session:', session)
+            if (session && !session.error) {
+              console.log('Session messages:', session.messages)
+              setSelectedSubject(session.subject)
+              setCurrentSessionId(resumeId)
+              
+              // Set the messages directly
+              setMessages(session.messages || [])
+              
+              toast({
+                title: "Session Resumed",
+                description: `Continuing conversation: ${session.title}`,
+              })
+            } else {
+              console.error('Session not found or error:', session)
+              toast({
+                title: "Session Not Found",
+                description: "The requested conversation could not be found.",
+                variant: "destructive",
+              })
+            }
+          })
+          .catch(error => {
+            console.error("Error loading session:", error)
+            toast({
+              title: "Error",
+              description: "Failed to load the conversation.",
+              variant: "destructive",
+            })
+          })
+          .finally(() => {
+            setIsLoadingSession(false)
+          })
+      } catch (error) {
+        console.error("Error loading session:", error)
+        toast({
+          title: "Error",
+          description: "Failed to load the conversation.",
+          variant: "destructive",
+        })
+        setIsLoadingSession(false)
+      }
+    }
+  }, [searchParams, toast, setMessages])
 
   const loadChatHistory = async () => {
     if (isHistoryLoading) return
@@ -227,6 +305,13 @@ export default function AITutorPage() {
 
   const filterSessionsBySubject = (sessions: ChatSession[], subject: string) => {
     return sessions.filter(session => session.subject === subject)
+  }
+
+
+
+  const capitalizeSubject = (subject: string) => {
+    if (subject === "Math") return subject
+    return subject.charAt(0).toUpperCase() + subject.slice(1)
   }
 
   // Load chat history when switching to that tab
@@ -352,10 +437,7 @@ export default function AITutorPage() {
     }
   }
 
-  const userInitials =
-    userProfile.firstName && userProfile.lastName
-      ? `${userProfile.firstName[0]}${userProfile.lastName[0]}`.toUpperCase()
-      : "ST"
+  // Voice recording functions
 
   // Voice recording handler
   const handleVoiceRecording = () => {
@@ -366,7 +448,15 @@ export default function AITutorPage() {
     } else {
       recognition.start()
     }
+    setIsRecording(!isRecording)
   }
+
+  const userInitials =
+    userProfile.firstName && userProfile.lastName
+      ? `${userProfile.firstName[0]}${userProfile.lastName[0]}`.toUpperCase()
+      : "ST"
+
+  // (Removed) audio analysis, waveform functions, and voice recording handler
 
   // Image upload handler
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -536,17 +626,44 @@ export default function AITutorPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-3">
+          {/* Voice recording indicator */}
+          {isRecording && (
+            <div className="flex items-center gap-2 p-3 bg-secondary/20 dark:bg-secondary/10 border border-border rounded-lg">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-[pulse_1.5s_ease-in-out_infinite]" />
+              <span className="text-sm font-medium">Listening</span>
+            </div>
+          )}
+
+          <form onSubmit={(e) => {
+            if (isRecording) {
+              recognition?.stop()
+            }
+            handleSubmit(e)
+          }} className="space-y-3">
             <div className="relative">
               <Textarea
                 ref={textareaRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
+                value={input + (interimTranscript ? " " + interimTranscript : "")}
+                onChange={(e) => {
+                  const newValue = e.target.value
+                  if (interimTranscript) {
+                    // Remove interim text when user types
+                    const withoutInterim = newValue.replace(" " + interimTranscript, "")
+                    setInput(withoutInterim)
+                  } else {
+                    setInput(newValue)
+                  }
+                }}
                 placeholder="Ask me anything about your studies..."
-                className="min-h-[80px] pr-16 resize-none text-base"
+                className={`min-h-[80px] pr-16 resize-none text-base ${
+                  isRecording ? 'ring-2 ring-blue-300 dark:ring-blue-600' : ''
+                }`}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault()
+                    if (isRecording) {
+                      recognition?.stop()
+                    }
                     handleSubmit(e)
                   }
                 }}
@@ -697,16 +814,20 @@ export default function AITutorPage() {
       <div className="space-y-6">
         {/* Subject Filter Tabs */}
         <div className="flex justify-center gap-2">
-          {["math", "science", "general"].map((subject) => (
-            <Button
-              key={subject}
-              variant={historyActiveTab === subject ? "default" : "outline"}
-              onClick={() => setHistoryActiveTab(subject)}
-              className="capitalize"
-            >
-              {subject === "math" ? capitalizeSubject("Math") : capitalizeSubject(subject)}
-            </Button>
-          ))}
+          {["math", "science", "general"].map((subject) => {
+            const subjectSessions = filterSessionsBySubject(chatHistory, subject)
+            const subjectCount = subjectSessions.length
+            return (
+              <Button
+                key={subject}
+                variant={historyActiveTab === subject ? "default" : "outline"}
+                onClick={() => setHistoryActiveTab(subject)}
+                className="capitalize"
+              >
+                {subject === "math" ? capitalizeSubject("Math") : capitalizeSubject(subject)} ({subjectCount})
+              </Button>
+            )
+          })}
         </div>
 
         {/* Loading indicator */}
@@ -775,7 +896,7 @@ export default function AITutorPage() {
           className="flex items-center gap-2 px-6 py-3"
           onClick={() => setActiveTab("chat-history")}
         >
-          <span role="img" aria-label="Chat History">📜</span> Chat History ({chatHistory.length})
+          <span role="img" aria-label="Chat History">📜</span> Chat History
         </Button>
       </div>
 

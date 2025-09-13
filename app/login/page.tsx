@@ -1,140 +1,102 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertCircle, PenTool } from "lucide-react"
 import Link from "next/link"
+import { PenTool, ArrowLeft } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
 
-export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
-  const router = useRouter()
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
-
-    try {
-      // Call the login API
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Login failed')
-      }
-
-      // Clear any existing user data to prevent showing old cached data
-      localStorage.removeItem("userProfile")
-      localStorage.removeItem("userName")
-      localStorage.removeItem("userEmail")
-      localStorage.removeItem("userRole")
-      localStorage.removeItem("isAuthenticated")
-      localStorage.removeItem("userFirstName")
-      
-      // Store authentication data
-      localStorage.setItem("isAuthenticated", "true")
-      localStorage.setItem("userEmail", data.user.email)
-      localStorage.setItem("userRole", "student")
-      localStorage.setItem("userName", `${data.user.firstName} ${data.user.lastName}`)
-      
-      // Save user profile data
-      localStorage.setItem("userProfile", JSON.stringify(data.user))
-
-      // Redirect to student dashboard
-      router.push("/student/dashboard")
-    } catch (error: any) {
-      setError(error.message || "Invalid email or password")
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
+export default function PortalSelectionPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Link href="/" className="hover:opacity-80 transition-opacity">
-              <PenTool className="w-8 h-8 text-primary" />
-            </Link>
-            <Link href="/" className="hover:opacity-80 transition-opacity">
-              <span className="text-2xl font-bold">Nesta Education <span className="text-amber-500">(Beta)</span></span>
-            </Link>
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 relative font-mono">
+      {/* Black and white grid background */}
+      <div 
+        className="absolute inset-0 -z-10" 
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '40px 40px',
+          backgroundColor: '#ffffff'
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Back Button - Positioned at the top left */}
+      <div className="absolute top-4 left-4">
+        <Link 
+          href="/"
+          className="inline-flex items-center gap-2 px-3 py-2 text-sm font-mono text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Home</span>
+        </Link>
+      </div>
+
+      <div className="w-full max-w-2xl">
+        {/* Logo and Title */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center gap-2">
+            <PenTool className="w-8 h-8" />
+            <h1 className="text-2xl font-bold tracking-tighter">
+              nesta education
+            </h1>
           </div>
-          <CardDescription className="font-code text-sm text-foreground">Welcome back! Please sign in below.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+        </div>
 
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+        {/* Portal Selection */}
+        <Card className="bg-white/80 backdrop-blur-sm border shadow-sm">
+          <CardContent className="p-6">
+            <h2 className="text-xl font-mono text-muted-foreground mb-6">Begin Your Journey:</h2>
 
-            <Button
-              type="submit"
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-              disabled={isLoading}
+            {/* Student Portal */}
+            <a 
+              href="/auth/login"
+              className="block p-4 rounded-lg border-2 border-muted hover:border-primary transition-colors mb-4 cursor-pointer"
             >
-              {isLoading ? "Signing in..." : "Sign In"}
-            </Button>
-          </form>
+              <div className="flex items-start gap-3">
+                <span className="mt-1">👨‍🎓</span>
+                <div>
+                  <h3 className="text-xl font-bold tracking-tighter">Student Portal</h3>
+                  <p className="text-sm font-mono text-muted-foreground mt-1">
+                    An AI-powered learning platform built on Socratic teaching principles.
+                  </p>
+                </div>
+              </div>
+            </a>
 
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            <p>
-              Don't have an account?{" "}
-              <Link href="/signup" className="text-primary hover:underline">
-                Sign up
-              </Link>
+            {/* Teacher Portal */}
+            <div className="p-4 rounded-lg border-2 border-muted opacity-75">
+              <div className="flex items-start gap-3">
+                <span className="mt-1">👨‍🏫</span>
+                <div>
+                  <h3 className="text-xl font-bold tracking-tighter">Teacher Portal</h3>
+                  <p className="text-sm font-mono text-muted-foreground mt-1">
+                    Coming Soon!
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Powered by OpenAI */}
+            <div className="text-center text-xs font-mono text-muted-foreground mt-6">
+              Powered by OpenAI GPT-4α.
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Beta Disclaimer */}
+        <div className="mt-8 max-w-xl mx-auto">
+          <div className="text-center text-sm border rounded-lg p-4 bg-white/50 backdrop-blur-sm">
+            <p className="mb-2 font-mono text-muted-foreground">⚠️ Beta Version Disclaimer ⚠️</p>
+            <p className="font-mono text-xs text-muted-foreground leading-relaxed">
+              This platform is currently in beta testing. Features, content, and
+              performance are still being actively developed and improved. Users may
+              occasionally encounter incomplete features, inaccuracies, or unexpected
+              behavior.
             </p>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }

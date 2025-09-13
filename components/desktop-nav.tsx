@@ -1,65 +1,20 @@
 "use client"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { usePathname } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { BookOpen, Home, MessageSquare, LogOut, ChevronLeft, ChevronRight, PenTool, FileText, GraduationCap } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { ExamSafeLink } from "@/components/exam-safe-link"
-
-// Preload function for chat sessions
-const preloadChatSessions = () => {
-  // Only preload if we don't have recent cache
-  const cacheTimestamp = sessionStorage.getItem('chatHistoryCacheTimestamp')
-  if (!cacheTimestamp || Date.now() - parseInt(cacheTimestamp) > 5 * 60 * 1000) {
-    fetch('/api/chat-sessions')
-      .then(response => response.json())
-      .then(sessions => {
-        const chatHistory = sessions.map((session: any) => ({
-          id: session.id,
-          subject: session.subject,
-          topic: session.topic || '',
-          title: session.title || 'Conversation',
-          lastMessage: session.last_message || '',
-          timestamp: new Date(session.updated_at),
-          messageCount: session.message_count || 0,
-        }))
-        sessionStorage.setItem('chatHistoryCache', JSON.stringify(chatHistory))
-        sessionStorage.setItem('chatHistoryCacheTimestamp', Date.now().toString())
-      })
-      .catch(error => {
-        console.error('Preload failed:', error)
-      })
-  }
-}
-
-// Preload function for exam results
-const preloadExamResults = () => {
-  // Only preload if we don't have recent cache
-  const cacheTimestamp = sessionStorage.getItem('examResultsCacheTimestamp')
-  if (!cacheTimestamp || Date.now() - parseInt(cacheTimestamp) > 5 * 60 * 1000) {
-    fetch('/api/exam-results')
-      .then(response => response.json())
-      .then(results => {
-        const examResults = results.map((result: any) => ({
-          id: result.id,
-          subject: result.subject,
-          score: result.score,
-          maxScore: result.max_score,
-          percentage: result.percentage,
-          totalQuestions: result.total_questions,
-          timeSpent: result.time_spent || 0,
-          date: result.created_at,
-          feedback: result.feedback,
-        }))
-        sessionStorage.setItem('examResultsCache', JSON.stringify(examResults))
-        sessionStorage.setItem('examResultsCacheTimestamp', Date.now().toString())
-      })
-      .catch(error => {
-        console.error('Exam results preload failed:', error)
-      })
-  }
-}
+import {
+  ChevronLeft,
+  ChevronRight,
+  LayoutDashboard,
+  MessageSquare,
+  ClipboardList,
+  BookOpen,
+  UserCircle,
+  LogOut,
+  PenTool
+} from "lucide-react"
 
 interface DesktopNavProps {
   isCollapsed: boolean
@@ -68,129 +23,126 @@ interface DesktopNavProps {
 
 export function DesktopNav({ isCollapsed, onToggle }: DesktopNavProps) {
   const pathname = usePathname()
-  
-  // Feature flag to hide Learning tab (set to false to show)
-  const showLearningTab = false
+  const router = useRouter()
 
   const handleLogout = () => {
-    // Clear authentication data
-    localStorage.removeItem("userRole")
-    localStorage.removeItem("userEmail")
-    localStorage.removeItem("isAuthenticated")
-    localStorage.removeItem("userProfile")
-    localStorage.removeItem("userName")
-    localStorage.removeItem("userAvatar")
-    
-    // Clear user-specific data (these are now stored in database, but clear any cached data)
-    localStorage.removeItem("chatHistory")
-    localStorage.removeItem("examResults")
-    localStorage.removeItem("sidebarCollapsed")
-
-    // Redirect to home page
-    window.location.href = "/"
+    // Clear all localStorage items
+    localStorage.clear()
+    // Redirect to login
+    router.push('/login')
   }
 
-  const studentLinks = [
-    { href: "/student/dashboard", label: "Dashboard", icon: Home },
-    { href: "/student/tutor", label: "Personalized AI Tutor", icon: MessageSquare },
-    ...(showLearningTab ? [{ href: "/student/learning", label: "Learning", icon: GraduationCap }] : []),
-    { href: "/student/practice-exam", label: "Practice Exams", icon: FileText },
+  const links = [
+    {
+      href: "/student/dashboard",
+      label: "Dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      href: "/student/tutor",
+      label: "AI Tutor",
+      icon: MessageSquare,
+    },
+    {
+      href: "/student/practice-exam",
+      label: "Practice Exams",
+      icon: ClipboardList,
+    },
+    {
+      href: "/student/learning",
+      label: "Learning",
+      icon: BookOpen,
+    },
+    {
+      href: "/student/profile",
+      label: "Profile",
+      icon: UserCircle,
+    },
   ]
 
   return (
-    <div
+    <nav
       className={cn(
-        "hidden md:flex h-screen flex-col border-r bg-background transition-all duration-300 relative",
-        isCollapsed ? "w-16" : "w-64",
+        "hidden border-r bg-background md:block transition-all duration-300 flex flex-col justify-between",
+        isCollapsed ? "w-[4.5rem]" : "w-64"
       )}
     >
-      <div className={cn("p-6 border-b", isCollapsed && "p-4")}>
-        {!isCollapsed ? (
-          <div className="flex items-center justify-between">
-            <ExamSafeLink href="/student/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <PenTool className="w-6 h-6 text-primary" />
-              <div className="flex flex-col">
-                <h2 className="text-xl font-bold whitespace-nowrap">Nesta Education</h2>
-                <span className="text-amber-500 text-xl font-bold">(Beta)</span>
-              </div>
-            </ExamSafeLink>
+      <div className="flex flex-col h-full">
+        {/* Top Section with Logo and Title */}
+        <div className="flex h-16 items-center border-b px-4">
+          <Link href="/" className="flex items-center gap-3 overflow-hidden">
+            <PenTool className="h-6 w-6 flex-shrink-0" />
+            <span
+              className={cn(
+                "font-bold tracking-tighter transition-all",
+                isCollapsed ? "w-0 opacity-0" : "opacity-100"
+              )}
+            >
+              nesta education
+            </span>
+          </Link>
+          <div className="flex-1 flex justify-end">
+            <button
+              onClick={onToggle}
+              className="h-auto p-2 hover:bg-muted rounded-md transition-colors"
+              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              {isCollapsed ? (
+                <ChevronRight className="h-4 w-4" />
+              ) : (
+                <ChevronLeft className="h-4 w-4" />
+              )}
+            </button>
           </div>
-        ) : (
-          <div className="flex flex-col items-center gap-4">
-            <ExamSafeLink href="/student/dashboard" className="block hover:opacity-80 transition-opacity">
-              <PenTool className="w-8 h-8 text-primary" />
-            </ExamSafeLink>
+        </div>
+
+        {/* Navigation Links */}
+        <div className="flex-1 overflow-auto py-4">
+          <div className="space-y-2 px-3">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-mono text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
+                  pathname === link.href && "bg-muted text-foreground"
+                )}
+              >
+                <link.icon className="h-4 w-4 flex-shrink-0" />
+                <span
+                  className={cn(
+                    "overflow-hidden transition-all",
+                    isCollapsed && "w-0"
+                  )}
+                >
+                  {link.label}
+                </span>
+              </Link>
+            ))}
           </div>
-        )}
+        </div>
+
+        {/* Logout Button */}
+        <div className="border-t p-3">
+          <button
+            onClick={handleLogout}
+            className={cn(
+              "flex w-full items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-mono text-red-500 transition-colors hover:bg-red-50",
+              isCollapsed && "justify-center"
+            )}
+          >
+            <LogOut className="h-4 w-4 flex-shrink-0" />
+            <span
+              className={cn(
+                "overflow-hidden transition-all",
+                isCollapsed && "w-0"
+              )}
+            >
+              Logout
+            </span>
+          </button>
+        </div>
       </div>
-
-      <nav className="flex-1 px-4 py-4">
-        <ul className="grid gap-1">
-          {studentLinks.map((link) => {
-            const Icon = link.icon
-            // Use startsWith for broader matching, but exact match for dashboard
-            const isActive =
-              link.href === "/student/dashboard" ? pathname === link.href : pathname.startsWith(link.href)
-
-            return (
-              <li key={link.href}>
-                <ExamSafeLink href={link.href}>
-                  <Button
-                    variant={isActive ? "secondary" : "ghost"}
-                    className={cn(
-                      "w-full nav-item",
-                      isActive && "active",
-                      isCollapsed ? "justify-center px-2" : "justify-start",
-                    )}
-                    title={isCollapsed ? link.label : undefined}
-                    onMouseEnter={() => {
-                      // Preload exam results when hovering over Practice Exams
-                      if (link.href === "/student/practice-exam") {
-                        preloadExamResults()
-                      }
-                    }}
-                  >
-                    <Icon className={cn("h-4 w-4", !isCollapsed && "mr-2")} />
-                    {!isCollapsed && link.label}
-                  </Button>
-                </ExamSafeLink>
-              </li>
-            )
-          })}
-        </ul>
-      </nav>
-
-      {/* Chevron Toggle Button - Positioned in middle */}
-      <div className="absolute right-0 top-1/2 transform -translate-y-1/2 -translate-x-1/2 z-10">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={onToggle} 
-          className="h-8 w-8 bg-background border border-border shadow-sm hover:bg-accent" 
-          title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          {isCollapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
-            <ChevronLeft className="h-4 w-4" />
-          )}
-        </Button>
-      </div>
-
-      <div className="p-4 border-t">
-        <Button
-          variant="ghost"
-          className={cn(
-            "w-full text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20",
-            isCollapsed ? "justify-center px-2" : "justify-start",
-          )}
-          onClick={handleLogout}
-          title={isCollapsed ? "Logout" : undefined}
-        >
-          <LogOut className={cn("h-4 w-4", !isCollapsed && "mr-2")} />
-          {!isCollapsed && "Logout"}
-        </Button>
-      </div>
-    </div>
+    </nav>
   )
 }

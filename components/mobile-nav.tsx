@@ -69,7 +69,7 @@ export function MobileNav() {
   const searchParams = useSearchParams()
   
   // Feature flag to hide Learning tab (set to false to show)
-  const showLearningTab = false
+  const showLearningTab = true
 
   const navigation = [
     {
