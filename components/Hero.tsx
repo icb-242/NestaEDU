@@ -5,12 +5,45 @@ import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import { Container } from "./ui/Container";
 import { siteContent } from "@/lib/siteContent";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function Hero() {
   const { hero } = siteContent;
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [displayedTitle, setDisplayedTitle] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const matrixChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?";
+  const targetTitle = hero.title;
+  const animationDuration = 750; // 0.75 seconds
+  const delayPerChar = animationDuration / targetTitle.length;
+
+  useEffect(() => {
+    // Initialize with scrambled text of exact same length
+    const scrambledText = targetTitle.split('').map(() => 
+      matrixChars[Math.floor(Math.random() * matrixChars.length)]
+    ).join('');
+    setDisplayedTitle(scrambledText);
+
+    // Start animation after a brief delay
+    const startTimer = setTimeout(() => {
+      const animateChar = (index: number) => {
+        if (index < targetTitle.length) {
+          setDisplayedTitle(prev => {
+            const newTitle = prev.split('');
+            newTitle[index] = targetTitle[index];
+            return newTitle.join('');
+          });
+          
+          setTimeout(() => animateChar(index + 1), delayPerChar);
+        }
+      };
+      animateChar(0);
+    }, 300);
+
+    return () => clearTimeout(startTimer);
+  }, [targetTitle, delayPerChar]);
 
   const handleScrollClick = () => {
     const nextSection = document.getElementById('about');
@@ -28,50 +61,40 @@ export function Hero() {
       />
       
       {/* Content */}
-      <Container className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center py-20">
-        <div className="flex flex-col md:flex-row items-center gap-8 md:gap-16 max-w-6xl">
-          {/* Logo */}
-          <div className="w-48 h-48 md:w-64 md:h-64 relative flex-shrink-0 md:ml-8">
-            <div className={`absolute inset-0 transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}>
-              <Image
-                src="/images/brand/nesta-logo.png"
-                alt="Nesta Education Logo"
-                fill
-                className="object-contain"
-                priority
-                sizes="(max-width: 768px) 192px, 256px"
-                onError={(e) => {
-                  console.error('Error loading logo:', e);
-                  setImageError(true);
-                }}
-                onLoad={() => {
-                  console.log('Logo loaded successfully');
-                  setImageLoaded(true);
-                }}
-              />
-            </div>
-            {!imageLoaded && !imageError && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="animate-pulse bg-muted rounded-full w-full h-full"></div>
-              </div>
-            )}
-          </div>
+      <Container className="flex min-h-[calc(100vh-4rem)] flex-col items-start justify-start py-8 pt-16">
+        <div className="flex flex-col md:flex-row items-start gap-8 md:gap-16 w-full">
 
           {/* Text Content */}
-          <div className="text-center md:text-left max-w-2xl">
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl mb-6">
-              {hero.title}
+          <div className="text-left max-w-6xl flex-1">
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl mb-6">
+              {displayedTitle || targetTitle}
             </h1>
-            <p className="text-xl text-muted-foreground leading-relaxed">
+            <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-6xl" style={{ fontFamily: 'SF Mono, Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace' }}>
               {hero.subtitle}
             </p>
+          </div>
+        </div>
+
+        {/* Bahamas Video - Centered on page */}
+        <div className="flex justify-center items-center mt-8 w-full">
+          <div className="relative w-[65rem] h-[26rem] md:w-[90rem] md:h-[36rem] mx-auto">
+            <video
+              src="/videos/bahamas-video.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-contain"
+            >
+              Your browser does not support the video tag.
+            </video>
           </div>
         </div>
 
         {/* Scroll Arrow */}
         <motion.button
           onClick={handleScrollClick}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 p-4 text-muted-foreground hover:text-foreground transition-colors"
+          className="mt-8 p-4 text-muted-foreground hover:text-foreground transition-colors mx-auto"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}

@@ -323,7 +323,7 @@ export default function PracticeExamPage() {
       {/* How It Works Section */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-center">How Practice Exams Work</CardTitle>
+          <CardTitle className="text-center text-lg font-bold tracking-tighter">How Practice Exams Work</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-3 gap-6 text-center">
@@ -331,8 +331,8 @@ export default function PracticeExamPage() {
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
                 <Target className="w-6 h-6 text-blue-600" />
               </div>
-              <h3 className="font-semibold">1. Choose Your Subject</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="text-sm font-medium tracking-tighter">1. Choose Your Subject</h3>
+              <p className="text-xs text-muted-foreground">
                 Select from BJC (Middle School) or BGCSE (High School) level exams across multiple subjects
               </p>
             </div>
@@ -340,8 +340,8 @@ export default function PracticeExamPage() {
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto">
                 <FileText className="w-6 h-6 text-green-600" />
               </div>
-              <h3 className="font-semibold">2. Take the Exam</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="text-sm font-medium tracking-tighter">2. Take the Exam</h3>
+              <p className="text-xs text-muted-foreground">
                 Answer AI-generated questions tailored to the official curriculum standards
               </p>
             </div>
@@ -349,8 +349,8 @@ export default function PracticeExamPage() {
               <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
                 <TrendingUp className="w-6 h-6 text-purple-600" />
               </div>
-              <h3 className="font-semibold">3. Get Results</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="text-sm font-medium tracking-tighter">3. Get Results</h3>
+              <p className="text-xs text-muted-foreground">
                 Receive detailed feedback and explanations to help you improve
               </p>
             </div>
@@ -373,8 +373,8 @@ export default function PracticeExamPage() {
                     <IconComponent className="w-6 h-6 text-white" />
                   </div>
                 </div>
-                <CardTitle className="text-xl">{exam.title}</CardTitle>
-                <CardDescription className="text-gray-600">{exam.description}</CardDescription>
+                <CardTitle className="text-lg font-bold tracking-tighter">{exam.title}</CardTitle>
+                <CardDescription className="text-sm text-muted-foreground">{exam.description}</CardDescription>
               </CardHeader>
 
               <CardContent className="flex-1 flex flex-col">
@@ -383,20 +383,20 @@ export default function PracticeExamPage() {
                     <div className="flex items-center justify-center gap-1 mb-1">
                       <FileText className="w-4 h-4 text-gray-600" />
                     </div>
-                    <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">{exam.questions}</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Questions</div>
+                    <div className="text-lg font-bold text-gray-800 dark:text-gray-200">{exam.questions}</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">Questions</div>
                   </div>
                   <div className="bg-muted/30 rounded-lg p-3 text-center">
                     <div className="flex items-center justify-center gap-1 mb-1">
                       <Clock className="w-4 h-4 text-gray-600" />
                     </div>
-                    <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">{exam.timeLimit}</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Minutes</div>
+                    <div className="text-lg font-bold text-gray-800 dark:text-gray-200">{exam.timeLimit}</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400">Minutes</div>
                   </div>
                 </div>
 
                 <div className="mb-4">
-                  <h4 className="font-medium text-gray-800 mb-2 dark:text-gray-200">Topics Covered:</h4>
+                  <h4 className="text-sm font-medium text-gray-800 mb-2 dark:text-gray-200">Topics Covered:</h4>
                   <div className="flex flex-wrap gap-2">
                     {exam.topics.map((topic) => (
                       <Badge
@@ -412,7 +412,7 @@ export default function PracticeExamPage() {
 
                 <div className="mt-auto pt-4 border-t border-white/30">
                   <Link href={`/student/practice-exam/${exam.id}`}>
-                    <Button size="lg" className={`w-full text-white ${exam.buttonColor}`}>
+                    <Button size="sm" className={`w-full text-white ${exam.buttonColor}`}>
                       Start Practice Exam
                     </Button>
                   </Link>
@@ -438,8 +438,8 @@ export default function PracticeExamPage() {
           <Card>
             <CardContent className="p-8 text-center">
               <History className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No Past Exams Yet</h3>
-              <p className="text-muted-foreground mb-4">
+              <h3 className="text-sm font-medium tracking-tighter mb-2">No Past Exams Yet</h3>
+              <p className="text-xs text-muted-foreground mb-4">
                 You haven't taken any practice exams yet. Start with a new exam to see your results here.
               </p>
               <Button onClick={() => setActiveTab("new-exam")}>
@@ -453,7 +453,7 @@ export default function PracticeExamPage() {
               <div className="flex items-center justify-center mb-4">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               </div>
-              <p className="text-muted-foreground">Loading exam details...</p>
+              <p className="text-xs text-muted-foreground">Loading exam details...</p>
             </CardContent>
           </Card>
         ) : selectedExam ? (
@@ -470,17 +470,17 @@ export default function PracticeExamPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
+                <CardTitle className="flex items-center gap-2 text-lg font-bold tracking-tighter">
+                  <CheckCircle className="h-5 w-5 text-green-600" />
                   Exam Results: {capitalizeSubject(selectedExam.subject)}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-center space-y-2">
-                  <div className="text-4xl font-bold text-primary">
+                  <div className="text-2xl font-bold text-primary">
                     {selectedExam.score}/{selectedExam.maxScore}
                   </div>
-                  <div className="text-2xl font-semibold text-green-600">{selectedExam.percentage}%</div>
+                  <div className="text-lg font-semibold text-green-600">{selectedExam.percentage}%</div>
                   <Badge variant={selectedExam.percentage >= 70 ? "default" : "secondary"} className="mt-2">
                     {selectedExam.percentage >= 90
                       ? "Excellent"
@@ -490,7 +490,7 @@ export default function PracticeExamPage() {
                           ? "Satisfactory"
                           : "Needs Improvement"}
                   </Badge>
-                  <p className="text-muted-foreground mt-4">{selectedExam.feedback}</p>
+                  <p className="text-xs text-muted-foreground mt-4">{selectedExam.feedback}</p>
                 </div>
               </CardContent>
             </Card>
@@ -498,8 +498,8 @@ export default function PracticeExamPage() {
             {selectedExam.questionResults && selectedExam.questionResults.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Question-by-Question Review</CardTitle>
-                  <CardDescription>Detailed feedback for each question</CardDescription>
+                  <CardTitle className="text-lg font-bold tracking-tighter">Question-by-Question Review</CardTitle>
+                  <CardDescription className="text-sm">Detailed feedback for each question</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {selectedExam.questionResults.map((result, index) => {
@@ -518,7 +518,7 @@ export default function PracticeExamPage() {
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-3">
-                              <h4 className="font-medium">Question {result.questionId}</h4>
+                              <h4 className="text-sm font-medium tracking-tighter">Question {result.questionId}</h4>
                               <Badge variant="outline">
                                 {result.pointsEarned}/{result.maxPoints} points
                               </Badge>
@@ -527,8 +527,8 @@ export default function PracticeExamPage() {
                             {/* Original Question */}
                             {originalQuestion && (
                               <div className="mb-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Original Question:</p>
-                                <p className="text-sm">{originalQuestion.question}</p>
+                                <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">Original Question:</p>
+                                <p className="text-xs">{originalQuestion.question}</p>
                                 {originalQuestion.type === "multiple-choice" && originalQuestion.options && (
                                   <div className="mt-2">
                                     <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Options:</p>
@@ -542,15 +542,15 @@ export default function PracticeExamPage() {
                               </div>
                             )}
                             
-                            <p className="text-sm text-muted-foreground mb-2">
+                            <p className="text-xs text-muted-foreground mb-2">
                               <strong>Your answer:</strong> {result.userAnswer || "No answer provided"}
                             </p>
                             {!result.isCorrect && result.correctAnswer && (
-                              <p className="text-sm text-green-600 mb-2">
+                              <p className="text-xs text-green-600 mb-2">
                                 <strong>Correct answer:</strong> {result.correctAnswer}
                               </p>
                             )}
-                            <p className="text-sm">{result.feedback}</p>
+                            <p className="text-xs">{result.feedback}</p>
                           </div>
                         </div>
                       </div>
@@ -570,27 +570,27 @@ export default function PracticeExamPage() {
               >
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{result.subject}</CardTitle>
+                    <CardTitle className="text-sm font-bold tracking-tighter">{result.subject}</CardTitle>
                     {getPerformanceBadge(result.percentage)}
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-xs">
                       <span>Score:</span>
                       <span className="font-medium">
                         {result.score}/{result.totalQuestions}
                       </span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-xs">
                       <span>Percentage:</span>
                       <span className="font-medium">{result.percentage}%</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-xs">
                       <span>Time:</span>
                       <span className="font-medium">{result.timeSpent} min</span>
                     </div>
-                    <div className="flex justify-between text-sm text-muted-foreground">
+                    <div className="flex justify-between text-xs text-muted-foreground">
                       <span>Date:</span>
                       <span>{new Date(result.date).toLocaleDateString()}</span>
                     </div>
@@ -609,16 +609,16 @@ export default function PracticeExamPage() {
       <div className="flex justify-center gap-4 mt-4 mb-6">
         <Button
           variant={activeTab === "new-exam" ? "default" : "outline"}
-          size="lg"
-          className="flex items-center gap-2 px-6 py-3"
+          size="sm"
+          className="flex items-center gap-2 px-4 py-2"
           onClick={() => setActiveTab("new-exam")}
         >
           <span role="img" aria-label="New Exam">🆕</span> New Exam
         </Button>
         <Button
           variant={activeTab === "past-exams" ? "default" : "outline"}
-          size="lg"
-          className="flex items-center gap-2 px-6 py-3"
+          size="sm"
+          className="flex items-center gap-2 px-4 py-2"
           onClick={() => setActiveTab("past-exams")}
         >
           <span role="img" aria-label="Past Exams">📜</span> Past Exams ({examResults.length})

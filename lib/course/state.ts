@@ -53,3 +53,4 @@ export function resetModuleProgress(courseId: string, moduleId: number): void {
   saveModuleProgress(courseId, moduleId, { completedSlideIds: [] });
 }
 
+

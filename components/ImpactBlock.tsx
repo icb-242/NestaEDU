@@ -23,9 +23,18 @@ export function ImpactBlock() {
     <section className="py-20">
       <Container>
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold tracking-tight text-center mb-12">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4 text-center">
             {impactBlock.title}
           </h2>
+
+          {impactBlock.description && (
+            <p 
+              className="text-lg text-muted-foreground max-w-4xl mx-auto mb-12"
+              style={{ fontFamily: 'SF Mono, Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace' }}
+            >
+              {impactBlock.description}
+            </p>
+          )}
 
           <div className="relative">
             {/* Connecting line */}
@@ -47,9 +56,12 @@ export function ImpactBlock() {
                       <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary/5 text-primary">
                         {index + 1}
                       </div>
-                      <div>
-                        <h3 className="font-medium">{step.label}</h3>
-                        <p className="mt-1 text-sm text-muted-foreground">
+                      <div className="flex-1">
+                        <h3 className="font-medium whitespace-nowrap">{step.label}</h3>
+                        <p 
+                          className="mt-1 text-sm text-muted-foreground"
+                          style={{ fontFamily: 'SF Mono, Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace' }}
+                        >
                           {step.desc}
                         </p>
                       </div>

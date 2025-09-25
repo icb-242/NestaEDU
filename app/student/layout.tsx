@@ -3,7 +3,6 @@
 import type React from "react"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { AppHeader } from "@/components/app-header"
 import { DesktopNav } from "@/components/desktop-nav"
 import { MobileBottomNav } from "@/components/mobile-bottom-nav"
 import { ExamProvider } from "@/contexts/exam-context"
@@ -87,7 +86,6 @@ export default function StudentLayout({
       <div className="flex h-screen">
         <DesktopNav isCollapsed={sidebarCollapsed} onToggle={toggleSidebar} />
         <div className="flex flex-col flex-1 overflow-hidden">
-          <AppHeader />
           <main className="flex-1 overflow-auto p-4 md:p-6 pb-20 md:pb-6">{children}</main>
           <MobileBottomNav />
         </div>

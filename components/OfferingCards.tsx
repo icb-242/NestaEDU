@@ -8,9 +8,17 @@ export function OfferingCards() {
   return (
     <section className="py-20">
       <Container>
-        <h2 className="text-center text-3xl font-bold tracking-tight">
+        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
           {offerings.title}
         </h2>
+        {offerings.description && (
+          <p
+            className="mt-4 text-muted-foreground max-w-4xl"
+            style={{ fontFamily: 'SF Mono, Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace' }}
+          >
+            {offerings.description}
+          </p>
+        )}
 
         <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {offerings.cards.map((card, index) => (

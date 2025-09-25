@@ -761,10 +761,10 @@ export default function DashboardPage() {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold">
+                <h1 className="text-lg sm:text-xl font-bold tracking-tighter">
                   {getGreeting()}, {userProfile?.firstName ? userProfile.firstName : "Student"}!
                 </h1>
-                <p className="text-sm sm:text-base text-muted-foreground">{getStreakMessage()}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">{getStreakMessage()}</p>
               </div>
             </div>
             <div className="flex gap-2 mt-4 sm:mt-0 justify-center sm:justify-end">
@@ -787,7 +787,7 @@ export default function DashboardPage() {
       <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="border-l-4 border-l-green-500 hover:shadow-md transition-shadow active:scale-95 md:active:scale-100">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Current Streak</CardTitle>
+            <CardTitle className="text-sm font-medium tracking-tighter">Current Streak</CardTitle>
             <Zap className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
@@ -800,7 +800,7 @@ export default function DashboardPage() {
 
         <Card className="border-l-4 border-l-blue-500 hover:shadow-md transition-shadow active:scale-95 md:active:scale-100">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tutoring Sessions This Week</CardTitle>
+            <CardTitle className="text-sm font-medium tracking-tighter">Tutoring Sessions This Week</CardTitle>
             <Calendar className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
@@ -813,7 +813,7 @@ export default function DashboardPage() {
 
         <Card className="border-l-4 border-l-purple-500 hover:shadow-md transition-shadow active:scale-95 md:active:scale-100">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Practice Exams This Week</CardTitle>
+            <CardTitle className="text-sm font-medium tracking-tighter">Practice Exams This Week</CardTitle>
             <MessageSquare className="h-4 w-4 text-purple-500" />
           </CardHeader>
           <CardContent>
@@ -826,7 +826,7 @@ export default function DashboardPage() {
 
         <Card className="border-l-4 border-l-orange-500 hover:shadow-md transition-shadow active:scale-95 md:active:scale-100">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg. Score</CardTitle>
+            <CardTitle className="text-sm font-medium tracking-tighter">Avg. Score</CardTitle>
             <Target className="h-4 w-4 text-orange-500" />
           </CardHeader>
           <CardContent>
@@ -845,7 +845,7 @@ export default function DashboardPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-lg font-bold tracking-tighter">
                   <Clock className="h-5 w-5" />
                   Recent Sessions
                 </CardTitle>
@@ -939,7 +939,7 @@ export default function DashboardPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-lg font-bold tracking-tighter">
                   <Award className="h-5 w-5" />
                   Exam Performance
                 </CardTitle>
@@ -1010,7 +1010,7 @@ export default function DashboardPage() {
       {/* Weekly Activity Graph */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg font-bold tracking-tighter">
             <BarChart3 className="h-5 w-5" />
             Activity This Week
           </CardTitle>

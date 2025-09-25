@@ -5,6 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -12,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
-import { Eye, EyeOff, AlertCircle, CheckCircle, PenTool, ArrowLeft } from "lucide-react"
+import { Eye, EyeOff, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 export default function SignUpPage() {
@@ -206,10 +207,18 @@ export default function SignUpPage() {
         <CardHeader className="text-center mt-14 sm:mt-0">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Link href="/" className="hover:opacity-80 transition-opacity">
-              <PenTool className="h-8 w-8 text-primary" />
+              <div className="relative w-8 h-8">
+                <Image
+                  src="/images/brand/nesta-logo-transparent.png"
+                  alt="Nesta Education Logo"
+                  fill
+                  className="object-contain"
+                  sizes="32px"
+                />
+              </div>
             </Link>
             <Link href="/" className="hover:opacity-80 transition-opacity">
-              <span className="text-2xl font-bold">Nesta Education <span className="text-amber-500">(Beta)</span></span>
+              <span className="text-2xl font-bold tracking-tighter">nesta education <span className="text-amber-500">(Beta)</span></span>
             </Link>
           </div>
           <CardTitle className="text-xl">Create Your Account</CardTitle>

@@ -3,13 +3,15 @@
 import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { AlertCircle, PenTool, ArrowLeft } from "lucide-react"
+import { AlertCircle, ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { ThemeToggleButton } from "@/components/theme-toggle-button"
 
 export default function StudentLoginPage() {
   const [email, setEmail] = useState("")
@@ -70,16 +72,15 @@ export default function StudentLoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative">
-      {/* Black and white grid background */}
+      {/* Theme-aware grid background */}
       <div 
-        className="absolute inset-0 -z-10" 
+        className="absolute inset-0 -z-10 bg-background" 
         style={{
           backgroundImage: `
-            linear-gradient(to right, rgba(0, 0, 0, 0.1) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 1px, transparent 1px)
+            linear-gradient(to right, hsl(var(--sketch-line)) 1px, transparent 1px),
+            linear-gradient(to bottom, hsl(var(--sketch-line)) 1px, transparent 1px)
           `,
-          backgroundSize: '40px 40px',
-          backgroundColor: '#ffffff'
+          backgroundSize: '40px 40px'
         }}
         aria-hidden="true"
       />
@@ -95,11 +96,24 @@ export default function StudentLoginPage() {
         </Link>
       </div>
 
-      <Card className="w-full max-w-md bg-white/80 backdrop-blur-sm">
+      {/* Theme Toggle Button - Positioned at the top right */}
+      <div className="absolute top-4 right-4">
+        <ThemeToggleButton />
+      </div>
+
+      <Card className="w-full max-w-md bg-card/80 backdrop-blur-sm">
         <CardHeader className="text-center space-y-2">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Link href="/" className="hover:opacity-80 transition-opacity">
-              <PenTool className="w-8 h-8" />
+              <div className="relative w-8 h-8">
+                <Image
+                  src="/images/brand/nesta-logo-transparent.png"
+                  alt="Nesta Education Logo"
+                  fill
+                  className="object-contain"
+                  sizes="32px"
+                />
+              </div>
             </Link>
             <Link href="/" className="hover:opacity-80 transition-opacity">
               <span className="text-2xl font-bold tracking-tighter">
@@ -124,7 +138,7 @@ export default function StudentLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-white font-mono"
+                className="font-mono"
               />
             </div>
             <div className="space-y-2">
@@ -138,7 +152,7 @@ export default function StudentLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="bg-white font-mono"
+                className="font-mono"
               />
             </div>
 

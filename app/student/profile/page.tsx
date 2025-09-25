@@ -12,8 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
-import { useTheme } from "next-themes"
-import { Camera, X, Sun, Moon, Monitor, User, Mail, Phone, GraduationCap, Loader2, Crop } from "lucide-react"
+import { Camera, X, User, Mail, Phone, GraduationCap, Loader2, Crop } from "lucide-react"
 import { ImageCropper } from "@/components/image-cropper"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
@@ -54,9 +53,6 @@ export default function ProfilePage() {
     gradeLevel: "",
     school: "",
   })
-  const [originalTheme, setOriginalTheme] = useState<string>("")
-  const [hasThemeChanged, setHasThemeChanged] = useState(false)
-  const [currentTheme, setCurrentTheme] = useState<string>("")
   const saveSuccessfulRef = useRef(false)
   const [errors, setErrors] = useState<{ [key: string]: boolean }>({})
   const [isLoading, setIsLoading] = useState(true)
@@ -68,7 +64,6 @@ export default function ProfilePage() {
   const [hasUnsavedAvatarChanges, setHasUnsavedAvatarChanges] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { toast } = useToast()
-  const { theme, setTheme, resolvedTheme } = useTheme()
   const router = useRouter()
 
   // Load profile data on component mount
@@ -179,24 +174,12 @@ export default function ProfilePage() {
     setHasUnsavedAvatarChanges(hasChanges)
   }, [avatarPreview, originalProfile.avatar])
 
-  // Initialize theme state when theme is available
-  useEffect(() => {
-    if (theme && !originalTheme) {
-      setOriginalTheme(theme)
-      setCurrentTheme(theme)
-    }
-  }, [theme, originalTheme])
 
   const handleInputChange = (field: keyof UserProfile, value: string) => {
     setProfile(prev => ({ ...prev, [field]: value }))
     setErrors(prev => ({ ...prev, [field]: false }))
   }
 
-  const handleThemeChange = (newTheme: string) => {
-    setTheme(newTheme)
-    setCurrentTheme(newTheme)
-    setHasThemeChanged(true)
-  }
 
   const hasChanges = (): boolean => {
     // Check if any profile fields have changed
@@ -208,10 +191,7 @@ export default function ProfilePage() {
     // Check if avatar has changed
     const avatarChanged = avatarPreview !== originalProfile.avatar
 
-    // Check if theme has changed
-    const themeChanged = hasThemeChanged
-
-    return profileChanged || avatarChanged || themeChanged
+    return profileChanged || avatarChanged
   }
 
   const compressImage = (file: File): Promise<string> => {
@@ -416,12 +396,6 @@ export default function ProfilePage() {
       console.log('Updated profile.avatar:', updatedProfile.avatar ? 'exists' : 'null')
       console.log('Updated avatarPreview:', updatedProfile.avatar ? 'exists' : 'null')
       
-      // Update original theme if changed
-      if (hasThemeChanged) {
-        setOriginalTheme(theme || "system")
-        setHasThemeChanged(false)
-        saveSuccessfulRef.current = true
-      }
 
       // Notify other components
       console.log('Profile page dispatching profileUpdated event:', updatedProfile)
@@ -649,43 +623,6 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          {/* Theme Settings */}
-          <Card className="md:col-span-3">
-            <CardHeader>
-              <CardTitle>Appearance</CardTitle>
-              <CardDescription>
-                Customize the appearance of the application
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center space-x-4">
-                <Button
-                  variant={currentTheme === "light" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleThemeChange("light")}
-                >
-                  <Sun className="h-4 w-4 mr-2" />
-                  Light
-                </Button>
-                <Button
-                  variant={currentTheme === "dark" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleThemeChange("dark")}
-                >
-                  <Moon className="h-4 w-4 mr-2" />
-                  Dark
-                </Button>
-                <Button
-                  variant={currentTheme === "system" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handleThemeChange("system")}
-                >
-                  <Monitor className="h-4 w-4 mr-2" />
-                  System
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* Save Button */}
           <Card className="md:col-span-3">

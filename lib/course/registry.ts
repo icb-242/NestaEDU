@@ -3,11 +3,13 @@ import { Course } from "./types";
 export const introToAICourse: Course = {
   id: "intro-to-ai",
   title: "Beginner to Builder 🤖",
-  description: "A comprehensive introduction to Artificial Intelligence, from basic concepts to practical applications. Learn how AI works and build your own AI-powered applications.",
+  description: "A comprehensive introduction to Artificial Intelligence, from basic concepts to practical applications. Learn the inner workings of AI with the end goal of building your own AI-powered application.",
   modules: [],
 };
 
-// Add Module 1 data
+// Add Module 
+//
+//1 data
 introToAICourse.modules.push({
   module: 1,
   title: "What Is AI?",

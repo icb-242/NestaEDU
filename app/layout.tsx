@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { GeistSans } from 'geist/font/sans';
 import "@/styles/globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
   title: "Nesta Education - AI-Powered Learning for Bahamian Students",
@@ -14,11 +15,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${GeistSans.variable} scroll-smooth`}>
+    <html lang="en" className={`${GeistSans.variable} scroll-smooth`} suppressHydrationWarning>
       <body className="font-sans antialiased">
-        <div className="relative min-h-screen bg-gradient">
-          {children}
-        </div>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="relative min-h-screen bg-gradient">
+            {children}
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

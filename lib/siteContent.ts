@@ -30,13 +30,8 @@ export type SiteContent = {
   };
   offerings: {
     title: string;
+    description: string;
     cards: OfferingCard[];
-  };
-  about: {
-    title: string;
-    mission: string;
-    approach: string;
-    stats: StatBlock[];
   };
 };
 
@@ -54,8 +49,8 @@ const courseIcon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox=
 
 export const siteContent: SiteContent = {
   hero: {
-    title: "Bahamian-context AI learning that actually helps you improve.",
-    subtitle: "Nesta Education blends AI-powered tutoring, BJC/BGCSE practice exams, and a beginner-friendly Intro to AI course—built for students in The Bahamas.",
+    title: "Education + Technology = Opportunity.",
+    subtitle: "Nesta is a comprehensive set of tools that blends artificial intelligence with Socratic teaching methods. The platform encourages independent reasoning and deliberate practice, creating opportunities for students, teachers, and the nation at large.",
     primaryCta: {
       text: "Start Learning",
       link: "/login"
@@ -66,59 +61,29 @@ export const siteContent: SiteContent = {
     }
   },
   offerings: {
-    title: "What you can do today",
+    title: "The Nesta Toolbox",
+    description: "The tools Nesta offers are designed to supplement the teaching currently provided by educators. Every aspect of the platform can be leveraged as needed to optimize each student's experience.",
     cards: [
       {
         title: "AI-Powered Tutoring",
-        description: "Ask questions, get step-by-step help, and learn with a Socratic coach tuned to Bahamian exams.",
+        description: "Students can converse with a personalized, AI powered tutor that is trained in the Socratic methood of teaching.",
         ctaText: "Open Tutor",
         ctaLink: "/login",
         icon: tutorIcon
       },
       {
         title: "BJC/BGCSE Practice Exams",
-        description: "Exam-style questions that mirror official papers so you know what to expect.",
+        description: "AI-Generated practice exams that mirror official questions with instant feedback.",
         ctaText: "Practice Now",
         ctaLink: "/login",
         icon: examIcon
       },
       {
         title: "Intro to AI Course",
-        description: "A hands-on, beginner-friendly course that teaches you to build a simple AI app.",
+        description: "A hands-on, beginner-friendly course that teaches the basics of Aritficial Intelligence.",
         ctaText: "Start the Course",
         ctaLink: "/login",
         icon: courseIcon
-      }
-    ]
-  },
-  about: {
-    title: "Why Nesta?",
-    mission: "We're on a mission to make high-quality education accessible to every student in The Bahamas through AI-powered learning tools that understand the local context.",
-    approach: "Our approach combines proven learning science with cutting-edge AI, delivered in a way that resonates with Bahamian students and aligns with BJC/BGCSE curricula.",
-    stats: [
-      {
-        value: "94%",
-        label: "of students improved their grades after 3 months",
-        source: {
-          text: "2023 Student Outcomes Report",
-          url: "#"
-        }
-      },
-      {
-        value: "12,000+",
-        label: "practice questions aligned with BJC/BGCSE",
-        source: {
-          text: "Internal Database Stats",
-          url: "#"
-        }
-      },
-      {
-        value: "89%",
-        label: "student satisfaction rating",
-        source: {
-          text: "User Feedback Analysis",
-          url: "#"
-        }
       }
     ]
   }

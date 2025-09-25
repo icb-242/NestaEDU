@@ -88,7 +88,7 @@ export const researchContent: ResearchContent = {
     { label: "BGCSE 2024 candidates", value: "5,935", sub: "↑ 10.05% vs 2023" },
     { label: "BGCSE ≥C in 5+ subjects", value: "653", sub: "~11% of candidates" },
     { label: "BGCSE ≥C in Math+Eng+Sci", value: "431", sub: "~7% of candidates" },
-    { label: "BJC 2024 candidates", value: "10,745" },
+    { label: "BJC 2024 candidates", value: "10,745", sub: "↓ 1.72% vs 2023" },
     { label: "BJC ≥C in 5+ subjects", value: "1,388", sub: "~13% of candidates" },
     { label: "BJC ≥C in Math+Eng+Sci", value: "1,298", sub: "~12% of candidates" },
   ],
@@ -118,14 +118,13 @@ export const researchContent: ResearchContent = {
     body: "The Bahamas did not participate in PISA 2022 or TIMSS 2019, limiting global comparisons. Nesta's analytics can simulate benchmarks and track skill growth over time."
   },
   impactBlock: {
-    title: "Beyond answers: build critical thinkers",
+    title: "The Nesta Toolbox",
+    description: "The tools Nesta offers are designed to supplement the teaching currently provided by educators. Every aspect of the platform can be leveraged as needed to optimize each student's experience.",
     steps: [
-      { label: "Question", desc: "Students bring problems, confusion, and misconceptions." },
-      { label: "Guided reasoning", desc: "Socratic prompts lead to insight—not shortcuts." },
-      { label: "Confident answer", desc: "Mastery with explanations, not memorization." },
+      { label: "AI Tutor", desc: "Students can converse with a personalized AI powered tutor that never gets tired." },
+      { label: "BJC/BGCSE Practice Exams", desc: "AI-Generated practice exams that mirror official questions with instant feedback." },
+      { label: "Intro to AI Course", desc: "A hands-on, beginner-friendly course that teaches the basics of Aritficial Intelligence." },
     ],
-    blurb:
-      "Tertiary educators report critical literacy gaps. Nesta emphasizes explanation-first learning so students develop analysis and interpretation skills."
   },
   mobileFirst: {
     title: "Mobile-first, island-wide",
