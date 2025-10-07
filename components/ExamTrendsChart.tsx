@@ -17,18 +17,12 @@ const examData = [
 
 export function ExamTrendsChart() {
   return (
-    <section className="py-20">
+    <section className="pt-0 pb-8">
       <div className="container mx-auto px-4">
-        <div className="mb-12 pl-12 md:pl-24">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4 text-left">
-            BJC and BGCSE Exam Performance Trends (2015–2024)
+        <div className="mb-12 text-center">
+          <h2 className="text-lg font-bold tracking-tight mb-4">
+            Exam Performance Trends (2015–2024)
           </h2>
-          <p 
-            className="text-left text-lg text-muted-foreground max-w-4xl"
-            style={{ fontFamily: 'SF Mono, Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace' }}
-          >
-            Historical data showing the number of candidates along with achievement rates across core subjects and >5 subjects.
-          </p>
         </div>
         
         <div className="bg-card rounded-lg border p-6 relative">
@@ -57,19 +51,19 @@ export function ExamTrendsChart() {
                   borderRadius: '6px',
                   fontFamily: 'SF Mono, Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace'
                 }}
-                formatter={(value, name, props) => {
+                formatter={(value: any, name: string, props: any) => {
                   if (value === null || value === undefined) return ['N/A', name];
                   
                   // Calculate percentages for achievement data
                   let displayValue = value.toLocaleString();
                   
-                  if (name.includes('≥C in Core') && props.payload) {
+                  if (typeof name === 'string' && name.includes('≥C in Core') && props.payload) {
                     const totalCandidates = name.includes('BJC') ? props.payload.bjcCandidates : props.payload.bgcseCandidates;
                     if (totalCandidates && totalCandidates > 0) {
                       const percentage = ((value / totalCandidates) * 100).toFixed(1);
                       displayValue = `${value.toLocaleString()} (${percentage}%)`;
                     }
-                  } else if (name.includes('≥C in 5+') && props.payload) {
+                  } else if (typeof name === 'string' && name.includes('≥C in 5+') && props.payload) {
                     const totalCandidates = name.includes('BJC') ? props.payload.bjcCandidates : props.payload.bgcseCandidates;
                     if (totalCandidates && totalCandidates > 0) {
                       const percentage = ((value / totalCandidates) * 100).toFixed(1);
@@ -186,9 +180,9 @@ export function ExamTrendsChart() {
           </div>
         </div>
         
-        <div className="mt-8">
+        <div className="mt-6">
           <div className="max-w-6xl mx-auto">
-            <h3 className="text-xl font-bold mb-4 text-center">
+            <h3 className="text-base font-bold mb-4 text-center">
               What The Numbers Tell Us:
             </h3>
             <div className="relative">
@@ -227,7 +221,7 @@ export function ExamTrendsChart() {
                           className="text-sm text-muted-foreground"
                           style={{ fontFamily: 'SF Mono, Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace' }}
                         >
-                          Across both BJC and BGCSE, fewer than 15% of candidates consistently secure a grade C or higher in all core subjects (Math, English, & Science), with that number dropping as low as 5–6% for BGCSE core proficiency in recent years.
+                          Across both BJC and BGCSE, fewer than 15% of candidates consistently secure a grade C or higher in all core subjects (Math, English, & Science).
                         </p>
                       </div>
                     </div>

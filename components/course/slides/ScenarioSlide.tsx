@@ -58,3 +58,9 @@ export function ScenarioSlideComponent({ slide, onComplete }: { slide: ScenarioS
 
 
 
+
+
+
+
+
+

@@ -2,6 +2,14 @@
 
 import { Slide } from "@/lib/course/types";
 import {
+  ContentSlide,
+  HeroSlide,
+  CarouselSlide,
+  HotspotSlide,
+  FlipCardSlide,
+  DiagramSlide,
+  ChartPlaygroundSlide,
+  TimelineSlide,
   DragDropSlide,
   ScenarioSlide,
   InteractiveInputSlide,
@@ -41,6 +49,22 @@ export function SlideRenderer({
   };
 
   switch (slide.type) {
+    case "content":
+      return <ContentSlide slide={slide} onComplete={handleComplete} />;
+    case "hero":
+      return <HeroSlide slide={slide} onComplete={handleComplete} />;
+    case "carousel":
+      return <CarouselSlide slide={slide} onComplete={handleComplete} />;
+    case "hotspot":
+      return <HotspotSlide slide={slide} onComplete={handleComplete} />;
+    case "flipcard":
+      return <FlipCardSlide slide={slide} onComplete={handleComplete} />;
+    case "diagram":
+      return <DiagramSlide slide={slide} onComplete={handleComplete} />;
+    case "chart-playground":
+      return <ChartPlaygroundSlide slide={slide} onComplete={handleComplete} />;
+    case "timeline":
+      return <TimelineSlide slide={slide} onComplete={handleComplete} />;
     case "drag-drop":
       return <DragDropSlide slide={slide} onComplete={handleComplete} />;
     case "scenario":
@@ -64,7 +88,7 @@ export function SlideRenderer({
     default:
       return (
         <div className="p-4 bg-destructive/10 text-destructive rounded-lg">
-          Slide type "{slide.type}" is not yet implemented. Available types: drag-drop, scenario, interactive-input, prompt-workbench, reflection, checklist, quiz
+          Slide type "{slide.type}" is not yet implemented. Available types: hero, carousel, hotspot, flipcard, diagram, chart-playground, timeline, drag-drop, scenario, interactive-input, prompt-workbench, reflection, checklist, quiz
         </div>
       );
   }

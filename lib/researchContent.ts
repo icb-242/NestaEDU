@@ -4,32 +4,7 @@ export type Kpi = {
   sub?: string;
 };
 
-export type ChartDataPoint = {
-  exam: "BGCSE" | "BJC";
-  metric: "≥C in 5+" | "≥C in Math+Eng+Sci";
-  percent: number;
-};
 
-export type ParticipationDataPoint = {
-  name: string;
-  participationGrowthPct: number;
-  coreProficiencyPct: number;
-};
-
-export type Callout = {
-  title: string;
-  body: string;
-};
-
-export type InfoBand = {
-  title: string;
-  body: string;
-};
-
-export type ImpactStep = {
-  label: string;
-  desc: string;
-};
 
 export type MobileFirst = {
   title: string;
@@ -59,20 +34,6 @@ export type MarketingCopy = {
 
 export type ResearchContent = {
   kpis: Kpi[];
-  charts: {
-    coreProficiencyBars: ChartDataPoint[];
-    participationVsProficiency: ParticipationDataPoint[];
-  };
-  callouts: {
-    polarization: Callout;
-    gender: Callout;
-  };
-  infoBand: InfoBand;
-  impactBlock: {
-    title: string;
-    steps: ImpactStep[];
-    blurb: string;
-  };
   mobileFirst: MobileFirst;
   teacherBenefits: TeacherBenefits;
   outcomes: Outcome[];
@@ -85,51 +46,17 @@ export type ResearchContent = {
 
 export const researchContent: ResearchContent = {
   kpis: [
-    { label: "BGCSE 2024 candidates", value: "5,935", sub: "↑ 10.05% vs 2023" },
-    { label: "BGCSE ≥C in 5+ subjects", value: "653", sub: "~11% of candidates" },
+    { label: "BGCSE # of Candidates", value: "5,935", sub: "↑ 10.05% vs 2023" },
     { label: "BGCSE ≥C in Math+Eng+Sci", value: "431", sub: "~7% of candidates" },
-    { label: "BJC 2024 candidates", value: "10,745", sub: "↓ 1.72% vs 2023" },
-    { label: "BJC ≥C in 5+ subjects", value: "1,388", sub: "~13% of candidates" },
+    { label: "BGCSE ≥C in 5+ subjects", value: "653", sub: "~11% of candidates" },
+    { label: "BJC # of Candidates", value: "10,745", sub: "↓ 1.72% vs 2023" },
     { label: "BJC ≥C in Math+Eng+Sci", value: "1,298", sub: "~12% of candidates" },
+    { label: "BJC ≥C in 5+ subjects", value: "1,388", sub: "~13% of candidates" },
   ],
-  charts: {
-    coreProficiencyBars: [
-      { exam: "BGCSE", metric: "≥C in 5+", percent: 11 },
-      { exam: "BGCSE", metric: "≥C in Math+Eng+Sci", percent: 7 },
-      { exam: "BJC", metric: "≥C in 5+", percent: 13 },
-      { exam: "BJC", metric: "≥C in Math+Eng+Sci", percent: 12 },
-    ],
-    participationVsProficiency: [
-      { name: "BGCSE 2023→2024", participationGrowthPct: 10.05, coreProficiencyPct: 7.0 },
-    ],
-  },
-  callouts: {
-    polarization: {
-      title: "Performance is polarizing",
-      body: "A–C grades are improving while U (ungraded) rates also rise—some students surge ahead while others fall behind. Adaptive support can bridge this gap."
-    },
-    gender: {
-      title: "Gender patterns matter",
-      body: "Females lead overall, while males show improvement in B grades and fewer D/F. Personalized paths can help both groups differently."
-    }
-  },
-  infoBand: {
-    title: "Benchmarking Gap",
-    body: "The Bahamas did not participate in PISA 2022 or TIMSS 2019, limiting global comparisons. Nesta's analytics can simulate benchmarks and track skill growth over time."
-  },
-  impactBlock: {
-    title: "The Nesta Toolbox",
-    description: "The tools Nesta offers are designed to supplement the teaching currently provided by educators. Every aspect of the platform can be leveraged as needed to optimize each student's experience.",
-    steps: [
-      { label: "AI Tutor", desc: "Students can converse with a personalized AI powered tutor that never gets tired." },
-      { label: "BJC/BGCSE Practice Exams", desc: "AI-Generated practice exams that mirror official questions with instant feedback." },
-      { label: "Intro to AI Course", desc: "A hands-on, beginner-friendly course that teaches the basics of Aritficial Intelligence." },
-    ],
-  },
   mobileFirst: {
-    title: "Mobile-first, island-wide",
+    title: "Mobile-First, Nation-Wide.",
     body:
-      "Laptop access is limited. Nesta works great on phones and supports lab desktops—so students across the archipelago can learn, anywhere."
+      "Nesta is optimized for both desktop and mobile experiences, ensuring students can learn wherever they are. Even in areas where laptops or Wi-Fi are limited, Nesta remains accessible through mobile devices and data plans."
   },
   teacherBenefits: {
     title: "For teachers & administrators",
@@ -160,9 +87,9 @@ export const researchContent: ResearchContent = {
   },
   marketingCopy: {
     problem:
-      "More Bahamian students sit national exams each year, yet too few reach proficiency in Math, English, and Science. The gap is widening between high achievers and those falling behind.",
+      "Despite tens of thousands of exam entries each year, fewer than 15% of Bahamian students consistently achieve a grade C or higher in core subjects (Math, English, and Science). For more than a decade, participation has been stagnant while overall proficiency remains low, leaving many students unprepared for future opportunities. ",
     approach:
-      "Nesta blends AI-powered tutoring, realistic practice, and an Intro to AI course—Socratic, adaptive, and tuned to Bahamian context.",
+      "Our plan is simple: give Bahamian students access to the kind of support that leads to tangible results. Nesta is a suite of tools designed to do just that.\n\n• First, students gain access to a personalized AI tutor that guides them step-by-step, teaching them 'how' to think rather than 'what' to think.\n\n• Next, they get access to a practice exam portal that generates questions that feels like the real test, with instant feedback to build confidence where it matters most.\n\n• To round it out, students can leverage an online learning platform currently loaded with an Intro to AI course that moves students from consuming technology to building with it.\n\n\nThe guiding principle is integrating these three components with Bahamian context and curriculum providing students with a tailored experience. By focusing on both current gaps and future skills, Nesta provides a pathway from today's reality to tomorrow's opportunity.",
     impact:
       "Close core-subject gaps, build confident problem solvers, and unlock opportunities in higher education and tomorrow's economy."
   }

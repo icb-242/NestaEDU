@@ -48,3 +48,9 @@ export function ChecklistSlideComponent({ slide, onComplete }: { slide: Checklis
 
 
 
+
+
+
+
+
+

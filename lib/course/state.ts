@@ -42,15 +42,46 @@ export function markSlideCompleted(courseId: string, moduleId: number, slideId: 
   }
 }
 
+// Alias for consistency with SlideRenderer
+export const markSlideComplete = markSlideCompleted;
+
 // Check if a slide is completed
 export function isSlideCompleted(courseId: string, moduleId: number, slideId: string): boolean {
   const progress = loadModuleProgress(courseId, moduleId);
   return progress.completedSlideIds.includes(slideId);
 }
 
+// Save quiz score
+export function saveQuizScore(courseId: string, moduleId: number, quizId: string, score: { correct: number; total: number }): void {
+  if (typeof window === 'undefined') return;
+
+  const key = `quiz_score_${courseId}_module_${moduleId}_${quizId}`;
+  localStorage.setItem(key, JSON.stringify(score));
+}
+
+// Load quiz score
+export function loadQuizScore(courseId: string, moduleId: number, quizId: string): { correct: number; total: number } | null {
+  if (typeof window === 'undefined') return null;
+
+  const key = `quiz_score_${courseId}_module_${moduleId}_${quizId}`;
+  const stored = localStorage.getItem(key);
+  
+  if (!stored) return null;
+
+  try {
+    return JSON.parse(stored);
+  } catch (e) {
+    console.error('Error loading quiz score:', e);
+    return null;
+  }
+}
+
 // Reset progress for a module
 export function resetModuleProgress(courseId: string, moduleId: number): void {
   saveModuleProgress(courseId, moduleId, { completedSlideIds: [] });
 }
+
+
+
 
 

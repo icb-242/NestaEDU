@@ -1,23 +1,36 @@
+import Image from "next/image";
 import { Navbar } from "@/components/Navbar";
-import { Hero } from "@/components/Hero";
-import { StatsKpis } from "@/components/StatsKpis";
-import { ExamTrendsChart } from "@/components/ExamTrendsChart";
-import { OfferingCards } from "@/components/OfferingCards";
-import { AdvantagesGrid } from "@/components/AdvantagesGrid";
-import { Footer } from "@/components/Footer";
+import { MinimalFooter } from "@/components/MinimalFooter";
+import { TextDecode } from "@/components/TextDecode";
 
 export default function HomePage() {
   return (
     <>
       <Navbar />
-      <main>
-        <Hero />
-        <StatsKpis />
-        <ExamTrendsChart />
-        <OfferingCards />
-        <AdvantagesGrid />
+      <main className="flex min-h-screen flex-col items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="flex items-center justify-center gap-4">
+            <div className="relative w-[48px] h-[48px]">
+              <Image
+                src="/images/brand/nesta-logo-transparent.png"
+                alt="Nesta Logo"
+                fill
+                className="object-contain"
+                sizes="48px"
+              />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tighter">nestaEDU</h1>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            <TextDecode 
+              text="education + technology = opportunity" 
+              delay={500}
+              duration={1000}
+            />
+          </p>
+        </div>
       </main>
-      <Footer />
+      <MinimalFooter />
     </>
   );
 }

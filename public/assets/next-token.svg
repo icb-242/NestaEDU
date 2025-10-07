@@ -1,0 +1,92 @@
+<svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="600" height="200" fill="#f8fafc"/>
+  
+  <!-- Input tokens -->
+  <g transform="translate(50, 80)">
+    <text x="0" y="0" font-family="Arial, sans-serif" font-size="14" fill="#374151">Input: "The cat sat on the"</text>
+    
+    <!-- Token boxes -->
+    <g transform="translate(0, 20)">
+      <rect x="0" y="0" width="40" height="25" rx="3" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+      <text x="20" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#374151">The</text>
+      
+      <rect x="50" y="0" width="35" height="25" rx="3" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+      <text x="67" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#374151">cat</text>
+      
+      <rect x="95" y="0" width="30" height="25" rx="3" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+      <text x="110" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#374151">sat</text>
+      
+      <rect x="135" y="0" width="35" height="25" rx="3" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+      <text x="152" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#374151">on</text>
+      
+      <rect x="180" y="0" width="45" height="25" rx="3" fill="#e5e7eb" stroke="#9ca3af" stroke-width="1"/>
+      <text x="202" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#374151">the</text>
+      
+      <!-- Arrow to context -->
+      <path d="M 240 12 L 280 12" stroke="#6b7280" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+    </g>
+  </g>
+  
+  <!-- Context processing -->
+  <g transform="translate(300, 80)">
+    <text x="0" y="0" font-family="Arial, sans-serif" font-size="14" fill="#374151">Context & Attention</text>
+    
+    <!-- Attention visualization -->
+    <g transform="translate(0, 20)">
+      <rect x="0" y="0" width="120" height="40" rx="5" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
+      
+      <!-- Attention lines -->
+      <line x1="10" y1="10" x2="50" y2="30" stroke="#3b82f6" stroke-width="1" opacity="0.7"/>
+      <line x1="30" y1="10" x2="70" y2="30" stroke="#3b82f6" stroke-width="1" opacity="0.7"/>
+      <line x1="50" y1="10" x2="90" y2="30" stroke="#3b82f6" stroke-width="1" opacity="0.7"/>
+      <line x1="70" y1="10" x2="110" y2="30" stroke="#3b82f6" stroke-width="1" opacity="0.7"/>
+      
+      <!-- Context tokens -->
+      <circle cx="20" cy="15" r="3" fill="#3b82f6"/>
+      <circle cx="40" cy="15" r="3" fill="#3b82f6"/>
+      <circle cx="60" cy="15" r="3" fill="#3b82f6"/>
+      <circle cx="80" cy="15" r="3" fill="#3b82f6"/>
+      <circle cx="100" cy="15" r="3" fill="#3b82f6"/>
+      
+      <!-- Output context -->
+      <rect x="20" y="25" width="80" height="12" rx="2" fill="#f3f4f6"/>
+      <text x="60" y="33" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#374151">Context</text>
+      
+      <!-- Arrow to probabilities -->
+      <path d="M 130 20 L 170 20" stroke="#6b7280" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+    </g>
+  </g>
+  
+  <!-- Probabilities -->
+  <g transform="translate(490, 80)">
+    <text x="0" y="0" font-family="Arial, sans-serif" font-size="14" fill="#374151">Next Token Probabilities</text>
+    
+    <!-- Probability bars -->
+    <g transform="translate(0, 20)">
+      <rect x="0" y="0" width="15" height="30" fill="#ef4444"/>
+      <text x="7" y="40" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#374151">mat</text>
+      
+      <rect x="25" y="5" width="15" height="25" fill="#f59e0b"/>
+      <text x="32" y="40" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#374151">rug</text>
+      
+      <rect x="50" y="15" width="15" height="15" fill="#10b981"/>
+      <text x="57" y="40" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#374151">floor</text>
+      
+      <rect x="75" y="20" width="15" height="10" fill="#6b7280"/>
+      <text x="82" y="40" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#374151">...</text>
+      
+      <text x="45" y="55" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#374151">→ "mat" (highest)</text>
+    </g>
+  </g>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6b7280"/>
+    </marker>
+  </defs>
+</svg>
+
+
+

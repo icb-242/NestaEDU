@@ -77,8 +77,5 @@ export const config = {
     '/api/generate-exam',
     '/api/grade-exam',
     '/api/user/profile',
-    '/api/test-avatar',
-    '/api/debug-avatar',
-    '/api/test-me',
   ],
 } 

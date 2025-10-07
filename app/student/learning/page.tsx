@@ -57,7 +57,7 @@ export default function LearningPage() {
 
       {/* Available Courses */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <a href="/courses/intro-to-ai" className="block">
+        <a href="/student/courses/intro-to-ai" className="block">
           <Card className="h-full hover:shadow-lg transition-all duration-200 cursor-pointer">
             <CardContent className="pt-6">
               <div className="space-y-4">

@@ -7,54 +7,145 @@ export const introToAICourse: Course = {
   modules: [],
 };
 
-// Add Module 
-//
-//1 data
+// Module 1: What Is AI?
 introToAICourse.modules.push({
   module: 1,
   title: "What Is AI?",
-  goal: "Build an intuitive, visual understanding of AI, ML, and LLMs—and spot AI in everyday life.",
-  duration: "~60–75 minutes",
+  goal: "Build an intuitive, visual understanding of Artificial Intelligence, Machine Learning, and Large Language Models — and recognize how these systems already shape daily life.",
+  duration: "~70 minutes",
   lessons: [
     {
       lesson: 1,
-      title: "AI, Everywhere",
+      title: "What Exactly Is AI?",
       slides: [
         {
-          type: "hero",
-          heading: "Welcome to AI",
-          content: "From recommendations to routes to smart replies—AI is quietly helping you all day.",
-          asset: { kind: "svg", src: "/assets/data-to-decision.svg", alt: "High-level AI pipeline" },
-          uiHints: { motion: "parallax", cta: "Start" }
+          type: "content",
+          heading: "Defining Artificial Intelligence",
+          content: "Artificial Intelligence (AI) is the science of making machines that can learn from data and make decisions like humans — without being explicitly told what to do. Traditional computer programs follow fixed instructions ('If this, then that'). AI systems, on the other hand, learn patterns from examples. This section introduces that distinction — what 'learning' means for a computer and why it's a big deal.",
+          requiresCompletion: true
         },
         {
-          type: "carousel",
-          heading: "Where do you see AI?",
-          items: [
-            { label: "Recommendations", caption: "'Because you watched…' or Discover Weekly" },
-            { label: "Maps & Navigation", caption: "Predicts traffic & fastest routes" },
-            { label: "Chat Assist", caption: "Drafts emails and replies" },
-            { label: "Camera", caption: "Detects faces & blurs backgrounds" }
+          type: "hero",
+          heading: "AI In Your Everyday Life",
+          content: "AI is when machines mimic thinking — using data to make decisions without being explicitly told how.",
+          uiHints: { motion: "parallax", cta: "See how it learns" },
+          requiresCompletion: true
+        },
+        {
+          type: "content",
+          heading: "Understanding the Vocabulary of AI",
+          content: "AI is a big umbrella term that includes many subfields. The most common are Machine Learning, Deep Learning, and Large Language Models (LLMs). Each one builds upon the last, forming the stack of 'modern AI.'",
+          requiresCompletion: true
+        },
+        {
+          type: "flipcard",
+          heading: "Key Terms You'll Hear Everywhere",
+          cards: [
+            { front: "Artificial Intelligence (AI)", back: "Artificial Intelligence is the field of computer science focused on building systems that can perform tasks that normally require human intelligence, such as reasoning, learning, perception, and decision-making." },
+            { front: "Machine Learning (ML)", back: "Machine Learning is a subset of AI that enables computers to learn from data and improve their performance on a task over time without being explicitly programmed." },
+            { front: "Deep Learning (DL)", back: "Deep Learning is a specialized form of machine learning that uses multi-layered neural networks to automatically learn complex patterns and representations from large amounts of data." },
+            { front: "Large Language Model (LLM)", back: "A Large Language Model is a type of deep learning model trained on vast amounts of text data to understand and generate human-like language, enabling tasks like translation, summarization, and conversation." }
           ],
-          uiHints: { motion: "slide", progress: true },
+          uiHints: { layout: "grid-2x2" },
           requiresCompletion: true
         },
         {
           type: "hotspot",
-          heading: "Tap to reveal: AI around a phone",
-          asset: { kind: "svg", src: "/assets/phone-hotspots.svg" },
+          heading: "AI On Your Cell Phone",
+          content: "Building on the examples you just saw, this phone illustrates where AI quietly runs on-device every day. Each feature uses the same cycle you'll learn throughout this course—collect data, learn a pattern, make a prediction, and improve with feedback.",
+          asset: { kind: "svg", src: "/assets/phone-hotspots.svg", alt: "Phone with AI feature hotspots" },
           hotspots: [
-            { id: "cam",  x: 0.72, y: 0.18, title: "Camera",   body: "Edge detection and face recognition." },
-            { id: "kb",   x: 0.48, y: 0.82, title: "Keyboard", body: "Next-word prediction and autocorrect." },
-            { id: "maps", x: 0.25, y: 0.55, title: "Maps",     body: "Traffic forecasting from historical patterns." }
+            {
+              id: "camera",
+              x: 0.15,
+              y: 0.15,
+              title: "Camera (Computer Vision)",
+              body: "Your camera uses AI models (like convolutional neural networks) trained on millions of images to detect faces, estimate landmarks (eyes, nose, mouth), and segment the background for portrait blur. This isn't a hand-written rule like 'if 3 circles, it's a face'—it's a learned pattern of pixel features. When you tap portrait mode or it auto-focuses on a face, that's the model making a prediction from patterns it learned."
+            },
+            {
+              id: "gallery",
+              x: 0.35,
+              y: 0.15,
+              title: "Photos/Gallery (On-Device Recognition)",
+              body: "Your gallery can group photos by people, places, and scenes using on-device classifiers and embeddings—vector representations learned from images. Instead of rules like 'if lots of blue, it's sky,' it uses learned features to cluster similar photos and power search like 'beach' or 'dog.' Your edits and selections become feedback that improve future groupings."
+            },
+            {
+              id: "maps",
+              x: 0.55,
+              y: 0.15,
+              title: "Maps (Traffic Forecasting & Routing)",
+              body: "Maps aggregates anonymous, real-time GPS signals plus historical data to forecast traffic and ETAs. ML models predict speeds on each road segment and how conditions will change. A search over possible routes then ranks options by predicted arrival time and reliability. When you follow or ignore a suggested route, that outcome becomes feedback to help future predictions."
+            },
+            {
+              id: "keyboard",
+              x: 0.6,
+              y: 0.88,
+              title: "Keyboard (Next-Word Prediction)",
+              body: "The keyboard's suggestions come from a small language model trained on text to predict the next likely word from your context. Autocorrect chooses the most probable intended word based on character patterns and nearby words—again, probabilities learned from lots of examples. As you accept or reject suggestions, your device personalizes the model's preferences for your writing style."
+            }
           ],
           requireAllViewed: true,
+          requiresCompletion: true,
+          uiHints: { motion: "stepper" }
+        },
+        {
+          type: "content",
+          heading: "Rule-Based vs Learning Systems",
+          content: "Before AI, most software used rules written by humans. A calculator 'knows' math because humans encoded it. AI programs don't memorize—they detect patterns. For example, they 'notice' that certain shapes mean a face or that words like 'rainy' often follow 'cloudy.'",
+          requiresCompletion: true
+        },
+        {
+          type: "drag-drop",
+          heading: "Rules or Learning?",
+          content: "Sort these examples into the correct category:",
+          items: [
+            { id: "calculator", label: "Calculator", correctTarget: "rules" },
+            { id: "chatgpt", label: "ChatGPT", correctTarget: "learning" },
+            { id: "alarm", label: "Alarm Clock", correctTarget: "rules" },
+            { id: "netflix", label: "Netflix", correctTarget: "learning" },
+            { id: "camera", label: "Phone Camera (Face Unlock)", correctTarget: "learning" }
+          ],
+          targets: [
+            { id: "rules", label: "Rule-Based" },
+            { id: "learning", label: "Learning Systems" }
+          ],
+          uiHints: { snap: true, celebrateOnComplete: true },
+          requiresCompletion: true
+        },
+        {
+          type: "diagram",
+          heading: "How Netflix's AI Feedback Loop Works",
+          content: "Every AI learns through a loop: it collects data, finds patterns, makes predictions, and then learns from what happens next. Here's how that process unfolds every time you use Netflix — and how your actions complete the loop.",
+          asset: { kind: "svg", src: "/assets/data-to-decision.svg", alt: "Netflix AI feedback loop diagram" },
+          steps: [
+            {
+              id: "data",
+              label: "Data – Collecting Information",
+              desc: "Netflix begins by gathering detailed viewing data — what you watch, when, how long, when you pause, and what you skip. It also combines this with information from millions of other users. Each of these actions becomes a signal that tells the AI what kinds of content different people enjoy."
+            },
+            {
+              id: "pattern",
+              label: "Pattern – Finding Relationships",
+              desc: "Using machine-learning models like collaborative filtering, Netflix looks for statistical patterns: 'Viewers who liked Stranger Things often liked Wednesday.' or 'People who watch comedies at night finish them more often than dramas.' It doesn't understand stories; it recognizes behavior patterns that predict preference."
+            },
+            {
+              id: "prediction",
+              label: "Prediction – Making Recommendations",
+              desc: "When you open Netflix, its AI predicts what you are most likely to enjoy based on those patterns. The thumbnails on your homepage are ranked by probability — how confident the model is that you'll click or finish each show. Even the artwork can change to highlight elements you tend to respond to, such as a favorite actor."
+            },
+            {
+              id: "feedback",
+              label: "Feedback – Learning from Your Response",
+              desc: "When you watch, skip, or quit a recommendation, Netflix records that as feedback. Watching the full episode reinforces the model's confidence; skipping it lowers it. Your behavior literally trains the system — each action updates what Netflix shows you next, completing the learning loop."
+            }
+          ],
+          uiHints: { motion: "stepper" },
           requiresCompletion: true
         },
         {
           type: "reflection",
-          heading: "Your AI moment today",
-          prompt: "Describe one time you unknowingly used AI today.",
+          heading: "Your Understanding",
+          prompt: "In your own words, how is AI different from a normal computer program?",
           saveKey: "m1_l1_reflection",
           requiresCompletion: true
         }
@@ -62,215 +153,183 @@ introToAICourse.modules.push({
     },
     {
       lesson: 2,
-      title: "Core Ideas: AI, ML, LLM",
+      title: "How AI Thinks (Without Thinking)",
       slides: [
         {
-          type: "flipcard",
-          heading: "Key terms (flip to learn)",
-          cards: [
-            { front: "Artificial Intelligence (AI)", back: "Making machines perform tasks that typically require human intelligence." },
-            { front: "Machine Learning (ML)",        back: "Models learn from examples (data) to make predictions." },
-            { front: "Deep Learning",                back: "ML using multi-layer neural networks to learn complex patterns." },
-            { front: "Large Language Model (LLM)",   back: "A deep model trained on vast text to understand and generate language." }
+          type: "content",
+          heading: "The Evolution of AI",
+          content: "AI has been around for decades. From early chess-playing machines to self-driving cars, each step pushed computers closer to learning from experience rather than following instructions.",
+          requiresCompletion: true
+        },
+        {
+          type: "timeline",
+          heading: "A Short History of Thinking Machines",
+          content: "Key milestones in AI development:",
+          events: [
+            { id: "turing", year: "1950", description: "Alan Turing's question: 'Can machines think?'" },
+            { id: "deepblue", year: "1997", description: "IBM's Deep Blue beats chess champion Garry Kasparov" },
+            { id: "transformers", year: "2017", description: "Transformers enable true natural language understanding" },
+            { id: "generative", year: "2023", description: "Generative AI reshapes creativity, productivity, and learning" }
           ],
-          uiHints: { layout: "grid-2x2" },
+          uiHints: { orientation: "horizontal" },
+          requiresCompletion: true
+        },
+        {
+          type: "content",
+          heading: "How ChatGPT Actually Works",
+          content: "ChatGPT doesn't 'understand' like humans — it predicts text based on patterns it learned from billions of examples. This section demonstrates how LLMs guess the next word in a sequence.",
           requiresCompletion: true
         },
         {
           type: "diagram",
-          heading: "From Data to Decisions",
-          content: "Data → Model learns patterns → Makes predictions",
-          asset: { kind: "svg", src: "/assets/data-to-decision.svg" },
+          heading: "Predict the Next Token",
+          content: "How language models work:",
+          asset: { kind: "svg", src: "/assets/next-token.svg", alt: "Next token prediction" },
           steps: [
-            { id: "data",    label: "Data",    desc: "Examples (text, images, numbers)" },
-            { id: "train",   label: "Train",   desc: "Adjusts parameters to reduce errors" },
-            { id: "predict", label: "Predict", desc: "Applies what it learned to new inputs" }
+            { id: "tokens", label: "Tokens", desc: "Text is split into chunks" },
+            { id: "context", label: "Context", desc: "The model analyzes nearby words" },
+            { id: "probabilities", label: "Probabilities", desc: "Assigns scores to possible next tokens" },
+            { id: "output", label: "Output", desc: "The highest-probability token is chosen and added" }
           ],
-          uiHints: { motion: "stepper" },
+          uiHints: { motion: "pulse" },
           requiresCompletion: true
         },
         {
-          type: "chart-playground",
-          heading: "Why more data often helps",
-          content: "Move the slider to see how accuracy can change with more labeled examples.",
-          controls: [{ type: "slider", id: "n_samples", min: 10, max: 10000, start: 200 }],
-          chartModel: "learningCurve",
-          explain: "Generally, more quality data improves performance—up to a point.",
-          initialData: { accuracy: 0.8, samples: 200 },
+          type: "content",
+          heading: "Game: 'Guess Like a Model'",
+          content: "Let's see how it feels to 'think like AI.' When you fill in a missing word, you're doing the same thing — predicting the most likely continuation based on context.",
+          requiresCompletion: true
+        },
+        {
+          type: "interactive-input",
+          heading: "Fill-in Game",
+          content: "Complete the sentence: 'The sky is ___'",
+          placeholder: "Type your guess and see how AI predicts the next word",
+          saveKey: "m1_l2_pattern_game",
+          requiresCompletion: true
+        },
+        {
+          type: "content",
+          heading: "Prompt Practice",
+          content: "Prompts are how we 'talk' to AI. A good prompt gives role, context, and constraints. Let's write one that could guide a study-helper bot.",
+          requiresCompletion: true
+        },
+        {
+          type: "prompt-workbench",
+          heading: "Prompt Workbench",
+          instructions: "Write a prompt for a study helper that explains homework in 3 bullet points and gives one practice question.",
+          inputLabel: "Your prompt",
+          improvementHints: [
+            "Add a role: 'You are a friendly study coach'",
+            "Add a format: '3 bullet points'",
+            "Add a topic: 'for grade 9 students'"
+          ],
+          aiEnabled: true,
+          saveKey: "m1_l2_prompt1",
           requiresCompletion: true
         }
       ]
     },
     {
       lesson: 3,
-      title: "How ChatGPT Works (Intuition, not math)",
-      slides: [
-        {
-          type: "timeline",
-          heading: "Milestones that led to modern LLMs",
-          content: "A few key advances brought us to today's general-purpose models.",
-          events: [
-            { id: "turing",       year: "1950",      description: "'Can machines think?' sparks AI inquiry." },
-            { id: "transformers", year: "2017",      description: "Self-attention architecture supercharges language models." },
-            { id: "llm",          year: "2020–2025", description: "Powerful general-purpose models become widely available." }
-          ],
-          uiHints: { orientation: "horizontal" },
-          requiresCompletion: true
-        },
-        {
-          type: "diagram",
-          heading: "Predict the next token",
-          content: "Given a sequence of tokens, an LLM predicts the most likely next token.",
-          asset: { kind: "svg", src: "/assets/next-token.svg" },
-          steps: [
-            { id: "tokens",  label: "Tokens",       desc: "Text is split into small pieces" },
-            { id: "context", label: "Context",      desc: "Model considers nearby tokens (attention)" },
-            { id: "prob",    label: "Probabilities", desc: "Scores each possible next token" }
-          ],
-          uiHints: { motion: "pulse" },
-          requiresCompletion: true
-        },
-        {
-          type: "prompt-workbench",
-          heading: "Try prompting (mini workbench)",
-          instructions: "Write a prompt for a study helper that explains homework in 3 bullet points and gives one practice question.",
-          inputLabel: "Your prompt",
-          improvementHints: [
-            "Add role or style: 'You are a helpful study coach…'",
-            "Add constraints: '3 bullet points, <100 words'",
-            "Add context: audience, goal, examples"
-          ],
-          aiEnabled: true,
-          saveKey: "m1_l3_prompt1",
-          requiresCompletion: true
-        }
-      ]
-    },
-    {
-      lesson: 4,
-      title: "AI in the Real World (Hands-on)",
-      slides: [
-        {
-          type: "drag-drop",
-          heading: "Match the tool to the AI area",
-          content: "Drag each app to the category that fits best.",
-          items: [
-            { id: "translate", label: "Google Translate",     correctTarget: "nlp" },
-            { id: "spotify",   label: "Spotify Mixes",        correctTarget: "rec" },
-            { id: "faceid",    label: "Phone Unlock (FaceID)",correctTarget: "cv" },
-            { id: "chatgpt",   label: "ChatGPT",              correctTarget: "llm" }
-          ],
-          targets: [
-            { id: "nlp", label: "Language (NLP)" },
-            { id: "rec", label: "Recommendations" },
-            { id: "cv",  label: "Computer Vision" },
-            { id: "llm", label: "Large Language Models" }
-          ],
-          uiHints: { snap: true, celebrateOnComplete: true },
-          requiresCompletion: true
-        },
-        {
-          type: "scenario",
-          heading: "Branching: Choose your helper",
-          scenario: "You're late for school and need to plan a route that avoids traffic and finds a coffee stop. Which tool do you open first?",
-          choices: [
-            { id: "maps",    text: "Maps" },
-            { id: "search",  text: "Search" },
-            { id: "chatbot", text: "Chatbot" }
-          ],
-          correctChoice: "maps",
-          feedback: {
-            "maps": "Correct: it gives real-time traffic and ETA.",
-            "search": "Search can help, but it's slower than live routing.",
-            "chatbot": "A chatbot can help, but apps with live data are better here."
-          },
-          requiresCompletion: true
-        },
-        {
-          type: "interactive-input",
-          heading: "Design an AI helper",
-          content: "Describe a simple daily problem. How might AI solve it?",
-          placeholder: "Keep it small & specific. Define inputs/outputs. Who benefits?",
-          requiresCompletion: true
-        }
-      ]
-    },
-    {
-      lesson: 5,
       title: "Responsible & Realistic AI",
       slides: [
         {
+          type: "content",
+          heading: "The Myths and the Truths",
+          content: "AI is powerful, but not magic. It doesn't 'think,' and it can make mistakes. This section clears up popular myths so students build a realistic understanding.",
+          requiresCompletion: true
+        },
+        {
           type: "flipcard",
-          heading: "Myths vs. Reality",
+          heading: "Myths vs Reality",
           cards: [
-            { front: "AI is always right",           back: "False. Models can be biased or hallucinate." },
-            { front: "AI understands like humans",   back: "Not quite. It recognizes patterns, not meaning." },
-            { front: "Data quality doesn't matter",  back: "Garbage in, garbage out. Data quality is critical." }
+            { front: "AI is always right", back: "False: AI depends on data quality." },
+            { front: "AI understands like humans", back: "False: It recognizes patterns, not meaning." },
+            { front: "AI will replace everyone", back: "False: It assists humans, not replaces them." },
+            { front: "AI needs no supervision", back: "False: Humans guide, correct, and verify outputs." }
           ],
+          requiresCompletion: true
+        },
+        {
+          type: "content",
+          heading: "Where Bias Hides",
+          content: "AI reflects the data it's trained on. If the data is biased, the model's predictions will be too. Below are stages where bias can enter an AI system.",
           requiresCompletion: true
         },
         {
           type: "hotspot",
-          heading: "Where bias can sneak in",
-          asset: { kind: "svg", src: "/assets/phone-hotspots.svg" },
+          heading: "Bias in the Pipeline",
+          asset: { kind: "svg", src: "/assets/phone-hotspots.svg", alt: "Bias hotspots diagram" },
           hotspots: [
-            { id: "data",  x: 0.18, y: 0.42, title: "Training data", body: "Skewed datasets → skewed outputs" },
-            { id: "prompt",x: 0.52, y: 0.30, title: "Prompting",     body: "Leading instructions bias results" },
-            { id: "eval",  x: 0.78, y: 0.62, title: "Evaluation",    body: "Who judges 'good' can bias outcomes" }
+            { id: "data", x: 0.18, y: 0.42, title: "Data Collection", body: "If examples aren't diverse, predictions will be skewed." },
+            { id: "model", x: 0.52, y: 0.30, title: "Model Training", body: "If labels are inconsistent, model learns errors." },
+            { id: "evaluation", x: 0.78, y: 0.62, title: "Evaluation", body: "If testers share one perspective, model fails others." }
           ],
           requireAllViewed: true,
           requiresCompletion: true
         },
         {
           type: "reflection",
-          heading: "Responsible use",
-          prompt: "Name one way you can use AI more responsibly this week.",
-          saveKey: "m1_l5_reflection",
+          heading: "Responsible Use",
+          prompt: "What's one way you can use AI responsibly this week?",
+          saveKey: "m1_l3_reflection",
           requiresCompletion: true
         }
       ]
     },
     {
-      lesson: 6,
-      title: "Mini-Lab: Get Ready to Build",
+      lesson: 4,
+      title: "Mini-Lab & Knowledge Check",
       slides: [
         {
+          type: "content",
+          heading: "Final Prompt Challenge",
+          content: "Now that you understand AI's structure and purpose, you'll design your own prompt to help someone learn — using everything you've discovered about data, predictions, and responsibility.",
+          requiresCompletion: true
+        },
+        {
           type: "prompt-workbench",
-          heading: "Craft a helpful prompt (you'll reuse this later)",
-          instructions: "Write a prompt for a study helper that explains homework in 3 bullet points and gives one practice question.",
-          inputLabel: "Your prompt",
+          heading: "Prompt Workbench (Final)",
+          instructions: "Improve your study-helper prompt using what you've learned.",
+          inputLabel: "Your improved prompt",
           improvementHints: [
             "Role: 'You are a friendly study coach for grade 9.'",
             "Constraints: '3 bullet points, 1 practice question, <120 words'",
             "Context: 'Topic: Photosynthesis' (or any topic you choose)"
           ],
           aiEnabled: true,
-          saveKey: "m1_l6_prompt_final",
+          saveKey: "m1_l4_prompt_final",
+          requiresCompletion: true
+        },
+        {
+          type: "content",
+          heading: "Checklist",
+          content: "Before you move on, confirm you understand the core principles of AI.",
           requiresCompletion: true
         },
         {
           type: "checklist",
-          heading: "Readiness checklist",
+          heading: "Readiness Checklist",
           items: [
-            "I can explain AI, ML, and LLM in plain words",
-            "I've written at least one solid prompt",
-            "I understand basic tradeoffs (cost, speed, accuracy)"
+            "I can define AI in my own words",
+            "I can describe how Netflix, Maps, and Chatbots use AI",
+            "I understand that AI learns from data, not rules"
           ],
           requireAllChecked: true,
           requiresCompletion: true
         },
         {
           type: "quiz",
-          heading: "Module 1 Knowledge Check",
+          heading: "Knowledge Check (5 Questions)",
           questions: [
-            { id: "q1", q: "Which statement best describes Machine Learning?", options: ["Hard-coded rules only", "Learning patterns from data", "A social media app"], answer: "Learning patterns from data",  explain: "ML improves by seeing many examples and minimizing errors." },
+            { id: "q1", q: "Which statement best describes Machine Learning?", options: ["Hard-coded rules only", "Learning patterns from data", "A social media app"], answer: "Learning patterns from data", explain: "ML improves by seeing many examples and minimizing errors." },
             { id: "q2", q: "LLMs like ChatGPT primarily predict…", options: ["The next token in text", "An image label", "GPS route times"], answer: "The next token in text" },
             { id: "q3", q: "More (high-quality) labeled data usually helps by…", options: ["Making it slower only", "Improving generalization/accuracy", "Increasing bias"], answer: "Improving generalization/accuracy" },
             { id: "q4", q: "Select the best example of AI in daily life:", options: ["Static calculator", "Netflix recommendations", "A paper map"], answer: "Netflix recommendations" },
-            { id: "q5", q: "'Garbage in, garbage out' refers to…", options: ["Poor input data leads to poor outputs", "Throwing away computers", "AI is always wrong"], answer: "Poor input data leads to poor outputs" },
-            { id: "q6", q: "Why add constraints to prompts (e.g., word limits, bullet points)?", options: ["To reduce clarity", "To steer structure and usefulness", "To make AI fail"], answer: "To steer structure and usefulness" }
+            { id: "q5", q: "'Garbage in, garbage out' refers to…", options: ["Poor input data leads to poor outputs", "Throwing away computers", "AI is always wrong"], answer: "Poor input data leads to poor outputs" }
           ],
-          passScore: 5,
+          passScore: 4,
           requiresCompletion: true
         }
       ]
@@ -281,11 +340,11 @@ introToAICourse.modules.push({
     title: "AI Explorer",
     criteria: [
       "Viewed all hotspots",
-      "Completed drag–drop",
-      "Submitted mini-lab prompt",
-      "Passed knowledge check"
+      "Completed pattern game",
+      "Submitted prompt",
+      "Passed quiz"
     ],
-    unlocks: "Module 2: Computing Fundamentals"
+    unlocks: "Module 2 – Computing Fundamentals"
   }
 });
 

@@ -97,21 +97,22 @@ export function DesktopNav({ isCollapsed, onToggle }: DesktopNavProps) {
 
         {/* Navigation Links */}
         <div className="flex-1 overflow-visible py-4 relative">
-          <div className="space-y-2 px-3">
+          <div className="flex flex-col gap-2 px-3">
             {links.map((link) => (
               <div key={link.href} className="relative group">
                 <Link
                   href={link.href}
                   className={cn(
                     "flex items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-mono text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-                    pathname === link.href && "bg-muted text-foreground"
+                    pathname === link.href && "bg-muted text-foreground",
+                    isCollapsed && "justify-center px-0"
                   )}
                 >
-                  <link.icon className="h-4 w-4 flex-shrink-0" />
+                  <link.icon className="h-5 w-5 flex-shrink-0" />
                   <span
                     className={cn(
                       "overflow-hidden transition-all",
-                      isCollapsed && "w-0"
+                      isCollapsed && "w-0 opacity-0"
                     )}
                   >
                     {link.label}
@@ -127,21 +128,21 @@ export function DesktopNav({ isCollapsed, onToggle }: DesktopNavProps) {
               </div>
             ))}
           </div>
-          
-          {/* Toggle Button - Center of Sidebar */}
-          <div className="absolute top-1/2 right-2 -translate-y-1/2">
-            <button
-              onClick={onToggle}
-              className="h-auto p-3 hover:bg-muted rounded-md transition-colors bg-background border"
-              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            >
-              {isCollapsed ? (
-                <ChevronRight className="h-5 w-5" />
-              ) : (
-                <ChevronLeft className="h-5 w-5" />
-              )}
-            </button>
-          </div>
+        </div>
+
+        {/* Toggle Button - Bottom Position */}
+        <div className="border-t p-3 flex justify-center">
+          <button
+            onClick={onToggle}
+            className="p-2 hover:bg-muted rounded-md transition-colors"
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-5 w-5" />
+            ) : (
+              <ChevronLeft className="h-5 w-5" />
+            )}
+          </button>
         </div>
 
         {/* Theme Toggle */}
@@ -159,15 +160,16 @@ export function DesktopNav({ isCollapsed, onToggle }: DesktopNavProps) {
           <button
             onClick={handleLogout}
             className={cn(
-              "flex w-full items-center gap-x-3 rounded-lg px-3 py-2 text-sm font-mono text-red-500 transition-colors hover:bg-red-50",
-              isCollapsed && "justify-center"
+              "flex w-full items-center gap-x-3 rounded-lg text-sm font-mono text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950",
+              isCollapsed && "justify-center px-0"
             )}
+            style={isCollapsed ? { padding: '0.5rem 0' } : { padding: '0.5rem 0.75rem' }}
           >
-            <LogOut className="h-4 w-4 flex-shrink-0" />
+            <LogOut className="h-5 w-5 flex-shrink-0" />
             <span
               className={cn(
                 "overflow-hidden transition-all",
-                isCollapsed && "w-0"
+                isCollapsed && "w-0 opacity-0"
               )}
             >
               Logout

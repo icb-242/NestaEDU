@@ -5,22 +5,31 @@ import Image from "next/image"
 import { ArrowLeft } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { ThemeToggleButton } from "@/components/theme-toggle-button"
+import { Footer } from "@/components/Footer"
+import { LoginForm } from "@/components/auth/LoginForm"
+import { useState } from "react"
 
 export default function PortalSelectionPage() {
+  const [showLogin, setShowLogin] = useState(false)
+  const [selectedPortal, setSelectedPortal] = useState<'student' | 'teacher' | null>(null)
+
+  const handlePortalSelect = (portal: 'student' | 'teacher') => {
+    if (portal === 'teacher') {
+      // Teacher portal is not available yet
+      return
+    }
+    setSelectedPortal(portal)
+    setShowLogin(true)
+  }
+
+  const handleCloseLogin = () => {
+    setShowLogin(false)
+    setSelectedPortal(null)
+  }
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 relative font-mono">
-      {/* Theme-aware grid background */}
-      <div 
-        className="absolute inset-0 -z-10 bg-background" 
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, hsl(var(--sketch-line)) 1px, transparent 1px),
-            linear-gradient(to bottom, hsl(var(--sketch-line)) 1px, transparent 1px)
-          `,
-          backgroundSize: '40px 40px'
-        }}
-        aria-hidden="true"
-      />
+    <div className="min-h-screen flex flex-col font-mono">
+      <div className="absolute inset-0 -z-10 bg-background" aria-hidden="true" />
 
       {/* Back Button - Positioned at the top left */}
       <div className="absolute top-4 left-4">
@@ -38,79 +47,99 @@ export default function PortalSelectionPage() {
         <ThemeToggleButton />
       </div>
 
-      <div className="w-full max-w-2xl">
-        {/* Logo and Title */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2">
-            <div className="relative w-8 h-8">
-              <Image
-                src="/images/brand/nesta-logo-transparent.png"
-                alt="Nesta Education Logo"
-                fill
-                className="object-contain"
-                sizes="32px"
-              />
+      <main className="flex-1 flex flex-col items-center justify-center p-4">
+        <div className="w-full max-w-2xl">
+          {/* Logo and Title */}
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center gap-2">
+              <div className="relative w-8 h-8">
+                <Image
+                  src="/images/brand/nesta-logo-transparent.png"
+                  alt="Nesta Education Logo"
+                  fill
+                  className="object-contain"
+                  sizes="32px"
+                />
+              </div>
+              <h1 className="text-2xl font-bold tracking-tighter">
+                nesta education
+              </h1>
             </div>
-            <h1 className="text-2xl font-bold tracking-tighter">
-              nesta education
-            </h1>
           </div>
-        </div>
 
-        {/* Portal Selection */}
-        <Card className="bg-card/80 backdrop-blur-sm border shadow-sm">
-          <CardContent className="p-6">
-            <h2 className="text-xl font-mono text-muted-foreground mb-6">Begin Your Journey:</h2>
+        {/* Container that switches between Portal Selection and Login Form */}
+        <div className="w-full max-w-2xl transition-all duration-300 ease-in-out">
+          {!showLogin ? (
+            // Portal Selection
+            <Card className="bg-card/80 backdrop-blur-sm border shadow-sm">
+              <CardContent className="p-6">
+                <h2 className="text-xl font-mono text-muted-foreground mb-6">Begin Your Journey:</h2>
 
-            {/* Student Portal */}
-            <a 
-              href="/auth/login"
-              className="block p-4 rounded-lg border-2 border-muted hover:border-primary transition-colors mb-4 cursor-pointer bg-card/50 hover:bg-card/80"
-            >
-              <div className="flex items-start gap-3">
-                <span className="mt-1">👨‍🎓</span>
-                <div>
-                  <h3 className="text-xl font-bold tracking-tighter text-card-foreground">Student Portal</h3>
-                  <p className="text-sm font-mono text-muted-foreground mt-1">
-                    An AI-powered learning platform built on Socratic teaching principles.
+                {/* Student Portal */}
+                <button 
+                  onClick={() => handlePortalSelect('student')}
+                  className="w-full text-left p-4 rounded-lg border-2 border-muted hover:border-primary transition-colors mb-4 cursor-pointer bg-card/50 hover:bg-card/80"
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="mt-1">👨‍🎓</span>
+                    <div>
+                      <h3 className="text-xl font-bold tracking-tighter text-card-foreground">Student Portal</h3>
+                      <p className="text-sm font-mono text-muted-foreground mt-1">
+                        An AI-powered learning platform built on Socratic teaching principles.
+                      </p>
+                    </div>
+                  </div>
+                </button>
+
+                {/* Teacher Portal */}
+                <button 
+                  onClick={() => handlePortalSelect('teacher')}
+                  className="w-full text-left p-4 rounded-lg border-2 border-muted opacity-75 bg-card/30"
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="mt-1">👨‍🏫</span>
+                    <div>
+                      <h3 className="text-xl font-bold tracking-tighter text-card-foreground">Teacher Portal</h3>
+                      <p className="text-sm font-mono text-muted-foreground mt-1">
+                        Coming Soon!
+                      </p>
+                    </div>
+                  </div>
+                </button>
+
+                {/* Sign Up Link */}
+                <div className="text-center mt-6">
+                  <p className="text-sm font-mono text-muted-foreground">
+                    Don't have an account?{" "}
+                    <Link href="/signup" className="text-primary hover:underline">
+                      Sign up here
+                    </Link>
                   </p>
                 </div>
-              </div>
-            </a>
 
-            {/* Teacher Portal */}
-            <div className="p-4 rounded-lg border-2 border-muted opacity-75 bg-card/30">
-              <div className="flex items-start gap-3">
-                <span className="mt-1">👨‍🏫</span>
-                <div>
-                  <h3 className="text-xl font-bold tracking-tighter text-card-foreground">Teacher Portal</h3>
-                  <p className="text-sm font-mono text-muted-foreground mt-1">
-                    Coming Soon!
-                  </p>
+                {/* Powered by OpenAI */}
+                <div className="text-center text-xs font-mono text-muted-foreground mt-4">
+                  Powered by OpenAI GPT-4α.
                 </div>
+              </CardContent>
+            </Card>
+          ) : (
+            // Login Form (when a portal is selected)
+            selectedPortal && (
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-300 flex justify-center">
+                <LoginForm onClose={handleCloseLogin} portalType={selectedPortal} />
               </div>
-            </div>
-
-            {/* Powered by OpenAI */}
-            <div className="text-center text-xs font-mono text-muted-foreground mt-6">
-              Powered by OpenAI GPT-4α.
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Beta Disclaimer */}
-        <div className="mt-8 max-w-xl mx-auto">
-          <div className="text-center text-sm border rounded-lg p-4 bg-card/50 backdrop-blur-sm">
-            <p className="mb-2 font-mono text-muted-foreground">⚠️ Beta Version Disclaimer ⚠️</p>
-            <p className="font-mono text-xs text-muted-foreground leading-relaxed">
-              This platform is currently in beta testing. Features, content, and
-              performance are still being actively developed and improved. Users may
-              occasionally encounter incomplete features, inaccuracies, or unexpected
-              behavior.
-            </p>
-          </div>
+            )
+          )}
         </div>
+
       </div>
+      </main>
+      
+      {/* Footer with border */}
+      <footer className="mt-auto border-t">
+        <Footer />
+      </footer>
     </div>
   )
 }

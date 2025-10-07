@@ -45,8 +45,8 @@ function getTrendColor(sub: string): string {
 }
 
 function KpiCard({ kpi, index }: { kpi: Kpi; index: number }) {
-  // Remove BJC/BGCSE prefix from the label
-  const cleanLabel = kpi.label.replace(/^(BJC|BGCSE)\s+/, '');
+  // Remove BJC/BGCSE prefix from the label and handle special case for "# of Candidates"
+  const cleanLabel = kpi.label.includes("# of Candidates") ? "# of Candidates" : kpi.label.replace(/^(BJC|BGCSE)\s+/, '');
   
   return (
     <motion.div
@@ -62,7 +62,7 @@ function KpiCard({ kpi, index }: { kpi: Kpi; index: number }) {
           {cleanLabel}
         </h3>
         <p 
-          className="text-3xl font-bold tracking-tight"
+          className="text-xl font-bold tracking-tight"
           style={{ fontFamily: 'SF Mono, Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace' }}
         >
           {kpi.value}
@@ -84,40 +84,65 @@ export function StatsKpis() {
   // Separate BGCSE and BJC statistics
   const bgcseKpis = researchContent.kpis.filter(kpi => kpi.label.includes("BGCSE"));
   const bjcKpis = researchContent.kpis.filter(kpi => kpi.label.includes("BJC"));
+  
+  // Debug logging
+  console.log("BGCSE KPIs:", bgcseKpis);
+  console.log("BJC KPIs:", bjcKpis);
 
   return (
-    <section id="about" className="py-20 scroll-mt-16">
+    <section id="about" className="pt-0 pb-12 scroll-mt-16">
       <Container>
-        <div className="mb-12">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+        <div className="mb-12 text-center">
+          <h2 className="text-lg font-bold tracking-tight">
             Bahamian Education By The Numbers
           </h2>
         </div>
         
-        {/* BGCSE Row */}
-        <div className="mb-8">
-          <div className="flex items-center gap-6">
-            <div className="flex-shrink-0 w-20">
-              <h3 className="text-2xl font-bold text-center">BGCSE</h3>
+        <div className="flex">
+          {/* Year and Brace */}
+          <div className="flex gap-4">
+            <div className="flex items-center">
+              <span className="text-xl font-bold">2024</span>
+              <div className="relative w-8 h-[140px] mx-4 ml-4">
+                {/* Vertical line */}
+                <div className="absolute left-4 top-0 bottom-0 w-[2px] bg-foreground"></div>
+                {/* Top horizontal */}
+                <div className="absolute top-0 left-4 w-[16px] h-[2px] bg-foreground"></div>
+                {/* Bottom horizontal */}
+                <div className="absolute bottom-0 left-4 w-[16px] h-[2px] bg-foreground"></div>
+              </div>
             </div>
-            <div className="flex-1 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {bgcseKpis.map((kpi, index) => (
-                <KpiCard key={kpi.label} kpi={kpi} index={index} />
-              ))}
-            </div>
-          </div>
-        </div>
 
-        {/* BJC Row */}
-        <div>
-          <div className="flex items-center gap-6">
-            <div className="flex-shrink-0 w-20">
-              <h3 className="text-2xl font-bold text-center">BJC</h3>
-            </div>
-            <div className="flex-1 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {bjcKpis.map((kpi, index) => (
-                <KpiCard key={kpi.label} kpi={kpi} index={index + 3} />
-              ))}
+            {/* Stats Grid */}
+            <div className="flex-1">
+              {/* BGCSE Row */}
+              <div className="mb-8">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0 w-14 -ml-2">
+                    <h3 className="text-lg font-bold">BGCSE</h3>
+                  </div>
+                  <div className="flex-1 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 ml-12">
+                    {bgcseKpis.map((kpi, index) => {
+                      console.log("Rendering BGCSE KPI:", kpi);
+                      return <KpiCard key={kpi.label} kpi={kpi} index={index} />;
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* BJC Row */}
+              <div>
+                <div className="flex items-center">
+                  <div className="flex-shrink-0 w-14 -ml-2">
+                    <h3 className="text-lg font-bold">BJC</h3>
+                  </div>
+                  <div className="flex-1 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 ml-12">
+                    {bjcKpis.map((kpi, index) => (
+                      <KpiCard key={kpi.label} kpi={kpi} index={index + 3} />
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
