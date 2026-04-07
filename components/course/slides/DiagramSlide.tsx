@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DiagramSlide } from "@/lib/course/types";
+import { TrainingVsInferenceDiagram, FeatureSpaceClusters, AIVisionGlasses } from "@/components/diagrams";
 
 export function DiagramSlideComponent({ slide, onComplete }: { slide: DiagramSlide; onComplete?: () => void }) {
   const [currentStep, setCurrentStep] = useState(0);
@@ -43,8 +44,9 @@ export function DiagramSlideComponent({ slide, onComplete }: { slide: DiagramSli
       
       {/* Diagram Visualization */}
       <div className="bg-card border rounded-lg p-8 min-h-[300px] flex items-center justify-center">
-        <div className="w-full max-w-2xl">
+        <div className="w-full">
           {isCircularLoop ? (
+            /* Netflix Feedback Loop - Module 1 */
             /* Perfect Square Layout with Lines Through Nodes */
             <div className="relative w-full max-w-4xl mx-auto">
               {/* Square Network Visualization */}
@@ -253,52 +255,191 @@ export function DiagramSlideComponent({ slide, onComplete }: { slide: DiagramSli
                 </div>
               </div>
             </div>
+          ) : slide.asset?.src === "TrainingVsInferenceDiagram" ? (
+            /* Training vs Inference Component */
+            <TrainingVsInferenceDiagram currentStep={currentStep} />
+          ) : slide.asset?.src === "FeatureSpaceClusters" ? (
+            /* Feature Space Clusters Component */
+            <FeatureSpaceClusters />
+          ) : slide.asset?.src === "AIVisionGlasses" ? (
+            /* AI Vision Glasses Component */
+            <AIVisionGlasses />
+          ) : slide.asset ? (
+            /* Custom Asset Image */
+            <div className="w-full flex justify-center">
+              <img 
+                src={slide.asset.src} 
+                alt={slide.asset.alt}
+                className="w-full max-w-4xl h-auto"
+              />
+            </div>
           ) : (
-            /* Linear Layout */
-            <div className="flex items-center justify-between">
-              {slide.steps.map((step, index) => (
-                <div key={step.id} className="flex items-center flex-1">
-                  <div className="flex flex-col items-center space-y-2">
-                    {/* Step Circle */}
-                    <motion.button
-                      className={cn(
-                        "w-12 h-12 rounded-full border-2 flex items-center justify-center font-semibold transition-colors",
-                        currentStep === index
-                          ? "bg-primary border-primary text-primary-foreground"
-                          : completedSteps.has(index)
-                          ? "bg-green-500 border-green-500 text-white"
-                          : "border-muted-foreground/20 text-muted-foreground"
-                      )}
-                      onClick={() => handleStepClick(index)}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      {completedSteps.has(index) ? "✓" : index + 1}
-                    </motion.button>
-                    
-                    {/* Step Label */}
-                    <div className="text-center">
-                      <div className="font-medium text-sm">{step.label}</div>
-                      {currentStep === index && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="text-xs text-muted-foreground mt-1 max-w-24"
-                        >
-                          {step.desc}
-                        </motion.div>
-                      )}
-                    </div>
-                  </div>
+            /* Linear Layout - Enhanced Visual */
+            <div className="relative py-8">
+              {/* Flowing Path Line */}
+              <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 0 }}>
+                <defs>
+                  <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
+                    <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.3" />
+                    <stop offset="100%" stopColor="#10b981" stopOpacity="0.3" />
+                  </linearGradient>
+                </defs>
+                <motion.path
+                  d={`M 80 60 Q 200 40, 320 60 T 560 60 T 800 60`}
+                  stroke="url(#pathGradient)"
+                  strokeWidth="3"
+                  fill="none"
+                  strokeDasharray="10,5"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: 1 }}
+                  transition={{ duration: 2, ease: "easeInOut" }}
+                />
+              </svg>
+
+              {/* Step Cards */}
+              <div className="relative flex items-center justify-between px-4" style={{ zIndex: 1 }}>
+                {slide.steps.map((step, index) => {
+                  const colors = [
+                    { bg: "from-blue-500 to-blue-600", ring: "ring-blue-200", text: "text-blue-600" },
+                    { bg: "from-purple-500 to-purple-600", ring: "ring-purple-200", text: "text-purple-600" },
+                    { bg: "from-indigo-500 to-indigo-600", ring: "ring-indigo-200", text: "text-indigo-600" },
+                    { bg: "from-green-500 to-green-600", ring: "ring-green-200", text: "text-green-600" }
+                  ];
+                  const color = colors[index];
+                  const isActive = currentStep === index;
+                  const isCompleted = completedSteps.has(index);
                   
-                  {/* Arrow between steps */}
-                  {index < slide.steps.length - 1 && (
-                    <div className="flex-1 flex justify-center">
-                      <ChevronRight className="h-4 w-4 text-muted-foreground/50" />
+                  return (
+                    <div key={step.id} className="flex items-center flex-1">
+                      <motion.button
+                        className="flex flex-col items-center space-y-3 cursor-pointer group relative"
+                        onClick={() => handleStepClick(index)}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.15 }}
+                        whileHover={{ y: -5 }}
+                      >
+                        {/* Glow Effect */}
+                        {isActive && (
+                          <motion.div
+                            className={cn("absolute inset-0 rounded-full blur-xl opacity-50", `bg-gradient-to-r ${color.bg}`)}
+                            animate={{
+                              scale: [1, 1.2, 1],
+                              opacity: [0.3, 0.5, 0.3],
+                            }}
+                            transition={{
+                              duration: 2,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }}
+                          />
+                        )}
+
+                        {/* Icon Container */}
+                        <motion.div
+                          className={cn(
+                            "relative w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg transition-all",
+                            isActive
+                              ? `bg-gradient-to-br ${color.bg} ring-4 ${color.ring} shadow-xl`
+                              : isCompleted
+                              ? `bg-gradient-to-br ${color.bg} opacity-90`
+                              : "bg-white border-2 border-gray-200"
+                          )}
+                          animate={{
+                            scale: isActive ? 1.1 : 1,
+                            rotateY: isActive ? [0, 5, -5, 0] : 0
+                          }}
+                          transition={{
+                            scale: { duration: 0.3 },
+                            rotateY: { duration: 2, repeat: isActive ? Infinity : 0 }
+                          }}
+                        >
+                          {/* Step Number or Checkmark */}
+                          <div className={cn(
+                            "text-2xl font-bold",
+                            isActive || isCompleted ? "text-white" : color.text
+                          )}>
+                            {isCompleted ? "✓" : index + 1}
+                          </div>
+                          
+                          {/* Particle effect for active step */}
+                          {isActive && (
+                            <>
+                              {[...Array(3)].map((_, i) => (
+                                <motion.div
+                                  key={i}
+                                  className="absolute w-1 h-1 bg-white rounded-full"
+                                  initial={{ opacity: 0, x: 0, y: 0 }}
+                                  animate={{
+                                    opacity: [0, 1, 0],
+                                    x: [0, (i - 1) * 20],
+                                    y: [0, -30 + i * 10],
+                                  }}
+                                  transition={{
+                                    duration: 1.5,
+                                    repeat: Infinity,
+                                    delay: i * 0.3,
+                                  }}
+                                />
+                              ))}
+                            </>
+                          )}
+                        </motion.div>
+
+                        {/* Step Label with Background */}
+                        <motion.div
+                          className={cn(
+                            "px-3 py-1.5 rounded-lg text-sm font-semibold transition-all text-center min-w-[80px]",
+                            isActive
+                              ? `${color.text} bg-white shadow-md`
+                              : isCompleted
+                              ? "text-gray-700 bg-gray-100"
+                              : "text-gray-500 bg-gray-50"
+                          )}
+                          animate={{
+                            scale: isActive ? 1.05 : 1
+                          }}
+                        >
+                          {step.label}
+                        </motion.div>
+                      </motion.button>
+                      
+                      {/* Animated Arrow between steps */}
+                      {index < slide.steps.length - 1 && (
+                        <div className="flex-1 flex justify-center items-center px-2">
+                          <motion.div
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ 
+                              opacity: completedSteps.has(index) ? 1 : 0.3,
+                              x: 0
+                            }}
+                            transition={{ delay: index * 0.2 }}
+                          >
+                            <motion.div
+                              animate={{
+                                x: [0, 5, 0]
+                              }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                ease: "easeInOut"
+                              }}
+                            >
+                              <ChevronRight 
+                                className={cn(
+                                  "h-6 w-6",
+                                  completedSteps.has(index) ? color.text : "text-muted-foreground/30"
+                                )} 
+                              />
+                            </motion.div>
+                          </motion.div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              ))}
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>

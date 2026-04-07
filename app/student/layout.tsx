@@ -35,12 +35,11 @@ export default function StudentLayout({
         if (savedState) {
           try {
             setSidebarCollapsed(JSON.parse(savedState))
-          } catch (e) {
-            console.warn("Invalid sidebar state in localStorage")
+          } catch {
+            // Ignore invalid localStorage value
           }
         }
       } catch (error) {
-        console.error("Error checking authentication:", error)
         router.push("/login")
       } finally {
         setIsLoading(false)

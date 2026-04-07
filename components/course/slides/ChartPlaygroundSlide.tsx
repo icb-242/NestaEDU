@@ -3,8 +3,50 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ChartPlaygroundSlide } from "@/lib/course/types";
+import { LearningCurveSim, PrecisionRecallToy } from "@/components/charts";
 
 export function ChartPlaygroundSlideComponent({ slide, onComplete }: { slide: ChartPlaygroundSlide; onComplete?: () => void }) {
+  // Check if we should render a custom chart component
+  if (slide.chartModel === "learningCurve" || slide.chartModel === "LearningCurveSim") {
+    return (
+      <div className="space-y-6">
+        <h3 className="text-2xl font-semibold">{slide.heading}</h3>
+        {slide.content && <p className="text-muted-foreground">{slide.content}</p>}
+        <LearningCurveSim onComplete={onComplete} />
+        {slide.explain && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-primary/5 border border-primary/20 rounded-lg p-4"
+          >
+            <p className="text-sm text-muted-foreground">{slide.explain}</p>
+          </motion.div>
+        )}
+      </div>
+    );
+  }
+  
+  // Precision-Recall Toy Chart
+  if (slide.chartModel === "precisionRecallToy") {
+    return (
+      <div className="space-y-6">
+        <h3 className="text-2xl font-semibold">{slide.heading}</h3>
+        {slide.content && <p className="text-muted-foreground">{slide.content}</p>}
+        <PrecisionRecallToy onComplete={onComplete} />
+        {slide.explain && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-primary/5 border border-primary/20 rounded-lg p-4"
+          >
+            <p className="text-sm text-muted-foreground">{slide.explain}</p>
+          </motion.div>
+        )}
+      </div>
+    );
+  }
+  
+  // Default implementation (existing bar chart)
   const [sliderValue, setSliderValue] = useState(slide.initialData.samples);
   const [hasInteracted, setHasInteracted] = useState(false);
 
@@ -129,6 +171,7 @@ export function ChartPlaygroundSlideComponent({ slide, onComplete }: { slide: Ch
 const cn = (...classes: (string | undefined | null | false)[]) => {
   return classes.filter(Boolean).join(' ');
 };
+
 
 
 

@@ -29,9 +29,7 @@ const preloadChatSessions = () => {
         sessionStorage.setItem('chatHistoryCache', JSON.stringify(chatHistory))
         sessionStorage.setItem('chatHistoryCacheTimestamp', Date.now().toString())
       })
-      .catch(error => {
-        console.error('Preload failed:', error)
-      })
+      .catch(() => {})
   }
 }
 
@@ -57,9 +55,7 @@ const preloadExamResults = () => {
         sessionStorage.setItem('examResultsCache', JSON.stringify(examResults))
         sessionStorage.setItem('examResultsCacheTimestamp', Date.now().toString())
       })
-      .catch(error => {
-        console.error('Exam results preload failed:', error)
-      })
+      .catch(() => {})
   }
 }
 
@@ -79,19 +75,19 @@ export function MobileNav() {
       current: pathname === "/student/dashboard",
     },
     {
-      name: "Personalized AI Tutor",
+      name: "Study",
       href: "/student/tutor",
       icon: MessageSquare,
       current: pathname === "/student/tutor",
     },
     ...(showLearningTab ? [{
-      name: "Learning",
+      name: "Courses",
       href: "/student/learning",
       icon: GraduationCap,
       current: pathname.startsWith("/student/learning"),
     }] : []),
     {
-      name: "Practice Exam",
+      name: "Exams",
       href: "/student/practice-exam",
       icon: FileText,
       current: pathname.startsWith("/student/practice-exam"),

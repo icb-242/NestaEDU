@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { ScrollLink } from "./ScrollLink";
 import { Container } from "./ui/Container";
 
 export function Footer() {
@@ -12,13 +11,10 @@ export function Footer() {
       <Container>
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="text-sm text-muted-foreground">
-            © {currentYear} Nesta Education
+            © {currentYear} Nesta Technology
           </div>
 
           <nav className="flex gap-6">
-            <ScrollLink href="#about" className="text-sm text-muted-foreground">
-              About
-            </ScrollLink>
             <Link
               href="/login"
               className="text-sm text-muted-foreground hover:text-accent"

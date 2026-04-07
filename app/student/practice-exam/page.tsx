@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { capitalizeSubject } from "@/lib/utils"
+import { getSubjectDisplayName } from "@/lib/subjects"
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -65,26 +66,12 @@ export default function PracticeExamPage() {
   const [selectedExam, setSelectedExam] = useState<DetailedExamResult | null>(null)
   const [isLoadingExam, setIsLoadingExam] = useState(false)
   const [activeTab, setActiveTab] = useState("new-exam")
+  const [levelFilter, setLevelFilter] = useState<'all' | 'bjc' | 'bgcse'>('all')
 
   const searchParams = useSearchParams()
   const examIdParam = searchParams.get("examId")
 
-  // Function to map route parameter subjects to display names
-  const getSubjectDisplayName = (subjectRoute: string) => {
-    const subjectMap: { [key: string]: string } = {
-      'bjc-math': 'BJC Mathematics',
-      'bjc-general-science': 'BJC General Science',
-      'bjc-health-science': 'BJC Health Science',
-      'bgcse-math': 'BGCSE Mathematics',
-      'bgcse-chemistry': 'BGCSE Chemistry',
-      'bgcse-physics': 'BGCSE Physics',
-      'bgcse-biology': 'BGCSE Biology',
-      'bgcse-combined-science': 'BGCSE Combined Science'
-    }
-    return subjectMap[subjectRoute] || subjectRoute
-  }
-
-  useEffect(() => {
+useEffect(() => {
     const loadExamResults = async () => {
       try {
         // Check cache first
@@ -95,7 +82,6 @@ export default function PracticeExamPage() {
         
         // Use cache if it's less than 5 minutes old
         if (cachedData && cacheAge < 5 * 60 * 1000) {
-          console.log('Using cached exam results')
           const cachedResults = JSON.parse(cachedData)
           setExamResults(cachedResults)
         }
@@ -122,13 +108,11 @@ export default function PracticeExamPage() {
           
           setExamResults(examResults)
         } else {
-          console.error('Failed to fetch exam results:', response.status)
           if (!cachedData) {
             setExamResults([])
           }
         }
-      } catch (error) {
-        console.error('Error loading exam results:', error)
+      } catch {
         if (!sessionStorage.getItem('examResultsCache')) {
           setExamResults([])
         }
@@ -139,7 +123,6 @@ export default function PracticeExamPage() {
     
     // Listen for exam updates
     const handleExamUpdate = () => {
-      console.log('Exam update event received, refreshing exam results...')
       loadExamResults()
     }
     
@@ -152,24 +135,19 @@ export default function PracticeExamPage() {
 
   useEffect(() => {
     if (examIdParam) {
-      console.log('Exam ID found in URL, switching to past exams tab and loading exam:', examIdParam)
       setActiveTab("past-exams")
       loadDetailedExam(examIdParam)
     }
   }, [examIdParam])
 
   const loadDetailedExam = async (examId: string) => {
-    console.log('Loading detailed exam for ID:', examId)
     setIsLoadingExam(true)
     try {
       const response = await fetch(`/api/exam-results/${examId}`)
-      console.log('API response status:', response.status)
-      
+
       if (response.ok) {
         const result = await response.json()
-        console.log('Detailed exam result:', result)
-        
-        // Map the API response to the expected structure
+
         const mappedResult: DetailedExamResult = {
           id: result.id,
           subject: getSubjectDisplayName(result.subject),
@@ -192,14 +170,10 @@ export default function PracticeExamPage() {
           }
         }
         
-        console.log('Mapped result:', mappedResult)
         setSelectedExam(mappedResult)
-      } else {
-        const errorText = await response.text()
-        console.error('Failed to fetch detailed exam result:', response.status, errorText)
       }
-    } catch (error) {
-      console.error('Error loading detailed exam result:', error)
+    } catch {
+      // Error is non-fatal; exam detail panel will remain closed
     } finally {
       setIsLoadingExam(false)
     }
@@ -318,49 +292,75 @@ export default function PracticeExamPage() {
     return <Badge className="bg-red-100 text-red-800 border-red-200">Needs Improvement</Badge>
   }
 
+  const filteredExamTypes = examTypes.filter((exam) => {
+    if (levelFilter === 'bjc') return exam.id.startsWith('bjc')
+    if (levelFilter === 'bgcse') return exam.id.startsWith('bgcse')
+    return true
+  })
+
   const renderNewExamTab = () => (
     <div className="space-y-8">
-      {/* How It Works Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-center text-lg font-bold tracking-tighter">How Practice Exams Work</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid md:grid-cols-3 gap-6 text-center">
-            <div className="space-y-2">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-                <Target className="w-6 h-6 text-blue-600" />
+      {/* How It Works — only shown to first-time users */}
+      {examResults.length === 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-center text-sm font-mono text-muted-foreground">&gt; how_it_works</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-3 gap-6 text-center">
+              <div className="space-y-2">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+                  <Target className="w-6 h-6 text-blue-600" />
+                </div>
+                <h3 className="text-xs font-mono font-medium">01. select subject</h3>
+                <p className="text-xs text-muted-foreground">
+                  BJC (middle school) or BGCSE (high school) across multiple subjects
+                </p>
               </div>
-              <h3 className="text-sm font-medium tracking-tighter">1. Choose Your Subject</h3>
-              <p className="text-xs text-muted-foreground">
-                Select from BJC (Middle School) or BGCSE (High School) level exams across multiple subjects
-              </p>
-            </div>
-            <div className="space-y-2">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                <FileText className="w-6 h-6 text-green-600" />
+              <div className="space-y-2">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                  <FileText className="w-6 h-6 text-green-600" />
+                </div>
+                <h3 className="text-xs font-mono font-medium">02. take the exam</h3>
+                <p className="text-xs text-muted-foreground">
+                  Answer AI-generated questions aligned to official curriculum standards
+                </p>
               </div>
-              <h3 className="text-sm font-medium tracking-tighter">2. Take the Exam</h3>
-              <p className="text-xs text-muted-foreground">
-                Answer AI-generated questions tailored to the official curriculum standards
-              </p>
-            </div>
-            <div className="space-y-2">
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
-                <TrendingUp className="w-6 h-6 text-purple-600" />
+              <div className="space-y-2">
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
+                  <TrendingUp className="w-6 h-6 text-purple-600" />
+                </div>
+                <h3 className="text-xs font-mono font-medium">03. get results</h3>
+                <p className="text-xs text-muted-foreground">
+                  Receive detailed feedback and explanations to improve
+                </p>
               </div>
-              <h3 className="text-sm font-medium tracking-tighter">3. Get Results</h3>
-              <p className="text-xs text-muted-foreground">
-                Receive detailed feedback and explanations to help you improve
-              </p>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Level Filter */}
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-mono text-muted-foreground">&gt; filter:</span>
+        {(['all', 'bjc', 'bgcse'] as const).map((level) => (
+          <button
+            key={level}
+            onClick={() => setLevelFilter(level)}
+            className={`px-3 py-1 rounded text-xs font-mono transition-colors border ${
+              levelFilter === level
+                ? 'bg-foreground text-background border-foreground'
+                : 'border-muted-foreground/30 text-muted-foreground hover:border-foreground hover:text-foreground'
+            }`}
+          >
+            {level === 'all' ? 'all' : level.toUpperCase()}
+          </button>
+        ))}
+      </div>
 
       {/* Exam Options */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {examTypes.map((exam) => {
+        {filteredExamTypes.map((exam) => {
           const IconComponent = exam.icon
           return (
             <Card
@@ -426,24 +426,18 @@ export default function PracticeExamPage() {
   )
 
   const renderPastExamsTab = () => {
-    console.log('Rendering past exams tab:', {
-      examResultsLength: examResults.length,
-      isLoadingExam,
-      selectedExam: !!selectedExam
-    })
-    
     return (
       <div className="space-y-6">
         {examResults.length === 0 ? (
           <Card>
             <CardContent className="p-8 text-center">
               <History className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-sm font-medium tracking-tighter mb-2">No Past Exams Yet</h3>
-              <p className="text-xs text-muted-foreground mb-4">
-                You haven't taken any practice exams yet. Start with a new exam to see your results here.
+              <p className="text-sm font-mono text-muted-foreground mb-1">&gt; no exams found</p>
+              <p className="text-xs font-mono text-muted-foreground mb-4">
+                // take your first exam to see results here
               </p>
-              <Button onClick={() => setActiveTab("new-exam")}>
-                Take Your First Exam
+              <Button onClick={() => setActiveTab("new-exam")} className="font-mono">
+                &gt; take first exam
               </Button>
             </CardContent>
           </Card>
@@ -468,38 +462,51 @@ export default function PracticeExamPage() {
               </Button>
             </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg font-bold tracking-tighter">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                  Exam Results: {capitalizeSubject(selectedExam.subject)}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center space-y-2">
-                  <div className="text-2xl font-bold text-primary">
-                    {selectedExam.score}/{selectedExam.maxScore}
-                  </div>
-                  <div className="text-lg font-semibold text-green-600">{selectedExam.percentage}%</div>
-                  <Badge variant={selectedExam.percentage >= 70 ? "default" : "secondary"} className="mt-2">
-                    {selectedExam.percentage >= 90
-                      ? "Excellent"
-                      : selectedExam.percentage >= 80
-                        ? "Good"
-                        : selectedExam.percentage >= 70
-                          ? "Satisfactory"
-                          : "Needs Improvement"}
-                  </Badge>
-                  <p className="text-xs text-muted-foreground mt-4">{selectedExam.feedback}</p>
+            <Card className="border-l-4 border-l-primary">
+              <CardContent className="p-6">
+                <p className="text-xs font-mono text-muted-foreground mb-3">
+                  // {selectedExam.subject}
+                </p>
+                <div className="font-mono space-y-1">
+                  <p className="text-3xl font-bold tracking-tight">
+                    {selectedExam.percentage}%
+                    <span className={`ml-3 text-lg ${
+                      selectedExam.percentage >= 90 ? 'text-green-500' :
+                      selectedExam.percentage >= 80 ? 'text-blue-500' :
+                      selectedExam.percentage >= 70 ? 'text-yellow-500' :
+                      'text-red-500'
+                    }`}>
+                      {selectedExam.percentage >= 90 ? '— EXCELLENT' :
+                       selectedExam.percentage >= 80 ? '— GOOD' :
+                       selectedExam.percentage >= 70 ? '— SATISFACTORY' :
+                       '— NEEDS IMPROVEMENT'}
+                    </span>
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    score: {selectedExam.score}/{selectedExam.maxScore} pts
+                  </p>
+                  {selectedExam.questionResults && selectedExam.questionResults.length > 0 && (() => {
+                    const wrong = selectedExam.questionResults.filter(r => !r.isCorrect).map(r => r.questionId)
+                    return wrong.length > 0 ? (
+                      <p className="text-sm text-yellow-600 dark:text-yellow-400">
+                        review: Q{wrong.join(', Q')}
+                      </p>
+                    ) : null
+                  })()}
                 </div>
+                {selectedExam.feedback && (
+                  <p className="text-xs text-muted-foreground mt-4 border-t pt-3 font-mono">
+                    {selectedExam.feedback}
+                  </p>
+                )}
               </CardContent>
             </Card>
 
             {selectedExam.questionResults && selectedExam.questionResults.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg font-bold tracking-tighter">Question-by-Question Review</CardTitle>
-                  <CardDescription className="text-sm">Detailed feedback for each question</CardDescription>
+                  <CardTitle className="text-sm font-mono text-muted-foreground">&gt; question_review</CardTitle>
+                  <CardDescription className="text-xs font-mono">// detailed feedback for each question</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {selectedExam.questionResults.map((result, index) => {
@@ -610,18 +617,18 @@ export default function PracticeExamPage() {
         <Button
           variant={activeTab === "new-exam" ? "default" : "outline"}
           size="sm"
-          className="flex items-center gap-2 px-4 py-2"
+          className="flex items-center gap-2 px-4 py-2 font-mono"
           onClick={() => setActiveTab("new-exam")}
         >
-          <span role="img" aria-label="New Exam">🆕</span> New Exam
+          &gt; new exam
         </Button>
         <Button
           variant={activeTab === "past-exams" ? "default" : "outline"}
           size="sm"
-          className="flex items-center gap-2 px-4 py-2"
+          className="flex items-center gap-2 px-4 py-2 font-mono"
           onClick={() => setActiveTab("past-exams")}
         >
-          <span role="img" aria-label="Past Exams">📜</span> Past Exams ({examResults.length})
+          &gt; past exams ({examResults.length})
         </Button>
       </div>
       <div className="mt-6">

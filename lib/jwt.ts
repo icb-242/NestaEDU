@@ -11,7 +11,8 @@ export interface UserData {
   avatar?: string
 }
 
-// JWT functions - safe for Edge Runtime
+// Edge Runtime-compatible JWT functions (no Node.js-only deps)
+
 export async function generateToken(user: UserData): Promise<string> {
   const secret = new TextEncoder().encode(process.env.JWT_SECRET!)
   return await new SignJWT({ id: user.id, email: user.email })
@@ -25,7 +26,7 @@ export async function verifyToken(token: string): Promise<UserData | null> {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET!)
     const { payload } = await jwtVerify(token, secret)
     return payload as unknown as UserData
-  } catch (error) {
+  } catch {
     return null
   }
-} 
+}

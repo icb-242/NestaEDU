@@ -17,7 +17,7 @@ export function Navbar() {
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               style={{ fontFamily: 'SF Mono, Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace' }}
             >
-              Master Plan
+              Our Approach
             </Link>
             <Link
               href="/login"

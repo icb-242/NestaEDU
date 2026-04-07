@@ -85,7 +85,7 @@ export type MasterPlanContent = {
 
 export const masterPlanContent = {
   seo: {
-    title: "Nesta — Our Master Plan",
+    title: "Nesta — Our Approach",
     description:
       "Nesta's plan to create opportunity: why it matters, what exists today, where we're going, and how we'll get there.",
   },
@@ -192,7 +192,7 @@ export const masterPlanContent = {
         cta: { label: "Practice Now", href: "/login" },
       },
       {
-        title: "Online Course Platform",
+        title: "Online Learning Platform",
         subtitle: "A growing hub for modern, skills-based learning.",
         features: [
           "Think of it as a student-friendly version of platforms like Coursera—built for high school learners.",

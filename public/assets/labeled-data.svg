@@ -1,0 +1,149 @@
+<svg width="800" height="500" viewBox="0 0 800 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="500" fill="#F9FAFB"/>
+  
+  <!-- Title -->
+  <text x="400" y="40" text-anchor="middle" font-size="28" font-weight="bold" fill="#1F2937">Data + Labels = Learning</text>
+  <text x="400" y="70" text-anchor="middle" font-size="16" fill="#6B7280">Supervised learning pairs inputs with correct answers</text>
+  
+  <!-- Example 1: Image Classification -->
+  <g id="image-example" transform="translate(80, 120)">
+    <!-- Container -->
+    <rect x="0" y="0" width="200" height="280" rx="12" fill="white" stroke="#3B82F6" stroke-width="3"/>
+    
+    <!-- Label -->
+    <text x="100" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#3B82F6">Image Input</text>
+    
+    <!-- Cat illustration - Improved clipart style -->
+    <g transform="translate(50, 60)">
+      <rect x="0" y="0" width="100" height="100" rx="8" fill="#DBEAFE"/>
+      
+      <!-- Cat clipart -->
+      <g transform="translate(50, 50)">
+        <!-- Main head circle -->
+        <ellipse cx="0" cy="0" rx="28" ry="26" fill="#FF9E4A"/>
+        
+        <!-- Left ear -->
+        <path d="M -20,-22 L -28,-35 L -12,-28 Z" fill="#FF9E4A"/>
+        <path d="M -20,-22 L -24,-32 L -15,-26 Z" fill="#FFB366"/>
+        
+        <!-- Right ear -->
+        <path d="M 20,-22 L 28,-35 L 12,-28 Z" fill="#FF9E4A"/>
+        <path d="M 20,-22 L 24,-32 L 15,-26 Z" fill="#FFB366"/>
+        
+        <!-- White muzzle -->
+        <ellipse cx="0" cy="5" rx="18" ry="15" fill="white"/>
+        
+        <!-- Eyes -->
+        <ellipse cx="-10" cy="-5" rx="5" ry="7" fill="white"/>
+        <ellipse cx="10" cy="-5" rx="5" ry="7" fill="white"/>
+        <ellipse cx="-10" cy="-4" rx="3" ry="5" fill="#1F2937"/>
+        <ellipse cx="10" cy="-4" rx="3" ry="5" fill="#1F2937"/>
+        <ellipse cx="-9" cy="-6" rx="1.5" ry="2" fill="white" opacity="0.8"/>
+        <ellipse cx="11" cy="-6" rx="1.5" ry="2" fill="white" opacity="0.8"/>
+        
+        <!-- Nose -->
+        <path d="M 0,5 L -3,8 L 0,9 L 3,8 Z" fill="#FF6B9D"/>
+        
+        <!-- Mouth -->
+        <path d="M 0,9 Q -6,12 -8,10 M 0,9 Q 6,12 8,10" stroke="#FF6B9D" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        
+        <!-- Whiskers -->
+        <line x1="-18" y1="3" x2="-30" y2="1" stroke="#1F2937" stroke-width="1" opacity="0.6"/>
+        <line x1="-18" y1="7" x2="-30" y2="8" stroke="#1F2937" stroke-width="1" opacity="0.6"/>
+        <line x1="18" y1="3" x2="30" y2="1" stroke="#1F2937" stroke-width="1" opacity="0.6"/>
+        <line x1="18" y1="7" x2="30" y2="8" stroke="#1F2937" stroke-width="1" opacity="0.6"/>
+        
+        <!-- Stripes on head -->
+        <path d="M -5,-18 Q -5,-12 -8,-8" stroke="#E67E22" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.6"/>
+        <path d="M 5,-18 Q 5,-12 8,-8" stroke="#E67E22" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.6"/>
+      </g>
+    </g>
+    
+    <!-- Arrow -->
+    <path d="M 100 175 L 100 195" stroke="#3B82F6" stroke-width="3" marker-end="url(#arrowBlue)"/>
+    
+    <!-- Label box -->
+    <rect x="30" y="210" width="140" height="50" rx="8" fill="#3B82F6"/>
+    <text x="100" y="240" text-anchor="middle" font-size="18" font-weight="bold" fill="white">Label: "Cat"</text>
+  </g>
+  
+  <!-- Example 2: Text Classification -->
+  <g id="text-example" transform="translate(300, 120)">
+    <!-- Container -->
+    <rect x="0" y="0" width="200" height="280" rx="12" fill="white" stroke="#8B5CF6" stroke-width="3"/>
+    
+    <!-- Label -->
+    <text x="100" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#8B5CF6">Text Input</text>
+    
+    <!-- Text snippet -->
+    <g transform="translate(20, 60)">
+      <rect x="0" y="0" width="160" height="100" rx="8" fill="#F3E8FF"/>
+      <text x="10" y="25" font-size="11" fill="#1F2937" font-style="italic">"This movie was</text>
+      <text x="10" y="45" font-size="11" fill="#1F2937" font-style="italic">amazing! Loved</text>
+      <text x="10" y="65" font-size="11" fill="#1F2937" font-style="italic">every minute of it."</text>
+      <!-- Quote marks decoration -->
+      <circle cx="145" cy="85" r="3" fill="#8B5CF6" opacity="0.3"/>
+      <circle cx="155" cy="85" r="3" fill="#8B5CF6" opacity="0.3"/>
+    </g>
+    
+    <!-- Arrow -->
+    <path d="M 100 175 L 100 195" stroke="#8B5CF6" stroke-width="3" marker-end="url(#arrowPurple)"/>
+    
+    <!-- Label box -->
+    <rect x="30" y="210" width="140" height="50" rx="8" fill="#8B5CF6"/>
+    <text x="100" y="235" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Label:</text>
+    <text x="100" y="250" text-anchor="middle" font-size="16" font-weight="bold" fill="white">"Positive"</text>
+  </g>
+  
+  <!-- Example 3: Email Classification -->
+  <g id="email-example" transform="translate(520, 120)">
+    <!-- Container -->
+    <rect x="0" y="0" width="200" height="280" rx="12" fill="white" stroke="#10B981" stroke-width="3"/>
+    
+    <!-- Label -->
+    <text x="100" y="30" text-anchor="middle" font-size="14" font-weight="bold" fill="#10B981">Email Input</text>
+    
+    <!-- Email interface -->
+    <g transform="translate(20, 60)">
+      <rect x="0" y="0" width="160" height="100" rx="8" fill="#D1FAE5"/>
+      <!-- Email header -->
+      <rect x="5" y="5" width="150" height="25" rx="4" fill="white"/>
+      <text x="10" y="21" font-size="9" font-weight="bold" fill="#1F2937">Win $1000 NOW!!!</text>
+      <!-- Email body lines -->
+      <rect x="10" y="40" width="130" height="3" rx="1" fill="#10B981" opacity="0.3"/>
+      <rect x="10" y="50" width="140" height="3" rx="1" fill="#10B981" opacity="0.3"/>
+      <rect x="10" y="60" width="120" height="3" rx="1" fill="#10B981" opacity="0.3"/>
+      <rect x="10" y="70" width="135" height="3" rx="1" fill="#10B981" opacity="0.3"/>
+      <rect x="10" y="80" width="110" height="3" rx="1" fill="#10B981" opacity="0.3"/>
+    </g>
+    
+    <!-- Arrow -->
+    <path d="M 100 175 L 100 195" stroke="#10B981" stroke-width="3" marker-end="url(#arrowGreen)"/>
+    
+    <!-- Label box -->
+    <rect x="30" y="210" width="140" height="50" rx="8" fill="#10B981"/>
+    <text x="100" y="240" text-anchor="middle" font-size="18" font-weight="bold" fill="white">Label: "Spam"</text>
+  </g>
+  
+  <!-- Bottom explanation -->
+  <g transform="translate(0, 430)">
+    <rect x="150" y="0" width="500" height="50" rx="8" fill="#EEF2FF" stroke="#6366F1" stroke-width="2"/>
+    <text x="400" y="22" text-anchor="middle" font-size="14" font-weight="600" fill="#4F46E5">Quality matters:</text>
+    <text x="400" y="40" text-anchor="middle" font-size="12" fill="#6B7280">Clear labels + diverse examples = better learning</text>
+  </g>
+  
+  <!-- Arrow markers -->
+  <defs>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+      <polygon points="0,0 10,5 0,10" fill="#3B82F6"/>
+    </marker>
+    <marker id="arrowPurple" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+      <polygon points="0,0 10,5 0,10" fill="#8B5CF6"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+      <polygon points="0,0 10,5 0,10" fill="#10B981"/>
+    </marker>
+  </defs>
+</svg>
+

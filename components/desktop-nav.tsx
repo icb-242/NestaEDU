@@ -41,17 +41,17 @@ export function DesktopNav({ isCollapsed, onToggle }: DesktopNavProps) {
     },
     {
       href: "/student/tutor",
-      label: "AI Tutor",
+      label: "Study",
       icon: MessageSquare,
     },
     {
       href: "/student/practice-exam",
-      label: "Practice Exams",
+      label: "Exams",
       icon: ClipboardList,
     },
     {
       href: "/student/learning",
-      label: "Learning",
+      label: "Courses",
       icon: BookOpen,
     },
     {
@@ -75,13 +75,22 @@ export function DesktopNav({ isCollapsed, onToggle }: DesktopNavProps) {
             "flex items-center gap-4 overflow-hidden transition-all",
             isCollapsed ? "justify-center w-full" : ""
           )}>
-            <div className="relative h-10 w-10 flex-shrink-0">
+            <div className="relative h-[60px] w-[60px] flex-shrink-0">
+              {/* Light mode logo */}
               <Image
-                src="/images/brand/nesta-logo-transparent.png"
+                src="/images/brand/nesta education 1-3.png"
                 alt="Nesta Education Logo"
                 fill
-                className="object-contain"
-                sizes="40px"
+                className="object-contain dark:opacity-0 dark:scale-0 transition-all duration-300"
+                sizes="60px"
+              />
+              {/* Dark mode logo */}
+              <Image
+                src="/images/brand/nesta education 1-white.png"
+                alt="Nesta Education Logo"
+                fill
+                className="object-contain opacity-0 scale-0 dark:opacity-100 dark:scale-100 transition-all duration-300"
+                sizes="60px"
               />
             </div>
             <span

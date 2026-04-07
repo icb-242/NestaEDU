@@ -52,7 +52,6 @@ export function FlipCardSlideComponent({ slide, onComplete }: { slide: FlipCardS
                 className="relative w-full h-full transform-style-preserve-3d"
                 animate={{ rotateY: isFlipped ? 180 : 0 }}
                 transition={{ duration: 0.6 }}
-                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
                 {/* Front of card */}

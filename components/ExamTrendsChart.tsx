@@ -17,15 +17,14 @@ const examData = [
 
 export function ExamTrendsChart() {
   return (
-    <section className="pt-0 pb-8">
-      <div className="container mx-auto px-4">
-        <div className="mb-12 text-center">
-          <h2 className="text-lg font-bold tracking-tight mb-4">
-            Exam Performance Trends (2015–2024)
-          </h2>
-        </div>
-        
-        <div className="bg-card rounded-lg border p-6 relative">
+    <section className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 pt-0 pb-8">
+      <div className="mb-12 text-center">
+        <h2 className="text-lg font-bold tracking-tight mb-4">
+          Exam Performance Trends (2015–2024)
+        </h2>
+      </div>
+      
+      <div className="bg-card rounded-lg border p-6 relative">
           <ResponsiveContainer width="100%" height={500}>
             <ComposedChart data={examData} margin={{ top: 20, right: 30, left: 80, bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" />
@@ -33,6 +32,12 @@ export function ExamTrendsChart() {
                 dataKey="year" 
                 stroke="hsl(var(--foreground))"
                 style={{ fontFamily: 'SF Mono, Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace' }}
+                label={{ 
+                  value: 'Exam Year', 
+                  position: 'insideBottom',
+                  offset: -20,
+                  style: { textAnchor: 'middle' }
+                }}
               />
               <YAxis 
                 stroke="hsl(var(--foreground))"
@@ -41,7 +46,8 @@ export function ExamTrendsChart() {
                   value: 'Number of Students', 
                   angle: -90, 
                   position: 'insideLeft',
-                  style: { textAnchor: 'middle', x: -80 }
+                  offset: -30,
+                  style: { textAnchor: 'middle' }
                 }}
               />
               <Tooltip 
@@ -141,7 +147,7 @@ export function ExamTrendsChart() {
               {/* Context Note */}
               <div className="text-center mb-2">
                 <p className="text-xs text-muted-foreground" style={{ fontFamily: 'SF Mono, Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace' }}>
-                  Background bars show total number of candidate that year.
+                  Background bars show total number of candidates that year.
                 </p>
               </div>
               
@@ -197,12 +203,9 @@ export function ExamTrendsChart() {
                         1
                       </div>
                       <div className="flex-1 max-w-lg">
-                        <h4 className="font-medium mb-2">Persistent Achievement Gap</h4>
-                        <p 
-                          className="text-sm text-muted-foreground"
-                          style={{ fontFamily: 'SF Mono, Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace' }}
-                        >
-                          Despite tens of thousands of exam entries annually, only about 10–13% of students earn a grade C or better in five or more subjects—a graduation benchmark.
+                        <h4 className="font-medium mb-2">Core Subjects at Crisis Levels</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Fewer than 15% of students earn a C or better in Math, English, and Science, the foundational skills required for modern careers and higher education.
                         </p>
                       </div>
                     </div>
@@ -216,12 +219,9 @@ export function ExamTrendsChart() {
                         2
                       </div>
                       <div className="flex-1 max-w-lg">
-                        <h4 className="font-medium mb-2">Core Proficiency Remains Low</h4>
-                        <p 
-                          className="text-sm text-muted-foreground"
-                          style={{ fontFamily: 'SF Mono, Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace' }}
-                        >
-                          Across both BJC and BGCSE, fewer than 15% of candidates consistently secure a grade C or higher in all core subjects (Math, English, & Science).
+                        <h4 className="font-medium mb-2">High Participation, Low Mastery</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Even with over 15,000 exam entries each year, only about 1 in 8 students achieve "strong passes" (C or better in five or more subjects), far below what's needed for real post-school readiness.
                         </p>
                       </div>
                     </div>
@@ -235,12 +235,9 @@ export function ExamTrendsChart() {
                         3
                       </div>
                       <div className="flex-1 max-w-lg">
-                        <h4 className="font-medium mb-2">Marginal Gains, Ongoing Challenges</h4>
-                        <p 
-                          className="text-sm text-muted-foreground"
-                          style={{ fontFamily: 'SF Mono, Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace' }}
-                        >
-                          While there have been small improvements in A to C-grade attainment recently, overall performance remains stagnant, reinforcing the need for substantial, targeted interventions.
+                        <h4 className="font-medium mb-2">A Decade of Stagnant Performance</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Despite small year-to-year fluctuations, national exam outcomes have flatlined or declined since 2018 — showing that participation is steady, but true academic progress is not.
                         </p>
                       </div>
                     </div>
@@ -250,7 +247,6 @@ export function ExamTrendsChart() {
             </div>
           </div>
         </div>
-      </div>
     </section>
   );
 }

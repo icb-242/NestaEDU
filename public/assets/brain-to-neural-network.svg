@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" fill="none">
+  <defs>
+    <!-- Gradients -->
+    <radialGradient id="somaGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#A49DFD;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#2C3EBA;stop-opacity:0.2" />
+    </radialGradient>
+    
+    <radialGradient id="nucleusGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#A49DFD;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#2C3EBA;stop-opacity:0.6" />
+    </radialGradient>
+    
+    <radialGradient id="aiNodeGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#00C2B8;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#2C3EBA;stop-opacity:0.6" />
+    </radialGradient>
+    
+    <!-- Glow effects -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Arrow marker -->
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#A49DFD" opacity="0.8"/>
+    </marker>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="675" fill="transparent"/>
+  
+  <!-- Title -->
+  <text x="600" y="60" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif" 
+        font-size="36" font-weight="700" fill="#2C3EBA" text-anchor="middle" opacity="0.95">
+    The Brain Behind AI
+  </text>
+  
+  <!-- Divider Line -->
+  <line x1="600" y1="120" x2="600" y2="580" stroke="#A49DFD" stroke-width="2" opacity="0.3" stroke-dasharray="10,8"/>
+  
+  <!-- LEFT SIDE: BIOLOGICAL NEURON -->
+  <g id="biologicalNeuron" transform="translate(300, 320)">
+    
+    <!-- Dendrites (branching inputs) -->
+    <g id="dendrites" stroke="#2C3EBA" stroke-width="3" fill="none" opacity="0.7" stroke-linecap="round">
+      <!-- Upper dendrite cluster -->
+      <path d="M -140,-80 Q -120,-70, -100,-60" />
+      <path d="M -140,-80 Q -130,-90, -120,-100" />
+      <path d="M -100,-60 Q -85,-55, -70,-50" />
+      <path d="M -100,-60 Q -95,-70, -85,-80" />
+      
+      <!-- Middle-upper dendrites -->
+      <path d="M -150,-30 Q -130,-25, -110,-20" />
+      <path d="M -150,-30 Q -145,-40, -135,-50" />
+      <path d="M -110,-20 Q -90,-15, -70,-10" />
+      
+      <!-- Middle-lower dendrites -->
+      <path d="M -150,30 Q -130,25, -110,20" />
+      <path d="M -150,30 Q -145,40, -135,50" />
+      <path d="M -110,20 Q -90,15, -70,10" />
+      
+      <!-- Lower dendrite cluster -->
+      <path d="M -140,80 Q -120,70, -100,60" />
+      <path d="M -140,80 Q -130,90, -120,100" />
+      <path d="M -100,60 Q -85,55, -70,50" />
+      <path d="M -100,60 Q -95,70, -85,80" />
+    </g>
+    
+    <!-- Dendrite connection points (glowing dots) -->
+    <g id="dendriteSignals" filter="url(#softGlow)">
+      <circle cx="-140" cy="-80" r="4" fill="#A49DFD" opacity="0.8">
+        <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="-150" cy="-30" r="4" fill="#A49DFD" opacity="0.8">
+        <animate attributeName="opacity" values="0.5;1;0.5" dur="2.3s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="-150" cy="30" r="4" fill="#A49DFD" opacity="0.8">
+        <animate attributeName="opacity" values="0.6;0.9;0.6" dur="2.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="-140" cy="80" r="4" fill="#A49DFD" opacity="0.8">
+        <animate attributeName="opacity" values="0.7;0.4;0.7" dur="2.7s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    
+    <!-- Cell Body (Soma) -->
+    <circle cx="0" cy="0" r="55" fill="url(#somaGradient)" stroke="#2C3EBA" stroke-width="3" opacity="0.9"/>
+    
+    <!-- Nucleus -->
+    <circle cx="0" cy="0" r="25" fill="url(#nucleusGradient)" stroke="#A49DFD" stroke-width="2" opacity="0.8"/>
+    
+    <!-- Axon -->
+    <g id="axon" stroke="#2C3EBA" stroke-width="4" fill="none" opacity="0.7">
+      <path d="M 55,0 L 180,0" stroke-linecap="round"/>
+      <!-- Myelin sheath segments -->
+      <rect x="80" y="-8" width="15" height="16" fill="#A49DFD" opacity="0.4" rx="2"/>
+      <rect x="110" y="-8" width="15" height="16" fill="#A49DFD" opacity="0.4" rx="2"/>
+      <rect x="140" y="-8" width="15" height="16" fill="#A49DFD" opacity="0.4" rx="2"/>
+    </g>
+    
+    <!-- Axon terminal (synapse) -->
+    <g id="axonTerminal">
+      <circle cx="180" cy="0" r="8" fill="#00C2B8" opacity="0.7" filter="url(#softGlow)">
+        <animate attributeName="r" values="8;10;8" dur="1.5s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    
+    <!-- Signal flow animation along axon -->
+    <circle cx="55" cy="0" r="3" fill="#00C2B8" opacity="0.9" filter="url(#softGlow)">
+      <animate attributeName="cx" values="55;180;55" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.9;0" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    
+    <!-- Labels -->
+    <g id="bioLabels" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif" fill="#2C3EBA">
+      <!-- Dendrites label -->
+      <text x="-140" y="-120" font-size="14" font-weight="600" text-anchor="middle" opacity="0.85">Dendrites</text>
+      <text x="-140" y="-105" font-size="11" font-weight="400" text-anchor="middle" opacity="0.6">(receive signals)</text>
+      
+      <!-- Cell Body label -->
+      <text x="0" y="85" font-size="14" font-weight="600" text-anchor="middle" opacity="0.85">Cell Body</text>
+      <text x="0" y="100" font-size="11" font-weight="400" text-anchor="middle" opacity="0.6">(processes signals)</text>
+      
+      <!-- Axon label -->
+      <text x="180" y="35" font-size="14" font-weight="600" text-anchor="middle" opacity="0.85">Axon</text>
+      <text x="180" y="50" font-size="11" font-weight="400" text-anchor="middle" opacity="0.6">(transmits output)</text>
+    </g>
+  </g>
+  
+  <!-- Sublabel for Biological Neuron -->
+  <text x="300" y="580" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif" 
+        font-size="18" font-weight="700" fill="#2C3EBA" text-anchor="middle" opacity="0.9">
+    Biological Neuron
+  </text>
+  <text x="300" y="605" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif" 
+        font-size="14" font-weight="400" fill="#A49DFD" text-anchor="middle" opacity="0.8">
+    Learns from experience
+  </text>
+  
+  <!-- CENTER: Transition Arrow -->
+  <g id="transition" transform="translate(600, 340)">
+    <path d="M -60,0 L 60,0" stroke="#A49DFD" stroke-width="3" opacity="0.6" marker-end="url(#arrowhead)" stroke-linecap="round"/>
+    <text x="0" y="-15" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif" 
+          font-size="13" font-weight="600" fill="#A49DFD" text-anchor="middle" opacity="0.8">
+      Inspiration → Implementation
+    </text>
+  </g>
+  
+  <!-- RIGHT SIDE: ARTIFICIAL NEURON -->
+  <g id="artificialNeuron" transform="translate(900, 320)">
+    
+    <!-- Input nodes -->
+    <g id="inputs">
+      <circle cx="-120" cy="-70" r="12" fill="url(#aiNodeGradient)" stroke="#00C2B8" stroke-width="2" filter="url(#softGlow)"/>
+      <circle cx="-120" cy="-25" r="12" fill="url(#aiNodeGradient)" stroke="#00C2B8" stroke-width="2" filter="url(#softGlow)"/>
+      <circle cx="-120" cy="25" r="12" fill="url(#aiNodeGradient)" stroke="#00C2B8" stroke-width="2" filter="url(#softGlow)"/>
+      <circle cx="-120" cy="70" r="12" fill="url(#aiNodeGradient)" stroke="#00C2B8" stroke-width="2" filter="url(#softGlow)"/>
+      
+      <!-- Input labels -->
+      <text x="-150" y="-65" font-size="11" font-weight="500" fill="#2C3EBA" opacity="0.7">x₁</text>
+      <text x="-150" y="-20" font-size="11" font-weight="500" fill="#2C3EBA" opacity="0.7">x₂</text>
+      <text x="-150" y="30" font-size="11" font-weight="500" fill="#2C3EBA" opacity="0.7">x₃</text>
+      <text x="-150" y="75" font-size="11" font-weight="500" fill="#2C3EBA" opacity="0.7">x₄</text>
+    </g>
+    
+    <!-- Connection lines with weights -->
+    <g id="connections" stroke="#2C3EBA" stroke-width="2.5" opacity="0.5">
+      <line x1="-108" y1="-70" x2="-25" y2="-15"/>
+      <line x1="-108" y1="-25" x2="-25" y2="-5"/>
+      <line x1="-108" y1="25" x2="-25" y2="5"/>
+      <line x1="-108" y1="70" x2="-25" y2="15"/>
+      
+      <!-- Weight labels -->
+      <text x="-75" y="-50" font-size="10" font-weight="600" fill="#A49DFD" opacity="0.8">w₁</text>
+      <text x="-75" y="-15" font-size="10" font-weight="600" fill="#A49DFD" opacity="0.8">w₂</text>
+      <text x="-75" y="20" font-size="10" font-weight="600" fill="#A49DFD" opacity="0.8">w₃</text>
+      <text x="-75" y="50" font-size="10" font-weight="600" fill="#A49DFD" opacity="0.8">w₄</text>
+    </g>
+    
+    <!-- Central artificial neuron -->
+    <g id="neuronCore">
+      <!-- Outer circle (activation) -->
+      <circle cx="0" cy="0" r="45" fill="url(#aiNodeGradient)" stroke="#2C3EBA" stroke-width="3" opacity="0.3"/>
+      
+      <!-- Inner circle (summation) -->
+      <circle cx="0" cy="0" r="30" fill="url(#somaGradient)" stroke="#00C2B8" stroke-width="2" opacity="0.8" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      
+      <!-- Sigma symbol for summation -->
+      <text x="0" y="8" font-family="Georgia, serif" font-size="24" font-weight="700" fill="#2C3EBA" text-anchor="middle" opacity="0.9">Σ</text>
+    </g>
+    
+    <!-- Output connection -->
+    <g id="output">
+      <line x1="45" y1="0" x2="140" y2="0" stroke="#2C3EBA" stroke-width="3" opacity="0.6" marker-end="url(#arrowhead)" stroke-linecap="round"/>
+      
+      <!-- Output node -->
+      <circle cx="140" cy="0" r="12" fill="#00C2B8" opacity="0.8" stroke="#2C3EBA" stroke-width="2" filter="url(#softGlow)">
+        <animate attributeName="r" values="12;14;12" dur="2s" repeatCount="indefinite"/>
+      </circle>
+      
+      <!-- Signal animation -->
+      <circle cx="45" cy="0" r="3" fill="#00C2B8" opacity="0.9" filter="url(#softGlow)">
+        <animate attributeName="cx" values="45;140;45" dur="2.5s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0;0.9;0" dur="2.5s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    
+    <!-- Labels -->
+    <g id="aiLabels" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif" fill="#2C3EBA">
+      <!-- Inputs label -->
+      <text x="-120" y="-100" font-size="14" font-weight="600" text-anchor="middle" opacity="0.85">Inputs</text>
+      
+      <!-- Weights label -->
+      <text x="-65" y="-85" font-size="14" font-weight="600" text-anchor="middle" opacity="0.85">Weights</text>
+      <text x="-65" y="-72" font-size="11" font-weight="400" text-anchor="middle" opacity="0.6">(importance)</text>
+      
+      <!-- Activation label -->
+      <text x="0" y="75" font-size="14" font-weight="600" text-anchor="middle" opacity="0.85">Activation</text>
+      <text x="0" y="90" font-size="11" font-weight="400" text-anchor="middle" opacity="0.6">(decision function)</text>
+      
+      <!-- Output label -->
+      <text x="140" y="35" font-size="14" font-weight="600" text-anchor="middle" opacity="0.85">Output</text>
+      <text x="140" y="50" font-size="11" font-weight="400" text-anchor="middle" opacity="0.6">(prediction)</text>
+    </g>
+  </g>
+  
+  <!-- Sublabel for Artificial Neuron -->
+  <text x="900" y="580" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif" 
+        font-size="18" font-weight="700" fill="#2C3EBA" text-anchor="middle" opacity="0.9">
+    Artificial Neuron
+  </text>
+  <text x="900" y="605" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Arial, sans-serif" 
+        font-size="14" font-weight="400" fill="#00C2B8" text-anchor="middle" opacity="0.8">
+    Learns from data
+  </text>
+  
+  <!-- Decorative elements: subtle background glow -->
+  <circle cx="300" cy="320" r="200" fill="#A49DFD" opacity="0.03"/>
+  <circle cx="900" cy="320" r="200" fill="#00C2B8" opacity="0.03"/>
+</svg>

@@ -1,91 +1,10 @@
-import { openai } from "@ai-sdk/openai"
 import { streamText } from "ai"
-import { getOpenAIKey, validateEnvironment } from "../../../config/api-keys"
+import { getAIModel } from "@/lib/ai"
 
 export const maxDuration = 30
 
-export async function POST(req: Request) {
-  try {
-    const { messages, subject } = await req.json()
-
-    // Validate environment variables first
-    if (!validateEnvironment()) {
-      return new Response(
-        JSON.stringify({
-          error: "Configuration error",
-          message: "The AI tutoring service is not properly configured. Please check environment variables.",
-          isMock: true,
-          debug: {
-            environment: process.env.NODE_ENV,
-            hasOpenAIKey: !!process.env.OPENAI_API_KEY,
-            hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-            hasSupabaseAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-            hasSupabaseServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-            hasJwtSecret: !!process.env.JWT_SECRET
-          }
-        }),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        },
-      )
-    }
-
-    // Check if OpenAI API key is available and set it as environment variable
-    const apiKey = getOpenAIKey()
-    
-    if (!apiKey) {
-      console.error("OpenAI API key not found")
-      return new Response(
-        JSON.stringify({
-          error: "AI service configuration error",
-          message: "I apologize, but the AI tutoring service is not properly configured. Please check environment variables.",
-          isMock: true,
-          debug: {
-            hasEnvVar: !!process.env.OPENAI_API_KEY,
-            envVarLength: process.env.OPENAI_API_KEY?.length || 0
-          }
-        }),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        },
-      )
-    }
-
-    // Set the environment variable for the AI SDK
-    process.env.OPENAI_API_KEY = apiKey
-
-    // Process messages to handle image content properly
-    const processedMessages = messages.map((message: any) => {
-      if (Array.isArray(message.content)) {
-        // Handle multimodal content (text + images)
-        return {
-          role: message.role,
-          content: message.content.map((content: any) => {
-            if (content.type === "image") {
-              return {
-                type: "image",
-                image: content.image,
-              }
-            }
-            return {
-              type: "text",
-              text: content.text,
-            }
-          }),
-        }
-      }
-      // Handle regular text messages
-      return {
-        role: message.role,
-        content: message.content,
-      }
-    })
-
-    // Create subject-specific system prompts
-    const getSystemPrompt = (subject: string) => {
-      const basePrompt = `
+const getSystemPrompt = (subject: string) => {
+  const basePrompt = `
 ROLE & SCOPE
 You are a highly experienced AI tutor trained specifically in the Bahamas Junior Certificate (BJC) and the Bahamas General Certificate of Secondary Education (BGCSE) syllabi. You use the Socratic method—asking strategic questions that lead to understanding. You NEVER provide direct answers. All communication must be plain text only—no LaTeX, markdown, or code fences.
 
@@ -105,33 +24,30 @@ CORE BEHAVIORAL PRINCIPLES
 
 EXAM FOCUS
 - Always keep BJC and BGCSE exam styles in mind.
-- Frame questions or examples the way they appear in past papers (word problems, diagrams, “Alternative to Coursework” investigations).
+- Frame questions or examples the way they appear in past papers (word problems, diagrams, "Alternative to Coursework" investigations).
 - Use local and practical contexts: Bahamian dollars, conch salad prices, straw market sales, fishing and tourism, Junkanoo, coral reefs, hurricanes, or island ecosystems.
 
 RESPONSE STRUCTURE
 1) If student gives an attempt: evaluate internally.
 2) If correct: affirm and extend with a deeper exam-style question.
-3) If partly correct: acknowledge what’s right and redirect with a guiding question.
+3) If partly correct: acknowledge what's right and redirect with a guiding question.
 4) If wrong: do not reveal the answer—ask a hinting question.
 5) Once correct: explain reasoning in plain text, tie it to syllabus content, and show how it mirrors BJC/BGCSE style.
 
 OFF-TOPIC HANDLING
-If asked something unrelated:  
-“I’m designed to focus on school subjects in The Bahamas, especially BJC and BGCSE preparation. Let’s bring this back to learning. Which topic are you working on—Math, Science, English, or Social Studies?”
+If asked something unrelated:
+"I'm designed to focus on school subjects in The Bahamas, especially BJC and BGCSE preparation. Let's bring this back to learning. Which topic are you working on—Math, Science, English, or Social Studies?"
 
-If vague but possibly academic (e.g., “rap music”):  
-“I can help if we connect this to your syllabus—for example, rhyme schemes (English), cultural history (Social Studies), or sound waves (Physics). Which one should we explore?”
+If vague but possibly academic (e.g., "rap music"):
+"I can help if we connect this to your syllabus—for example, rhyme schemes (English), cultural history (Social Studies), or sound waves (Physics). Which one should we explore?"
 
 STUDENT PUSHBACK
-If asked for the answer directly:  
-“Let’s work through this together. What do you think comes next?”
+If asked for the answer directly:
+"Let's work through this together. What do you think comes next?"
+`
 
-`;
-      if (subject === "math") {
-        return (
-          basePrompt +
-          `
-
+  if (subject === "math") {
+    return basePrompt + `
 MATHEMATICS SPECIALIZATION (BJC & BGCSE)
 Focus areas (syllabus aligned):
 - BJC: Number operations, fractions/decimals/percentages, ratios, algebra basics, geometry of shapes, perimeter/area/volume, simple statistics.
@@ -148,20 +64,16 @@ Exam-style guidance:
 - Highlight multiple solution paths when appropriate.
 
 Socratic stems (Math):
-- What’s the first step the exam expects here?
+- What's the first step the exam expects here?
 - Which operation or property applies?
 - How would you set this up in equation form?
 - If we change this value, how does it affect the answer?
 - Can you check your result the way you would in an exam?
-
 `
-        );
-      }
-      if (subject === "science") {
-        return (
-          basePrompt +
-          `
+  }
 
+  if (subject === "science") {
+    return basePrompt + `
 SCIENCE SPECIALIZATION (BJC & BGCSE)
 Focus areas (syllabus aligned):
 - BJC: Cells and human body systems, ecosystems, weather and climate, simple chemistry (elements, mixtures, reactions), forces and motion basics.
@@ -173,7 +85,7 @@ Strategies:
 - Always encourage linking cause and effect.
 
 Exam-style guidance:
-- Use “Alternative to Coursework” prompts: e.g., “Design an experiment to test how salt affects the boiling point of water.”
+- Use "Alternative to Coursework" prompts: e.g., "Design an experiment to test how salt affects the boiling point of water."
 - Ask students to explain diagrams or data tables like those in past BJC/BGCSE past papers.
 - Reinforce vocabulary (photosynthesis, mitosis, ionic bonding, velocity, density).
 
@@ -183,36 +95,46 @@ Socratic stems (Science):
 - What pattern would you predict if conditions change?
 - How does this link to something you see in The Bahamas (reefs, weather, ecosystems)?
 - Which syllabus term best describes this process?
-
 `
-        );
+  }
+
+  return basePrompt
+}
+
+export async function POST(req: Request) {
+  try {
+    const { messages, subject } = await req.json()
+
+    const model = getAIModel()
+
+    const processedMessages = messages.map((message: any) => {
+      if (Array.isArray(message.content)) {
+        return {
+          role: message.role,
+          content: message.content.map((content: any) =>
+            content.type === "image"
+              ? { type: "image", image: content.image }
+              : { type: "text", text: content.text }
+          ),
+        }
       }
-      return basePrompt;
-    }
+      return { role: message.role, content: message.content }
+    })
 
     const result = streamText({
-      model: openai("gpt-4o"),
+      model,
       messages: processedMessages,
       system: getSystemPrompt(subject || "general"),
     })
 
     return result.toDataStreamResponse()
   } catch (error) {
-    console.error("Chat API Error:", error)
-
-    // Enhanced mock fallback with more specific error handling
     return new Response(
       JSON.stringify({
         error: "AI service temporarily unavailable",
-        message:
-          "I apologize, but I'm having trouble connecting to the AI tutoring service right now. Please try again in a moment, or check your internet connection.",
-        isMock: true,
-        timestamp: new Date().toISOString(),
+        message: "I'm having trouble connecting right now. Please try again in a moment.",
       }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      },
+      { status: 503, headers: { "Content-Type": "application/json" } },
     )
   }
 }

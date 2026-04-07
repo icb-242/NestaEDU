@@ -71,14 +71,30 @@ export function HeroSlideComponent({ slide, onComplete }: { slide: HeroSlide; on
         </p>
       </motion.div>
 
-      {/* AI in Action - Realistic App Screenshots */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8, delay: 0.5 }}
-        className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl relative z-10"
-      >
-        {/* Netflix - "Because you watched" */}
+      {/* Conditional Content: Asset or App Screenshots */}
+      {slide.asset ? (
+        /* Custom Asset */
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="relative z-10 max-w-5xl mx-auto"
+        >
+          <img 
+            src={slide.asset.src} 
+            alt={slide.asset.alt}
+            className="w-full h-auto rounded-xl shadow-2xl"
+          />
+        </motion.div>
+      ) : (
+        /* AI in Action - Realistic App Screenshots (Module 1 Default) */
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl relative z-10"
+        >
+          {/* Netflix - "Because you watched" */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -291,6 +307,7 @@ export function HeroSlideComponent({ slide, onComplete }: { slide: HeroSlide; on
           <span className="text-lg text-muted-foreground font-semibold">Biometric Security</span>
         </motion.div>
       </motion.div>
+      )}
 
     </div>
   );

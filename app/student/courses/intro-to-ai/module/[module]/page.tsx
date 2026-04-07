@@ -49,8 +49,8 @@ export default function ModulePlayerPage({ params }: { params: { module: string 
       if (e.key === "sidebarCollapsed" && e.newValue) {
         try {
           setSidebarCollapsed(JSON.parse(e.newValue));
-        } catch (err) {
-          console.warn("Failed to parse sidebar state");
+        } catch {
+          // Ignore invalid sidebar state
         }
       }
     };

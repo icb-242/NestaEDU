@@ -6,8 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { 
+import {
   BookOpen, 
   Brain, 
   Clock, 
@@ -27,9 +26,8 @@ import {
   FlaskConical
 } from "lucide-react"
 import Link from "next/link"
-import { capitalizeSubject } from "@/lib/utils"
-import { cn } from "@/lib/utils"
-import { getAvatarUrl, getAvatarKey, forceAvatarRefresh } from "@/lib/utils"
+import { capitalizeSubject, cn } from "@/lib/utils"
+import { getSubjectDisplayName } from "@/lib/subjects"
 
 interface ChatSession {
   id: string
@@ -90,22 +88,6 @@ export default function DashboardPage() {
   const [showAllExams, setShowAllExams] = useState(false)
   const router = useRouter()
 
-  // Function to map route parameter subjects to display names
-  const getSubjectDisplayName = (subjectRoute: string) => {
-    const subjectMap: { [key: string]: string } = {
-      'bjc-math': 'BJC Mathematics',
-      'bjc-general-science': 'BJC General Science',
-      'bjc-health-science': 'BJC Health Science',
-      'bgcse-math': 'BGCSE Mathematics',
-      'bgcse-chemistry': 'BGCSE Chemistry',
-      'bgcse-physics': 'BGCSE Physics',
-      'bgcse-biology': 'BGCSE Biology',
-      'bgcse-combined-science': 'BGCSE Combined Science'
-    }
-    return subjectMap[subjectRoute] || subjectRoute
-  }
-
-
   // Helper function to get the current week's date range (Sunday to Saturday)
   const getCurrentWeekRange = () => {
     const now = new Date()
@@ -163,44 +145,19 @@ export default function DashboardPage() {
         const res = await fetch('/api/user/profile')
         if (res.ok) {
           const user = await res.json()
-          console.log('Dashboard fetched user from API:', user)
-          console.log('Dashboard avatar from API:', user?.avatar)
-          
-          // Check if localStorage has more recent data (from profile updates)
-          const localProfile = localStorage.getItem('userProfile')
-          if (localProfile) {
-            const parsedLocalProfile = JSON.parse(localProfile)
-            console.log('Dashboard localStorage avatar:', parsedLocalProfile.avatar ? 'exists' : 'null')
-            console.log('Dashboard API avatar:', user.avatar ? 'exists' : 'null')
-            
-            // If localStorage avatar is different from API avatar (including null vs non-null), use localStorage
-            if (parsedLocalProfile.avatar !== user.avatar) {
-              console.log('Dashboard using localStorage avatar (different from API):', parsedLocalProfile.avatar ? 'exists' : 'null')
-              setUserProfile(parsedLocalProfile)
-              return
-            }
-          }
-          
+
           setUserProfile(user)
           localStorage.setItem('userProfile', JSON.stringify(user))
         } else {
-          // fallback to localStorage if API fails
           const profile = localStorage.getItem('userProfile')
           if (profile) {
-            const parsedProfile = JSON.parse(profile)
-            console.log('Dashboard fallback to localStorage:', parsedProfile)
-            console.log('Dashboard avatar from localStorage:', parsedProfile?.avatar)
-            setUserProfile(parsedProfile)
+            setUserProfile(JSON.parse(profile))
           }
         }
-      } catch (error) {
-        // fallback to localStorage on error
+      } catch {
         const profile = localStorage.getItem('userProfile')
         if (profile) {
-          const parsedProfile = JSON.parse(profile)
-          console.log('Dashboard error fallback to localStorage:', parsedProfile)
-          console.log('Dashboard avatar from error fallback:', parsedProfile?.avatar)
-          setUserProfile(parsedProfile)
+          setUserProfile(JSON.parse(profile))
         }
       }
       setUserProfileLoaded(true)
@@ -212,16 +169,10 @@ export default function DashboardPage() {
   useEffect(() => {
     const handleProfileUpdate = (e: Event) => {
       const customEvent = e as CustomEvent
-      console.log('Dashboard received profile update:', customEvent.detail)
-      console.log('Dashboard avatar from update:', customEvent.detail?.avatar ? 'exists' : 'null')
-      console.log('Dashboard avatar length from update:', customEvent.detail?.avatar?.length)
-      
-      // Force a state update to trigger re-render
       setUserProfile(null)
       setTimeout(() => {
         setUserProfile(customEvent.detail)
         localStorage.setItem('userProfile', JSON.stringify(customEvent.detail))
-        console.log('Dashboard updated userProfile state with:', customEvent.detail?.avatar ? 'exists' : 'null')
       }, 10)
     }
     window.addEventListener("profileUpdated", handleProfileUpdate)
@@ -233,15 +184,10 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        console.log('Fetching dashboard data...')
-        
-        // Fetch chat sessions from database
         const chatRes = await fetch('/api/chat-sessions')
-        console.log('Chat sessions response status:', chatRes.status)
         let chatHistory: ChatSession[] = []
         if (chatRes.ok) {
           const sessions = await chatRes.json()
-          console.log('Chat sessions data:', sessions)
           chatHistory = sessions.map((session: any) => ({
             id: session.id,
             subject: session.subject,
@@ -255,17 +201,12 @@ export default function DashboardPage() {
           // Cache the sessions data for faster loading on subjects page
           sessionStorage.setItem('chatHistoryCache', JSON.stringify(chatHistory))
           sessionStorage.setItem('chatHistoryCacheTimestamp', Date.now().toString())
-        } else {
-          console.error('Chat sessions fetch failed:', chatRes.status, chatRes.statusText)
         }
 
-        // Fetch exam results from database
         const examRes = await fetch('/api/exam-results')
-        console.log('Exam results response status:', examRes.status)
         let examResults: ExamResult[] = []
         if (examRes.ok) {
           const results = await examRes.json()
-          console.log('Exam results data:', results)
           examResults = results.map((result: any) => ({
             id: result.id,
             subject: getSubjectDisplayName(result.subject), // Convert route parameter to display name
@@ -276,12 +217,7 @@ export default function DashboardPage() {
             time_spent: result.time_spent || 0,
             created_at: result.created_at,
           }))
-        } else {
-          console.error('Exam results fetch failed:', examRes.status, examRes.statusText)
         }
-
-        console.log('Processed chat history length:', chatHistory.length)
-        console.log('Processed exam results length:', examResults.length)
 
         const learningSessions = chatHistory.length
         const recentSessions = chatHistory
@@ -316,8 +252,8 @@ export default function DashboardPage() {
               const dayIndex = getDayOfWeekIndex(sessionDate)
               weeklyChatActivity[dayIndex]++
             }
-          } catch (e) {
-            console.error('Error processing chat session date:', e)
+          } catch {
+            // Skip sessions with invalid dates
           }
         })
 
@@ -329,8 +265,8 @@ export default function DashboardPage() {
               const dayIndex = getDayOfWeekIndex(examDate)
               weeklyExamActivity[dayIndex]++
             }
-          } catch (e) {
-            console.error('Error processing exam date:', e)
+          } catch {
+            // Skip exams with invalid dates
           }
         })
 
@@ -447,11 +383,9 @@ export default function DashboardPage() {
           sessionsThisWeek,
         }
         
-        console.log('Final stats object:', finalStats)
         setStats(finalStats)
         setDashboardDataLoaded(true)
       } catch (error) {
-        console.error('Error fetching dashboard data:', error)
         setStats({
           learningSessions: 0,
           recentSessions: [],
@@ -488,51 +422,34 @@ export default function DashboardPage() {
     }
   }, [router])
 
-  // Effect to set loading to false when both profile and data are loaded
   useEffect(() => {
-    console.log('Loading state check:', { userProfileLoaded, dashboardDataLoaded, isLoading })
     if (userProfileLoaded && dashboardDataLoaded) {
-      console.log('Both profile and dashboard data loaded - setting loading to false')
       setIsLoading(false)
     }
   }, [userProfileLoaded, dashboardDataLoaded])
 
-  // Effect to set loading to false when user profile is loaded (even if dashboard data fails)
   useEffect(() => {
     if (userProfileLoaded && isLoading) {
-      // If we have the user profile but dashboard data is taking too long, show the dashboard anyway
       const timeout = setTimeout(() => {
         if (isLoading && !dashboardDataLoaded) {
-          console.log('User profile loaded but dashboard data taking too long - showing dashboard anyway')
           setIsLoading(false)
           setDashboardDataLoaded(true)
         }
-      }, 3000) // 3 seconds instead of 10
-
+      }, 3000)
       return () => clearTimeout(timeout)
     }
   }, [userProfileLoaded, isLoading, dashboardDataLoaded])
 
-  // Fallback timeout to prevent infinite loading (5 seconds)
+  // Fallback timeout to prevent infinite loading
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (isLoading) {
-        console.log('Dashboard loading timeout - forcing loading to false')
         setIsLoading(false)
         setDashboardDataLoaded(true)
       }
-    }, 5000) // 5 seconds instead of 10
-
+    }, 5000)
     return () => clearTimeout(timeout)
   }, [isLoading])
-
-  // Debug effect to monitor userProfile changes
-  useEffect(() => {
-    console.log('userProfile state changed:', userProfile)
-    console.log('Avatar in userProfile:', userProfile?.avatar)
-    console.log('Avatar type:', typeof userProfile?.avatar)
-    console.log('Avatar length:', userProfile?.avatar?.length)
-  }, [userProfile])
 
   useEffect(() => {
     // Mobile viewport fix - ensure proper zoom on mobile
@@ -633,8 +550,7 @@ export default function DashboardPage() {
       if (diffInHours < 24) return `${diffInHours}h ago`
       if (diffInDays < 7) return `${diffInDays}d ago`
       return date.toLocaleDateString()
-    } catch (error) {
-      console.error('Error formatting timestamp:', error)
+    } catch {
       return 'Unknown'
     }
   }
@@ -663,13 +579,10 @@ export default function DashboardPage() {
 
         {/* Loading Message */}
         <div className="text-center py-4">
-          <div className="inline-flex items-center gap-2 text-muted-foreground">
-            <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-            <span className="text-sm font-medium">Loading your learning dashboard...</span>
+          <div className="inline-flex items-center gap-2 text-muted-foreground font-mono">
+            <span className="text-sm">$ loading dashboard</span>
+            <span className="animate-pulse">_</span>
           </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            Fetching your progress, recent activity, and performance data
-          </p>
         </div>
 
         {/* Loading Metrics */}
@@ -743,23 +656,9 @@ export default function DashboardPage() {
         <CardContent className="p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center space-x-4">
-              <Avatar className="h-12 w-12" key={`dashboard-avatar-${userProfile?.avatar ? userProfile.avatar.substring(0, 50) : 'no-avatar'}`}>
-                <AvatarImage
-                  src={userProfile?.avatar}
-                  alt="User Avatar"
-                  className="object-cover"
-                  onError={(e) => {
-                    console.log('Dashboard avatar image failed to load:', userProfile?.avatar)
-                    e.currentTarget.style.display = 'none'
-                  }}
-                  onLoad={() => {
-                    console.log('Dashboard avatar image loaded successfully')
-                  }}
-                />
-                <AvatarFallback className="text-xl font-bold">
-                  {getUserInitials()}
-                </AvatarFallback>
-              </Avatar>
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <span className="text-xl font-bold text-primary">{getUserInitials()}</span>
+              </div>
               <div>
                 <h1 className="text-lg sm:text-xl font-bold tracking-tighter">
                   {getGreeting()}, {userProfile?.firstName ? userProfile.firstName : "Student"}!
@@ -769,13 +668,13 @@ export default function DashboardPage() {
             </div>
             <div className="flex gap-2 mt-4 sm:mt-0 justify-center sm:justify-end">
               <Link href="/student/tutor">
-                <Button className="text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-2.5">
-                  💬 Start A Chat!
+                <Button className="text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-2.5 font-mono">
+                  &gt; study
                 </Button>
               </Link>
               <Link href="/student/practice-exam">
-                <Button className="text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-2.5">
-                  📝 Take A Practice Exam!
+                <Button className="text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-2.5 font-mono" variant="outline">
+                  &gt; take exam
                 </Button>
               </Link>
             </div>
@@ -783,56 +682,78 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
+      {/* Resume where you left off */}
+      {stats.recentSessions.length > 0 && (
+        <Link href={`/student/tutor?resume=${stats.recentSessions[0].id}`}>
+          <Card className="border-l-4 border-l-primary hover:shadow-md transition-shadow cursor-pointer group">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Play className="h-4 w-4 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="text-xs font-mono text-muted-foreground">// resume last session</p>
+                    <p className="text-sm font-mono font-medium group-hover:text-primary transition-colors">
+                      {stats.recentSessions[0].title}
+                    </p>
+                  </div>
+                </div>
+                <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+      )}
+
       {/* Key Metrics - Focused on Learning Momentum */}
       <div className="grid gap-3 sm:gap-4 grid-cols-2 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="border-l-4 border-l-green-500 hover:shadow-md transition-shadow active:scale-95 md:active:scale-100">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium tracking-tighter">Current Streak</CardTitle>
+            <CardTitle className="text-xs font-mono text-muted-foreground uppercase tracking-widest">streak</CardTitle>
             <Zap className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.currentStreak}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats.currentStreak === 0 ? "Start today!" : stats.currentStreak === 1 ? "day in a row" : "days in a row"}
+            <div className="text-2xl font-bold font-mono">{stats.currentStreak}</div>
+            <p className="text-xs text-muted-foreground font-mono">
+              {stats.currentStreak === 0 ? "// start today" : stats.currentStreak === 1 ? "// day in a row" : "// days in a row"}
             </p>
           </CardContent>
         </Card>
 
         <Card className="border-l-4 border-l-blue-500 hover:shadow-md transition-shadow active:scale-95 md:active:scale-100">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium tracking-tighter">Tutoring Sessions This Week</CardTitle>
+            <CardTitle className="text-xs font-mono text-muted-foreground uppercase tracking-widest">sessions / wk</CardTitle>
             <Calendar className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.sessionsThisWeek}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats.learningSessions} total tutoring sessions
+            <div className="text-2xl font-bold font-mono">{stats.sessionsThisWeek}</div>
+            <p className="text-xs text-muted-foreground font-mono">
+              // {stats.learningSessions} total
             </p>
           </CardContent>
         </Card>
 
         <Card className="border-l-4 border-l-purple-500 hover:shadow-md transition-shadow active:scale-95 md:active:scale-100">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium tracking-tighter">Practice Exams This Week</CardTitle>
+            <CardTitle className="text-xs font-mono text-muted-foreground uppercase tracking-widest">exams / wk</CardTitle>
             <MessageSquare className="h-4 w-4 text-purple-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.examsThisWeek}</div>
-            <p className="text-xs text-muted-foreground">
-              {stats.practiceExams} total practice exams
+            <div className="text-2xl font-bold font-mono">{stats.examsThisWeek}</div>
+            <p className="text-xs text-muted-foreground font-mono">
+              // {stats.practiceExams} total
             </p>
           </CardContent>
         </Card>
 
         <Card className="border-l-4 border-l-orange-500 hover:shadow-md transition-shadow active:scale-95 md:active:scale-100">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium tracking-tighter">Avg. Score</CardTitle>
+            <CardTitle className="text-xs font-mono text-muted-foreground uppercase tracking-widest">avg. score</CardTitle>
             <Target className="h-4 w-4 text-orange-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.averageScore}%</div>
-            <p className="text-xs text-muted-foreground">
-              {stats.practiceExams} exams taken
+            <div className="text-2xl font-bold font-mono">{stats.averageScore}%</div>
+            <p className="text-xs text-muted-foreground font-mono">
+              // {stats.practiceExams} exams taken
             </p>
           </CardContent>
         </Card>
@@ -845,11 +766,11 @@ export default function DashboardPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="flex items-center gap-2 text-lg font-bold tracking-tighter">
-                  <Clock className="h-5 w-5" />
-                  Recent Sessions
+                <CardTitle className="flex items-center gap-2 text-sm font-mono text-muted-foreground">
+                  <Clock className="h-4 w-4" />
+                  &gt; recent_sessions
                 </CardTitle>
-                <CardDescription>Click to continue any conversation</CardDescription>
+                <CardDescription className="font-mono text-xs">// click to continue any conversation</CardDescription>
               </div>
               <Link href="/student/tutor">
                 <Button variant="ghost" size="sm">
@@ -883,8 +804,8 @@ export default function DashboardPage() {
             ) : (
               <div className="text-center py-6">
                 <MessageSquare className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">No sessions yet</p>
-                <p className="text-xs text-muted-foreground mb-4">Try these example questions to get started!</p>
+                <p className="text-sm font-mono text-muted-foreground">&gt; no sessions found</p>
+                <p className="text-xs font-mono text-muted-foreground mb-4">// try one of these to get started</p>
                 
                 <div className="space-y-3">
                   {/* Mathematics Example */}
@@ -924,8 +845,8 @@ export default function DashboardPage() {
 
                 <div className="mt-4 flex justify-center">
                   <Link href="/student/tutor">
-                    <Button size="sm">
-                      💬 Start A Chat!
+                    <Button size="sm" className="font-mono">
+                      &gt; start studying
                     </Button>
                   </Link>
                 </div>
@@ -939,11 +860,11 @@ export default function DashboardPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="flex items-center gap-2 text-lg font-bold tracking-tighter">
-                  <Award className="h-5 w-5" />
-                  Exam Performance
+                <CardTitle className="flex items-center gap-2 text-sm font-mono text-muted-foreground">
+                  <Award className="h-4 w-4" />
+                  &gt; exam_performance
                 </CardTitle>
-                <CardDescription>Your recent practice results</CardDescription>
+                <CardDescription className="font-mono text-xs">// your recent practice results</CardDescription>
               </div>
               <Link href="/student/practice-exam">
                 <Button variant="ghost" size="sm">
@@ -994,11 +915,11 @@ export default function DashboardPage() {
             ) : (
               <div className="text-center py-6">
                 <Award className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">No exams taken yet</p>
-                <p className="text-xs text-muted-foreground">Test your knowledge!</p>
+                <p className="text-sm font-mono text-muted-foreground">&gt; no exams found</p>
+                <p className="text-xs font-mono text-muted-foreground">// test your knowledge</p>
                 <Link href="/student/practice-exam">
-                  <Button variant="outline" size="sm" className="mt-2">
-                    Take First Exam
+                  <Button variant="outline" size="sm" className="mt-2 font-mono">
+                    &gt; take first exam
                   </Button>
                 </Link>
               </div>
@@ -1010,13 +931,13 @@ export default function DashboardPage() {
       {/* Weekly Activity Graph */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg font-bold tracking-tighter">
-            <BarChart3 className="h-5 w-5" />
-            Activity This Week
+          <CardTitle className="flex items-center gap-2 text-sm font-mono text-muted-foreground">
+            <BarChart3 className="h-4 w-4" />
+            &gt; activity_this_week
           </CardTitle>
-          <CardDescription>
-            <span className="inline-block w-3 h-3 bg-blue-500 rounded mr-1 align-middle"></span> Learning Sessions
-            <span className="inline-block w-3 h-3 bg-purple-500 rounded ml-4 mr-1 align-middle"></span> Practice Exams
+          <CardDescription className="font-mono text-xs">
+            <span className="inline-block w-3 h-3 bg-blue-500 rounded mr-1 align-middle"></span> sessions
+            <span className="inline-block w-3 h-3 bg-purple-500 rounded ml-4 mr-1 align-middle"></span> exams
           </CardDescription>
         </CardHeader>
         <CardContent>

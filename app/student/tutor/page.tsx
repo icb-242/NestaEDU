@@ -9,7 +9,7 @@ import { useChat } from "ai/react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Separator } from "@/components/ui/separator"
@@ -69,6 +69,7 @@ export default function AITutorPage() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [selectedSubject, setSelectedSubject] = useState<string>("general")
+  const [subjectChosen, setSubjectChosen] = useState(false)
   const [isLoadingSession, setIsLoadingSession] = useState(false)
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
   const [userProfile, setUserProfile] = useState<any>({})
@@ -102,8 +103,7 @@ export default function AITutorPage() {
     body: {
       subject: selectedSubject,
     },
-    onError: (error) => {
-      console.error("Chat error:", error)
+    onError: () => {
       toast({
         title: "Error",
         description: "Failed to send message. Please try again.",
@@ -187,10 +187,9 @@ export default function AITutorPage() {
         fetch(`/api/chat-sessions?id=${resumeId}`)
           .then(response => response.json())
           .then(session => {
-            console.log('Resuming session:', session)
             if (session && !session.error) {
-              console.log('Session messages:', session.messages)
               setSelectedSubject(session.subject)
+              setSubjectChosen(true)
               setCurrentSessionId(resumeId)
               
               // Set the messages directly
@@ -201,7 +200,6 @@ export default function AITutorPage() {
                 description: `Continuing conversation: ${session.title}`,
               })
             } else {
-              console.error('Session not found or error:', session)
               toast({
                 title: "Session Not Found",
                 description: "The requested conversation could not be found.",
@@ -209,8 +207,7 @@ export default function AITutorPage() {
               })
             }
           })
-          .catch(error => {
-            console.error("Error loading session:", error)
+          .catch(() => {
             toast({
               title: "Error",
               description: "Failed to load the conversation.",
@@ -220,8 +217,7 @@ export default function AITutorPage() {
           .finally(() => {
             setIsLoadingSession(false)
           })
-      } catch (error) {
-        console.error("Error loading session:", error)
+      } catch {
         toast({
           title: "Error",
           description: "Failed to load the conversation.",
@@ -254,8 +250,8 @@ export default function AITutorPage() {
         sessionStorage.setItem('chatHistoryCache', JSON.stringify(chatHistory))
         sessionStorage.setItem('chatHistoryCacheTimestamp', Date.now().toString())
       }
-    } catch (error) {
-      console.error('Error loading chat history:', error)
+    } catch {
+      // History load failure is non-critical
     } finally {
       setIsHistoryLoading(false)
       setIsInitialLoad(false)
@@ -275,8 +271,7 @@ export default function AITutorPage() {
           description: "The conversation has been deleted successfully.",
         })
       }
-    } catch (error) {
-      console.error('Error deleting session:', error)
+    } catch {
       toast({
         title: "Error",
         description: "Failed to delete the conversation.",
@@ -481,8 +476,7 @@ export default function AITutorPage() {
         title: "Image uploaded successfully",
         description: "You can now ask questions about this image.",
       })
-    } catch (error) {
-      console.error("Error uploading image:", error)
+    } catch {
       toast({
         title: "Upload failed",
         description: "Failed to upload image. Please try again.",
@@ -553,6 +547,61 @@ export default function AITutorPage() {
       )
     }
 
+    // Subject selection screen — shown when no conversation is active
+    if (messages.length === 0 && !subjectChosen && !isLoadingSession) {
+      return (
+        <div className="space-y-6 py-4">
+          <div className="text-center">
+            <p className="text-xs font-mono text-muted-foreground">&gt; select_subject</p>
+            <p className="text-sm font-mono text-muted-foreground mt-1">// choose a subject to start your session</p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {[
+              {
+                id: "math",
+                label: "Mathematics",
+                desc: "Algebra, geometry, trigonometry, calculus and more",
+                icon: <CalculatorIcon className="h-8 w-8" />,
+                color: "border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30",
+                iconColor: "bg-blue-100 text-blue-600",
+              },
+              {
+                id: "science",
+                label: "Science",
+                desc: "Biology, chemistry, physics and earth science",
+                icon: <FlaskConical className="h-8 w-8" />,
+                color: "border-green-400 hover:bg-green-50 dark:hover:bg-green-950/30",
+                iconColor: "bg-green-100 text-green-600",
+              },
+              {
+                id: "general",
+                label: "General",
+                desc: "English, social studies, or any other subject",
+                icon: <Bot className="h-8 w-8" />,
+                color: "border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900/30",
+                iconColor: "bg-gray-100 text-gray-600",
+              },
+            ].map((s) => (
+              <button
+                key={s.id}
+                onClick={() => {
+                  setSelectedSubject(s.id)
+                  setSubjectChosen(true)
+                }}
+                className={`flex flex-col items-center gap-4 p-6 rounded-xl border-2 transition-all text-left cursor-pointer ${s.color}`}
+              >
+                <div className={`p-3 rounded-full ${s.iconColor}`}>{s.icon}</div>
+                <div>
+                  <p className="font-mono font-semibold text-sm">{s.label}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{s.desc}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )
+    }
+
     return (
       <Card className="flex-1 flex flex-col min-h-0">
         <CardContent className="flex-1 p-0">
@@ -565,9 +614,9 @@ export default function AITutorPage() {
                   >
                     {getSubjectIcon()}
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">Welcome to your {getSubjectTitle()}!</h3>
-                  <p className="text-muted-foreground max-w-md mx-auto">
-                    Ask me questions, upload images of problems, or start a conversation about what you're studying.
+                  <p className="text-xs font-mono text-muted-foreground mb-2">// {selectedSubject} tutor ready</p>
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                    Ask me a question, upload an image of a problem, or start with what you're studying.
                   </p>
                 </div>
               )}
@@ -586,7 +635,6 @@ export default function AITutorPage() {
                   </div>
                   {message.role === "user" && (
                     <Avatar className="h-8 w-8 mt-1">
-                      <AvatarImage src={userProfile?.avatar || ""} />
                       <AvatarFallback className="bg-green-100 text-green-600">{userInitials}</AvatarFallback>
                     </Avatar>
                   )}
@@ -885,18 +933,18 @@ export default function AITutorPage() {
         <Button
           variant={activeTab === "new-chat" ? "default" : "outline"}
           size="lg"
-          className="flex items-center gap-2 px-6 py-3"
+          className="flex items-center gap-2 px-6 py-3 font-mono"
           onClick={() => setActiveTab("new-chat")}
         >
-          <span role="img" aria-label="New Chat">💬</span> New Chat
+          &gt; new session
         </Button>
         <Button
           variant={activeTab === "chat-history" ? "default" : "outline"}
           size="lg"
-          className="flex items-center gap-2 px-6 py-3"
+          className="flex items-center gap-2 px-6 py-3 font-mono"
           onClick={() => setActiveTab("chat-history")}
         >
-          <span role="img" aria-label="Chat History">📜</span> Chat History
+          &gt; history
         </Button>
       </div>
 

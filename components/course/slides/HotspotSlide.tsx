@@ -25,14 +25,70 @@ export function HotspotSlideComponent({ slide, onComplete }: { slide: HotspotSli
   const closeHotspot = () => {
     setActiveHotspot(null);
   };
+  
+  // Check if this should render the hardcoded phone (Module 1 slide)
+  const isPhoneSlide = slide.heading === "AI On Your Cell Phone";
 
   return (
     <div className="space-y-6">
       <h3 className="text-2xl font-semibold">{slide.heading}</h3>
+      {slide.content && <p className="text-muted-foreground max-w-3xl">{slide.content}</p>}
       
-      <div className="relative max-w-md mx-auto">
-        {/* Authentic iPhone Home Screen */}
-        <div className="relative bg-gray-900 rounded-[2.5rem] p-2 mx-auto w-80 h-[600px] shadow-2xl">
+      <div className="relative max-w-4xl mx-auto">
+        {slide.asset && !isPhoneSlide ? (
+          /* Custom SVG/Image Asset */
+          <div className="relative w-full">
+            <img 
+              src={slide.asset.src} 
+              alt={slide.asset.alt} 
+              className="w-full h-auto"
+            />
+            
+            {/* Hotspots positioned on the asset */}
+            {slide.hotspots.map((hotspot) => (
+              <motion.button
+                key={hotspot.id}
+                className={cn(
+                  "absolute w-10 h-10 rounded-full border-3 transition-all duration-200 z-20 shadow-lg flex items-center justify-center font-bold text-lg",
+                  viewedHotspots.has(hotspot.id)
+                    ? "bg-green-500 border-green-600 text-white"
+                    : "bg-red-500 border-red-600 hover:bg-red-600 text-white"
+                )}
+                style={{
+                  left: `${hotspot.x * 100}%`,
+                  top: `${hotspot.y * 100}%`,
+                  transform: "translate(-50%, -50%)"
+                }}
+                onClick={() => handleHotspotClick(hotspot.id)}
+                animate={
+                  viewedHotspots.has(hotspot.id)
+                    ? {}
+                    : {
+                        opacity: [0.6, 1, 0.6],
+                        scale: [1, 1.1, 1],
+                        boxShadow: [
+                          "0 0 10px rgba(239, 68, 68, 0.4)",
+                          "0 0 20px rgba(239, 68, 68, 0.8)",
+                          "0 0 10px rgba(239, 68, 68, 0.4)"
+                        ]
+                      }
+                }
+                transition={{
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                {viewedHotspots.has(hotspot.id) ? "✓" : "!"}
+              </motion.button>
+            ))}
+          </div>
+        ) : (
+          /* Default: Authentic iPhone Home Screen */
+          <div className="relative max-w-md mx-auto">
+            <div className="relative bg-gray-900 rounded-[2.5rem] p-2 mx-auto w-80 h-[600px] shadow-2xl">
           {/* iPhone Frame */}
           <div className="bg-black rounded-[2rem] p-1 h-full">
             {/* Screen */}
@@ -259,6 +315,8 @@ export function HotspotSlideComponent({ slide, onComplete }: { slide: HotspotSli
             </div>
           </div>
         </div>
+          </div>
+        )}
 
         {/* Hotspot Info Panel */}
         <AnimatePresence>

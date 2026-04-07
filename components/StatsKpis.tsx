@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Container } from "./ui/Container";
 import { researchContent } from "@/lib/researchContent";
 import type { Kpi } from "@/lib/researchContent";
 
@@ -55,7 +54,7 @@ function KpiCard({ kpi, index }: { kpi: Kpi; index: number }) {
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
       variants={fadeIn}
-      className="rounded-lg border bg-card p-6"
+      className="w-full h-full rounded-lg border bg-card p-6"
     >
       <div className="space-y-2 text-center">
         <h3 className="text-sm font-medium text-muted-foreground">
@@ -85,68 +84,51 @@ export function StatsKpis() {
   const bgcseKpis = researchContent.kpis.filter(kpi => kpi.label.includes("BGCSE"));
   const bjcKpis = researchContent.kpis.filter(kpi => kpi.label.includes("BJC"));
   
-  // Debug logging
-  console.log("BGCSE KPIs:", bgcseKpis);
-  console.log("BJC KPIs:", bjcKpis);
-
   return (
-    <section id="about" className="pt-0 pb-12 scroll-mt-16">
-      <Container>
-        <div className="mb-12 text-center">
-          <h2 className="text-lg font-bold tracking-tight">
-            Bahamian Education By The Numbers
-          </h2>
+    <section id="about" className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 pt-0 pb-12 scroll-mt-16">
+      <div className="mb-12 text-center">
+        <h2 className="text-lg font-bold tracking-tight">
+          2024 Performance By The Numbers
+        </h2>
+      </div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-[120px_1fr] gap-6">
+        {/* LEFT RAIL (labels only) */}
+        <div className="relative hidden lg:block h-full">
+          {/* BGCSE label */}
+          <div className="absolute right-6 top-[60px]">
+            <span className="text-lg font-bold tracking-tight">BGCSE</span>
+          </div>
+
+          {/* BJC label */}
+          <div className="absolute right-6 bottom-[60px]">
+            <span className="text-lg font-bold tracking-tight">BJC</span>
+          </div>
         </div>
-        
-        <div className="flex">
-          {/* Year and Brace */}
-          <div className="flex gap-4">
-            <div className="flex items-center">
-              <span className="text-xl font-bold">2024</span>
-              <div className="relative w-8 h-[140px] mx-4 ml-4">
-                {/* Vertical line */}
-                <div className="absolute left-4 top-0 bottom-0 w-[2px] bg-foreground"></div>
-                {/* Top horizontal */}
-                <div className="absolute top-0 left-4 w-[16px] h-[2px] bg-foreground"></div>
-                {/* Bottom horizontal */}
-                <div className="absolute bottom-0 left-4 w-[16px] h-[2px] bg-foreground"></div>
-              </div>
+
+        {/* RIGHT: stats grid */}
+        <div className="w-full">
+          {/* Top row (BGCSE) */}
+          <div className="mb-8 lg:mb-0">
+            <h3 className="text-lg font-bold mb-4 lg:hidden">BGCSE</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {bgcseKpis.map((kpi, index) => (
+                <KpiCard key={kpi.label} kpi={kpi} index={index} />
+              ))}
             </div>
+          </div>
 
-            {/* Stats Grid */}
-            <div className="flex-1">
-              {/* BGCSE Row */}
-              <div className="mb-8">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 w-14 -ml-2">
-                    <h3 className="text-lg font-bold">BGCSE</h3>
-                  </div>
-                  <div className="flex-1 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 ml-12">
-                    {bgcseKpis.map((kpi, index) => {
-                      console.log("Rendering BGCSE KPI:", kpi);
-                      return <KpiCard key={kpi.label} kpi={kpi} index={index} />;
-                    })}
-                  </div>
-                </div>
-              </div>
-
-              {/* BJC Row */}
-              <div>
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 w-14 -ml-2">
-                    <h3 className="text-lg font-bold">BJC</h3>
-                  </div>
-                  <div className="flex-1 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 ml-12">
-                    {bjcKpis.map((kpi, index) => (
-                      <KpiCard key={kpi.label} kpi={kpi} index={index + 3} />
-                    ))}
-                  </div>
-                </div>
-              </div>
+          {/* Bottom row (BJC) */}
+          <div>
+            <h3 className="text-lg font-bold mb-4 lg:hidden">BJC</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {bjcKpis.map((kpi, index) => (
+                <KpiCard key={kpi.label} kpi={kpi} index={index + 3} />
+              ))}
             </div>
           </div>
         </div>
-      </Container>
+      </div>
     </section>
   );
 }

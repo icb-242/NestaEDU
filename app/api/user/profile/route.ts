@@ -3,7 +3,6 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { verifyToken } from '@/lib/jwt-auth'
 
 // Create Supabase client function to handle runtime configuration
 function createSupabaseClient() {
@@ -34,23 +33,13 @@ export async function GET(request: NextRequest) {
     const supabase = createSupabaseClient()
     const { data: profile, error } = await supabase
       .from('users')
-      .select('id, email, first_name, last_name, phone, grade_level, school, avatar, full_image')
+      .select('id, email, first_name, last_name, phone, grade_level, school')
       .eq('id', userId)
       .single()
 
-    if (error) {
-      console.error('Supabase error fetching profile:', error)
+    if (error || !profile) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
-
-    if (!profile) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
-
-    console.log('GET /api/user/profile - Raw profile from database:', profile)
-    console.log('GET /api/user/profile - Avatar from database:', profile.avatar)
-    console.log('GET /api/user/profile - Avatar type:', typeof profile.avatar)
-    console.log('GET /api/user/profile - Avatar length:', profile.avatar?.length)
 
     return NextResponse.json({
       id: profile.id,
@@ -60,11 +49,8 @@ export async function GET(request: NextRequest) {
       phone: profile.phone,
       gradeLevel: profile.grade_level,
       school: profile.school,
-      avatar: profile.avatar,
-      fullImage: profile.full_image,
     })
   } catch (error) {
-    console.error('Error fetching user profile:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -81,16 +67,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { firstName, lastName, phone, gradeLevel, school, avatar, fullImage } = await request.json()
-
-    // Store null in DB if avatar or fullImage is empty string
-    const avatarToStore = avatar === '' ? null : avatar
-    const fullImageToStore = fullImage === '' ? null : fullImage
-
-    console.log('PUT /api/user/profile - Received avatar data:', avatar ? 'exists' : 'null')
-    console.log('PUT /api/user/profile - Avatar type:', typeof avatar)
-    console.log('PUT /api/user/profile - Avatar length:', avatar?.length)
-    console.log('PUT /api/user/profile - Avatar starts with data:image/:', avatar?.startsWith('data:image/'))
+    const { firstName, lastName, phone, gradeLevel, school } = await request.json()
 
     const supabase = createSupabaseClient()
     const { data: updatedProfile, error } = await supabase
@@ -101,25 +78,18 @@ export async function PUT(request: NextRequest) {
         phone: phone,
         grade_level: gradeLevel,
         school: school,
-        avatar: avatarToStore,
-        full_image: fullImageToStore,
         updated_at: new Date().toISOString(),
       })
       .eq('id', userId)
-      .select('id, email, first_name, last_name, phone, grade_level, school, avatar, full_image')
+      .select('id, email, first_name, last_name, phone, grade_level, school')
       .single()
 
     if (error) {
-      console.error('Supabase error updating profile:', error)
       return NextResponse.json(
         { error: `Failed to update profile: ${error.message}` },
         { status: 500 }
       )
     }
-
-    console.log('PUT /api/user/profile - Updated profile from database:', updatedProfile)
-    console.log('PUT /api/user/profile - Avatar after update:', updatedProfile.avatar)
-    console.log('PUT /api/user/profile - Avatar type after update:', typeof updatedProfile.avatar)
 
     return NextResponse.json({
       id: updatedProfile.id,
@@ -129,11 +99,8 @@ export async function PUT(request: NextRequest) {
       phone: updatedProfile.phone,
       gradeLevel: updatedProfile.grade_level,
       school: updatedProfile.school,
-      avatar: updatedProfile.avatar,
-      fullImage: updatedProfile.full_image,
     })
   } catch (error) {
-    console.error('Error updating user profile:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

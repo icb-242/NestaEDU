@@ -7,10 +7,14 @@ import { ChecklistSlide } from "@/lib/course/types";
 
 export function ChecklistSlideComponent({ slide, onComplete }: { slide: ChecklistSlide; onComplete?: () => void }) {
   const [checked, setChecked] = useState<Set<number>>(new Set());
+  const [hasCompleted, setHasCompleted] = useState(false);
 
   useEffect(() => {
-    if (slide.requireAllChecked && checked.size === slide.items.length) onComplete?.();
-  }, [checked, slide.items.length, slide.requireAllChecked, onComplete]);
+    if (slide.requireAllChecked && checked.size === slide.items.length && !hasCompleted) {
+      setHasCompleted(true);
+      onComplete?.();
+    }
+  }, [checked, slide.items.length, slide.requireAllChecked, hasCompleted]);
 
   return (
     <div className="space-y-6">
@@ -44,6 +48,7 @@ export function ChecklistSlideComponent({ slide, onComplete }: { slide: Checklis
     </div>
   );
 }
+
 
 
 

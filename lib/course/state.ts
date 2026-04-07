@@ -18,8 +18,7 @@ export function loadModuleProgress(courseId: string, moduleId: number): ModulePr
 
   try {
     return JSON.parse(stored);
-  } catch (e) {
-    console.error('Error loading module progress:', e);
+  } catch {
     return { completedSlideIds: [] };
   }
 }
@@ -70,8 +69,7 @@ export function loadQuizScore(courseId: string, moduleId: number, quizId: string
 
   try {
     return JSON.parse(stored);
-  } catch (e) {
-    console.error('Error loading quiz score:', e);
+  } catch {
     return null;
   }
 }

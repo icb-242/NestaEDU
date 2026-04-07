@@ -52,13 +52,22 @@ export default function PortalSelectionPage() {
           {/* Logo and Title */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-2">
-              <div className="relative w-8 h-8">
+              <div className="relative w-16 h-16">
+                {/* Light mode logo */}
                 <Image
-                  src="/images/brand/nesta-logo-transparent.png"
+                  src="/images/brand/nesta education 1-3.png"
                   alt="Nesta Education Logo"
                   fill
-                  className="object-contain"
-                  sizes="32px"
+                  className="object-contain dark:opacity-0 dark:scale-0 transition-all duration-300"
+                  sizes="64px"
+                />
+                {/* Dark mode logo */}
+                <Image
+                  src="/images/brand/nesta education 1-white.png"
+                  alt="Nesta Education Logo"
+                  fill
+                  className="object-contain opacity-0 scale-0 dark:opacity-100 dark:scale-100 transition-all duration-300"
+                  sizes="64px"
                 />
               </div>
               <h1 className="text-2xl font-bold tracking-tighter">

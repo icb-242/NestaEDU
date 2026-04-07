@@ -77,7 +77,7 @@ export interface CarouselItem {
 
 export interface HotspotSlide extends BaseSlide {
   type: "hotspot";
-  asset: Asset;
+  asset?: Asset;
   hotspots: Hotspot[];
   requireAllViewed?: boolean;
 }
@@ -102,7 +102,7 @@ export interface FlipCard {
 
 export interface DiagramSlide extends BaseSlide {
   type: "diagram";
-  asset: Asset;
+  asset?: Asset;
   steps: DiagramStep[];
 }
 

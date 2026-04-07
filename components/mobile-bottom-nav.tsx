@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   MessageSquare,
   ClipboardList,
-  BookOpen,
   UserCircle,
 } from "lucide-react"
 
@@ -17,23 +16,18 @@ export function MobileBottomNav() {
   const links = [
     {
       href: "/student/dashboard",
-      label: "Dashboard",
+      label: "Home",
       icon: LayoutDashboard,
     },
     {
       href: "/student/tutor",
-      label: "AI Tutor",
+      label: "Study",
       icon: MessageSquare,
     },
     {
       href: "/student/practice-exam",
-      label: "Practice",
+      label: "Exams",
       icon: ClipboardList,
-    },
-    {
-      href: "/student/learning",
-      label: "Learning",
-      icon: BookOpen,
     },
     {
       href: "/student/profile",
