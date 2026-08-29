@@ -1,133 +1,149 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { researchContent } from "@/lib/researchContent";
-import type { Kpi } from "@/lib/researchContent";
+import { latest, rate, heroStats } from "@/lib/examData";
 
-const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.1,
-      duration: 0.5,
-    },
-  }),
+const BJC_RAMP = ["#b5d4f4", "#378add", "#185fa5"];
+const BGCSE_RAMP = ["#f5c4b3", "#d85a30", "#993c1d"];
+
+type WaffleStats = {
+  title: string;
+  registered: number;
+  satFive: number;
+  passed: number;
+  satPct: number;
+  passPct: number;
+  ramp: string[];
 };
 
-// Simple display of numbers without animation
-
-function getTrendColor(sub: string): string {
-  if (!sub) return "text-muted-foreground";
-  
-  // Check for positive trends (↑)
-  if (sub.includes("↑")) {
-    return "text-green-600";
-  }
-  
-  // Check for negative trends (↓)
-  if (sub.includes("↓")) {
-    return "text-red-600";
-  }
-  
-  // Check for percentage values less than 20%
-  const percentageMatch = sub.match(/(\d+(?:\.\d+)?)%/);
-  if (percentageMatch) {
-    const percentage = parseFloat(percentageMatch[1]);
-    if (percentage < 20) {
-      return "text-red-600";
-    }
-  }
-  
-  return "text-muted-foreground";
+function buildStats(
+  title: string,
+  candidates: number | null,
+  satFivePlus: number | undefined,
+  mathEngSci: number | null,
+  ramp: string[]
+): WaffleStats {
+  const registered = candidates ?? 0;
+  const satFive = satFivePlus ?? 0;
+  const passed = mathEngSci ?? 0;
+  const satPct = registered > 0 ? Math.round((satFive / registered) * 100) : 0;
+  const passRate = rate(mathEngSci, candidates);
+  const passPct = passRate != null ? Math.round(passRate) : 0;
+  return { title, registered, satFive, passed, satPct, passPct, ramp };
 }
 
-function KpiCard({ kpi, index }: { kpi: Kpi; index: number }) {
-  // Remove BJC/BGCSE prefix from the label and handle special case for "# of Candidates"
-  const cleanLabel = kpi.label.includes("# of Candidates") ? "# of Candidates" : kpi.label.replace(/^(BJC|BGCSE)\s+/, '');
-  
+function WaffleGrid({ stats }: { stats: WaffleStats }) {
+  const [restColor, satColor, passColor] = stats.ramp;
+  const satMissed = Math.max(stats.satPct - stats.passPct, 0);
+  const rest = Math.max(100 - stats.satPct, 0);
+
+  const cells = Array.from({ length: 100 }, (_, i) => {
+    if (i < stats.passPct) return passColor;
+    if (i < stats.satPct) return satColor;
+    return restColor;
+  });
+
   return (
-    <motion.div
-      custom={index}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
-      variants={fadeIn}
-      className="w-full h-full rounded-lg border bg-card p-6"
-    >
-      <div className="space-y-2 text-center">
-        <h3 className="text-sm font-medium text-muted-foreground">
-          {cleanLabel}
-        </h3>
-        <p 
-          className="text-xl font-bold tracking-tight"
-          style={{ fontFamily: 'SF Mono, Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace' }}
-        >
-          {kpi.value}
-        </p>
-        {kpi.sub && (
-          <p 
-            className={`text-base ${getTrendColor(kpi.sub)}`}
-            style={{ fontFamily: 'SF Mono, Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace' }}
-          >
-            {kpi.sub}
-          </p>
-        )}
+    <div className="space-y-4">
+      <h4 className="text-sm font-semibold">{stats.title}</h4>
+      <div
+        role="img"
+        aria-label={`${stats.title}: ${stats.passPct} of 100 registered students earned a C or better in Math, English and a science. ${stats.satPct} sat five or more subjects.`}
+        className="grid w-full max-w-[220px] gap-[3px] [grid-template-columns:repeat(10,minmax(0,1fr))]"
+      >
+        {cells.map((fill, i) => (
+          <motion.span
+            key={i}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.2, delay: i * 0.006 }}
+            className="aspect-square rounded-[2px]"
+            style={{ backgroundColor: fill }}
+          />
+        ))}
       </div>
-    </motion.div>
+      <ul className="space-y-1 text-xs text-muted-foreground" style={{ fontVariantNumeric: "tabular-nums" }}>
+        <li className="flex items-start gap-2">
+          <span
+            className="mt-0.5 h-3 w-3 shrink-0 rounded-[2px]"
+            style={{ backgroundColor: passColor }}
+            aria-hidden
+          />
+          <span>
+            {stats.passPct} of 100 — {stats.passed.toLocaleString()} with ≥C in
+            Math, English and a science
+          </span>
+        </li>
+        <li className="flex items-start gap-2">
+          <span
+            className="mt-0.5 h-3 w-3 shrink-0 rounded-[2px]"
+            style={{ backgroundColor: satColor }}
+            aria-hidden
+          />
+          <span>
+            {satMissed} of 100 — sat five or more subjects, missed the bar
+          </span>
+        </li>
+        <li className="flex items-start gap-2">
+          <span
+            className="mt-0.5 h-3 w-3 shrink-0 rounded-[2px]"
+            style={{ backgroundColor: restColor }}
+            aria-hidden
+          />
+          <span>
+            {rest} of 100 — registered, never sat five subjects
+          </span>
+        </li>
+      </ul>
+    </div>
   );
 }
 
 export function StatsKpis() {
-  // Separate BGCSE and BJC statistics
-  const bgcseKpis = researchContent.kpis.filter(kpi => kpi.label.includes("BGCSE"));
-  const bjcKpis = researchContent.kpis.filter(kpi => kpi.label.includes("BJC"));
-  
+  const hero = heroStats();
+  const bjc = buildStats(
+    `BJC ${latest.year}`,
+    latest.bjc.candidates,
+    latest.bjc.satFivePlus,
+    latest.bjc.mathEngSci,
+    BJC_RAMP
+  );
+  const bgcse = buildStats(
+    `BGCSE ${latest.year}`,
+    latest.bgcse.candidates,
+    latest.bgcse.satFivePlus,
+    latest.bgcse.mathEngSci,
+    BGCSE_RAMP
+  );
+
   return (
-    <section id="about" className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 pt-0 pb-12 scroll-mt-16">
-      <div className="mb-12 text-center">
-        <h2 className="text-lg font-bold tracking-tight">
-          2024 Performance By The Numbers
-        </h2>
-      </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-[120px_1fr] gap-6">
-        {/* LEFT RAIL (labels only) */}
-        <div className="relative hidden lg:block h-full">
-          {/* BGCSE label */}
-          <div className="absolute right-6 top-[60px]">
-            <span className="text-lg font-bold tracking-tight">BGCSE</span>
-          </div>
+    <section className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 pt-0 pb-8">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="mb-10"
+      >
+        <p className="text-xl md:text-2xl lg:text-3xl text-foreground leading-snug max-w-4xl font-medium tracking-tight">
+          In {hero.year},{" "}
+          <span className="font-bold">
+            {hero.candidates.toLocaleString()}
+          </span>{" "}
+          students sat BJC and BGCSE exams. Just{" "}
+          <span className="font-bold">{hero.passed.toLocaleString()}</span>{" "}
+          earned a C or better in Math, English and a science.{" "}
+          <span className="font-bold">
+            {hero.rate < 10
+              ? "Under ten percent."
+              : `${Math.round(hero.rate)} percent.`}
+          </span>
+        </p>
+      </motion.div>
 
-          {/* BJC label */}
-          <div className="absolute right-6 bottom-[60px]">
-            <span className="text-lg font-bold tracking-tight">BJC</span>
-          </div>
-        </div>
-
-        {/* RIGHT: stats grid */}
-        <div className="w-full">
-          {/* Top row (BGCSE) */}
-          <div className="mb-8 lg:mb-0">
-            <h3 className="text-lg font-bold mb-4 lg:hidden">BGCSE</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {bgcseKpis.map((kpi, index) => (
-                <KpiCard key={kpi.label} kpi={kpi} index={index} />
-              ))}
-            </div>
-          </div>
-
-          {/* Bottom row (BJC) */}
-          <div>
-            <h3 className="text-lg font-bold mb-4 lg:hidden">BJC</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {bjcKpis.map((kpi, index) => (
-                <KpiCard key={kpi.label} kpi={kpi} index={index + 3} />
-              ))}
-            </div>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 mb-2">
+        <WaffleGrid stats={bjc} />
+        <WaffleGrid stats={bgcse} />
       </div>
     </section>
   );

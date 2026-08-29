@@ -4,14 +4,12 @@ import Link from "next/link";
 import { Container } from "./ui/Container";
 
 export function Footer() {
-  const currentYear = new Date().getFullYear();
-
   return (
     <footer className="border-t py-8">
       <Container>
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="text-sm text-muted-foreground">
-            © {currentYear} Nesta Technology
+            © 2026 Nesta Technology
           </div>
 
           <nav className="flex gap-6">

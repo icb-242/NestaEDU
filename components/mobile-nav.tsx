@@ -6,7 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
-import { Menu, Home, BookOpen, MessageSquare, User, FileText, Settings, LogOut, PenTool, GraduationCap } from "lucide-react"
+import { Menu, Home, MessageSquare, User, FileText, Settings, LogOut, PenTool } from "lucide-react"
 import { ExamSafeLink } from "@/components/exam-safe-link"
 
 // Preload function for chat sessions
@@ -64,9 +64,6 @@ export function MobileNav() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   
-  // Feature flag to hide Learning tab (set to false to show)
-  const showLearningTab = true
-
   const navigation = [
     {
       name: "Dashboard",
@@ -80,12 +77,6 @@ export function MobileNav() {
       icon: MessageSquare,
       current: pathname === "/student/tutor",
     },
-    ...(showLearningTab ? [{
-      name: "Courses",
-      href: "/student/learning",
-      icon: GraduationCap,
-      current: pathname.startsWith("/student/learning"),
-    }] : []),
     {
       name: "Exams",
       href: "/student/practice-exam",

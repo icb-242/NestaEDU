@@ -1,15 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
 
 interface FeatureCardProps {
   title: string;
   subtitle: string;
   features: string[];
+  cta?: { label: string; href: string };
 }
 
-export function FeatureCard({ title, subtitle, features }: FeatureCardProps) {
+export function FeatureCard({ title, subtitle, features, cta }: FeatureCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -24,13 +25,19 @@ export function FeatureCard({ title, subtitle, features }: FeatureCardProps) {
       <ul className="space-y-4">
         {features.map((feature, index) => (
           <li key={index} className="flex items-start gap-3 text-sm text-muted-foreground/90">
-            <span className="text-primary mt-1">•</span>
-            <span className="leading-relaxed">
-              {feature}
-            </span>
+            <span className="text-primary mt-1">&bull;</span>
+            <span className="leading-relaxed">{feature}</span>
           </li>
         ))}
       </ul>
+      {cta && (
+        <Link
+          href={cta.href}
+          className="mt-6 inline-block text-sm font-medium text-primary hover:underline"
+        >
+          {cta.label}
+        </Link>
+      )}
     </motion.div>
   );
 }

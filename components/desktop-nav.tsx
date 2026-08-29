@@ -11,7 +11,6 @@ import {
   LayoutDashboard,
   MessageSquare,
   ClipboardList,
-  BookOpen,
   LogOut,
   User
 } from "lucide-react"
@@ -48,11 +47,6 @@ export function DesktopNav({ isCollapsed, onToggle }: DesktopNavProps) {
       href: "/student/practice-exam",
       label: "Exams",
       icon: ClipboardList,
-    },
-    {
-      href: "/student/learning",
-      label: "Courses",
-      icon: BookOpen,
     },
     {
       href: "/student/profile",

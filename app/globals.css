@@ -32,6 +32,12 @@
     --sketch-line: 0 0% 85%;
     --sketch-shadow: 0 0% 85%;
     --paper-texture: 0 0% 99%;
+
+    /* Chart variables */
+    --chart-grid: #e1e0d9;
+    --chart-axis: #c3c2b7;
+    --chart-text: #898781;
+    --chart-surface: #fcfcfb;
   }
 
   .dark {
@@ -59,6 +65,12 @@
     --sketch-line: 0 0% 20%;
     --sketch-shadow: 0 0% 15%;
     --paper-texture: 0 0% 8%;
+
+    /* Chart variables */
+    --chart-grid: #2c2c2a;
+    --chart-axis: #383835;
+    --chart-text: #898781;
+    --chart-surface: #1a1a19;
   }
 }
 
