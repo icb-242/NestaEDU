@@ -6,7 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
-import { Menu, Home, BookOpen, MessageSquare, User, FileText, Settings, LogOut, PenTool, GraduationCap } from "lucide-react"
+import { Menu, Home, MessageSquare, User, FileText, Settings, LogOut, PenTool } from "lucide-react"
 import { ExamSafeLink } from "@/components/exam-safe-link"
 
 // Preload function for chat sessions
@@ -29,9 +29,7 @@ const preloadChatSessions = () => {
         sessionStorage.setItem('chatHistoryCache', JSON.stringify(chatHistory))
         sessionStorage.setItem('chatHistoryCacheTimestamp', Date.now().toString())
       })
-      .catch(error => {
-        console.error('Preload failed:', error)
-      })
+      .catch(() => {})
   }
 }
 
@@ -57,9 +55,7 @@ const preloadExamResults = () => {
         sessionStorage.setItem('examResultsCache', JSON.stringify(examResults))
         sessionStorage.setItem('examResultsCacheTimestamp', Date.now().toString())
       })
-      .catch(error => {
-        console.error('Exam results preload failed:', error)
-      })
+      .catch(() => {})
   }
 }
 
@@ -68,9 +64,6 @@ export function MobileNav() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   
-  // Feature flag to hide Learning tab (set to false to show)
-  const showLearningTab = false
-
   const navigation = [
     {
       name: "Dashboard",
@@ -79,19 +72,13 @@ export function MobileNav() {
       current: pathname === "/student/dashboard",
     },
     {
-      name: "Personalized AI Tutor",
+      name: "Study",
       href: "/student/tutor",
       icon: MessageSquare,
       current: pathname === "/student/tutor",
     },
-    ...(showLearningTab ? [{
-      name: "Learning",
-      href: "/student/learning",
-      icon: GraduationCap,
-      current: pathname.startsWith("/student/learning"),
-    }] : []),
     {
-      name: "Practice Exam",
+      name: "Exams",
       href: "/student/practice-exam",
       icon: FileText,
       current: pathname.startsWith("/student/practice-exam"),

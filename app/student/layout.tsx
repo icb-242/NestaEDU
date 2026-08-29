@@ -1,12 +1,11 @@
 "use client"
 
 import type React from "react"
-
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { AppHeader } from "@/components/app-header"
 import { DesktopNav } from "@/components/desktop-nav"
 import { MobileBottomNav } from "@/components/mobile-bottom-nav"
+import { ExamProvider } from "@/contexts/exam-context"
 
 export default function StudentLayout({
   children,
@@ -36,12 +35,11 @@ export default function StudentLayout({
         if (savedState) {
           try {
             setSidebarCollapsed(JSON.parse(savedState))
-          } catch (e) {
-            console.warn("Invalid sidebar state in localStorage")
+          } catch {
+            // Ignore invalid localStorage value
           }
         }
       } catch (error) {
-        console.error("Error checking authentication:", error)
         router.push("/login")
       } finally {
         setIsLoading(false)
@@ -83,13 +81,14 @@ export default function StudentLayout({
   }
 
   return (
-    <div className="flex h-screen">
-      <DesktopNav isCollapsed={sidebarCollapsed} onToggle={toggleSidebar} />
-      <div className="flex flex-col flex-1 overflow-hidden">
-        <AppHeader />
-        <main className="flex-1 overflow-auto p-4 md:p-6 pb-20 md:pb-6">{children}</main>
-        <MobileBottomNav />
+    <ExamProvider>
+      <div className="flex h-screen">
+        <DesktopNav isCollapsed={sidebarCollapsed} onToggle={toggleSidebar} />
+        <div className="flex flex-col flex-1 overflow-hidden">
+          <main className="flex-1 overflow-auto p-4 md:p-6 pb-20 md:pb-6">{children}</main>
+          <MobileBottomNav />
+        </div>
       </div>
-    </div>
+    </ExamProvider>
   )
 }

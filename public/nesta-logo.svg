@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40" height="40" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(8, 4)">
+    <!-- Feather part -->
+    <path d="M12,0 C12,0 20,4 20,12 C20,20 12,28 12,32
+             M12,0 C12,0 4,4 4,12 C4,20 12,28 12,32" 
+          fill="none" stroke="currentColor" stroke-width="2"/>
+    
+    <!-- Circuit board lines -->
+    <path d="M20,12 L24,12 M22,10 L26,10 M22,14 L26,14 M22,16 L26,16 M22,18 L26,18 M22,20 L26,20"
+          fill="none" stroke="currentColor" stroke-width="1.5"/>
+    
+    <!-- Pen nib -->
+    <path d="M10,32 L14,32 L12,28 Z" fill="currentColor"/>
+  </g>
+</svg>

@@ -5,67 +5,38 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest) {
   let prisma = null
-  
+
   try {
-    console.log('Chat sessions GET - Starting request')
-    
-    // Get user ID from headers
     const userId = request.headers.get('x-user-id')
-    console.log('Chat sessions - User ID from headers:', userId)
-    
     if (!userId) {
       return NextResponse.json({ error: 'User ID not found' }, { status: 401 })
     }
-    
-    // Get a fresh Prisma client
+
     prisma = await getPrisma()
-    
-    // Check if a specific session ID is requested
+
     const { searchParams } = new URL(request.url)
     const sessionId = searchParams.get('id')
-    
+
     if (sessionId) {
-      // Fetch specific session
-      console.log('Chat sessions GET - Fetching specific session:', sessionId)
-      
       const session = await prisma.chatSession.findFirst({
-        where: {
-          id: sessionId,
-          user_id: userId,
-        },
+        where: { id: sessionId, user_id: userId },
       })
-      
+
       if (!session) {
         return NextResponse.json({ error: 'Session not found' }, { status: 404 })
       }
-      
-      console.log('Chat sessions GET - Found specific session')
+
       return NextResponse.json(session)
     }
-    
-    // Fetch all sessions
-    console.log('Chat sessions GET - Fetching all sessions for user:', userId)
-    
+
     const sessions = await prisma.chatSession.findMany({
-      where: {
-        user_id: userId,
-      },
-      orderBy: {
-        updated_at: 'desc',
-      },
+      where: { user_id: userId },
+      orderBy: { updated_at: 'desc' },
     })
-    
-    console.log('Chat sessions GET - Found', sessions.length, 'sessions')
-    
+
     return NextResponse.json(sessions)
-    
+
   } catch (error) {
-    console.error('Chat sessions GET - Error details:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-      name: error instanceof Error ? error.constructor.name : 'Unknown'
-    })
-    
     return NextResponse.json(
       { error: 'Failed to fetch chat sessions' },
       { status: 500 }
@@ -110,7 +81,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(session)
     
   } catch (error) {
-    console.error('Chat sessions POST - Error:', error)
     return NextResponse.json(
       { error: 'Failed to create chat session' },
       { status: 500 }
@@ -163,7 +133,6 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(session)
     
   } catch (error) {
-    console.error('Chat sessions PUT - Error:', error)
     return NextResponse.json(
       { error: 'Failed to update chat session' },
       { status: 500 }
@@ -196,7 +165,6 @@ export async function DELETE(request: NextRequest) {
         })
         return NextResponse.json({ message: 'All sessions deleted successfully' })
       } catch (error) {
-        console.error('Error deleting all sessions:', error)
         return NextResponse.json(
           { error: 'Failed to delete all sessions' },
           { status: 500 }
@@ -226,7 +194,6 @@ export async function DELETE(request: NextRequest) {
         })
       return NextResponse.json({ message: 'Session deleted successfully' })
     } catch (error) {
-      console.error('Error deleting chat session:', error)
       return NextResponse.json(
         { error: 'Failed to delete session' },
         { status: 500 }
@@ -237,7 +204,6 @@ export async function DELETE(request: NextRequest) {
       }
     }
   } catch (error) {
-    console.error('Error deleting chat session:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

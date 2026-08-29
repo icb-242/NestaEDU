@@ -24,10 +24,8 @@ class LearningProgressManager {
 
   private getCurrentUserId(): string | null {
     try {
-      const userEmail = localStorage.getItem("userEmail")
-      return userEmail || null
-    } catch (error) {
-      console.warn("Could not get current user ID:", error)
+      return localStorage.getItem("userEmail")
+    } catch {
       return null
     }
   }
@@ -53,8 +51,7 @@ class LearningProgressManager {
           ])
         )
       }
-    } catch (error) {
-      console.error('Error loading course progress:', error)
+    } catch {
       return null
     }
   }
@@ -66,8 +63,8 @@ class LearningProgressManager {
       
       // Trigger background sync (don't await)
       this.syncProgressToDatabase(courseId, progress)
-    } catch (error) {
-      console.error('Error saving course progress:', error)
+    } catch {
+      // localStorage may be unavailable (private browsing, storage full)
     }
   }
 
@@ -94,14 +91,14 @@ class LearningProgressManager {
               timeSpent: moduleProgress.timeSpent || 0
             })
           })
-        } catch (error) {
-          console.warn(`Failed to sync module ${moduleProgress.moduleId}:`, error)
+        } catch {
+          // Sync failures are non-critical; localStorage remains the source of truth
         }
       })
 
       await Promise.allSettled(syncPromises)
-    } catch (error) {
-      console.warn("Background database sync failed:", error)
+    } catch {
+      // Background sync failures are non-critical
     }
   }
 
@@ -153,8 +150,8 @@ class LearningProgressManager {
 
       // Update localStorage with fresh data
       this.saveCourseProgress(courseId, courseProgress)
-    } catch (error) {
-      console.warn("Failed to load from database:", error)
+    } catch {
+      // Fall back to localStorage data
     }
   }
 
@@ -190,8 +187,7 @@ class LearningProgressManager {
 
     this.saveCourseProgress(courseId, newProgress)
     
-    // Try to load from database in background
-    this.loadProgressFromDatabase(courseId).catch(console.warn)
+    this.loadProgressFromDatabase(courseId).catch(() => {})
     
     return newProgress
   }
@@ -339,7 +335,7 @@ class LearningProgressManager {
     if (userId) {
       fetch(`/api/learning-progress?userId=${userId}&courseId=${courseId}`, {
         method: 'DELETE'
-      }).catch(console.warn)
+      }).catch(() => {})
     }
   }
 

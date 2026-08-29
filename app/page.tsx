@@ -1,97 +1,44 @@
-import { CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import Link from "next/link"
-import { GraduationCap, PenTool, Apple } from "lucide-react"
-import { MatrixText } from "@/components/matrix-text"
+import Image from "next/image";
+import { Navbar } from "@/components/Navbar";
+import { MinimalFooter } from "@/components/MinimalFooter";
+import { TextDecode } from "@/components/TextDecode";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="container px-4 py-8 mx-auto max-w-4xl flex flex-col items-center justify-center">
-        {/* ---------- HERO ---------- */}
-        <header className="flex flex-col items-center justify-center text-center w-full mb-16">
-          <div className="mb-2 flex items-center justify-center">
-            <PenTool className="w-10 h-10 text-primary mx-auto" />
-          </div>
-          <h1 className="text-4xl font-bold tracking-tight font-handwriting sm:text-5xl md:text-6xl mb-4 text-center">
-            Nesta Education <span className="text-amber-500">(Beta)</span>
-          </h1>
-          <div className="text-lg font-code text-center">
-            {/* Mobile: stacked, Desktop: inline */}
-            <div className="block sm:hidden">
-              <div className="font-bold">
-                <MatrixText text="<DISCOVER> <LEARN> <PROGRESS>" />
-              </div>
+    <>
+      <Navbar />
+      <main className="flex min-h-screen flex-col items-center justify-center -mt-12">
+        <div className="text-center">
+          <div className="flex items-center justify-center">
+            <div className="relative w-[432px] h-[432px]">
+              {/* Light mode logo */}
+              <Image
+                src="/images/brand/nesta education 3.png"
+                alt="Nesta Logo"
+                fill
+                className="object-contain dark:opacity-0 dark:scale-0 transition-all duration-300"
+                sizes="432px"
+              />
+              {/* Dark mode logo */}
+              <Image
+                src="/images/brand/nesta education 3(white).png"
+                alt="Nesta Logo"
+                fill
+                className="object-contain opacity-0 scale-0 dark:opacity-100 dark:scale-100 transition-all duration-300"
+                sizes="432px"
+              />
             </div>
-            <div className="hidden sm:flex items-center gap-2">
-              <span className="font-bold">
-                <MatrixText text="<DISCOVER> <LEARN> <PROGRESS>" />
-              </span>
-            </div>
           </div>
-        </header>
-
-        {/* ---------- ROLE CARD ---------- */}
-        <main className="max-w-md mx-auto w-full flex justify-center mb-16">
-          <div className="sketch-card w-full">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl font-handwriting">Begin Your Journey:</CardTitle>
-            </CardHeader>
-
-            <CardContent className="grid gap-6">
-              {/* Student Portal */}
-              <Link href="/login" className="w-full">
-                <div className="sketch-button w-full h-auto p-6 flex items-start gap-4 hover:bg-accent/80 transition-colors">
-                  <GraduationCap className="w-6 h-6 text-primary flex-shrink-0" />
-                  <div>
-                    <span className="text-lg font-semibold font-handwriting">Student Portal</span>
-                    <p className="text-sm text-muted-foreground font-code mt-2">
-                      An AI-powered learning platform built on Socratic teaching principles.
-                    </p>
-                  </div>
-                </div>
-              </Link>
-
-              {/* Teacher Portal - Coming Soon */}
-              <div className="w-full">
-                <div className="sketch-button w-full h-auto p-6 flex items-start gap-4 transition-colors opacity-60 cursor-not-allowed">
-                  <Apple className="w-6 h-6 text-primary flex-shrink-0" />
-                  <div>
-                    <span className="text-lg font-semibold font-handwriting">Teacher Portal</span>
-                    <p className="text-sm text-muted-foreground font-code mt-2">
-                      Coming Soon!
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-
-            <CardFooter className="flex flex-col gap-3">
-              <div className="text-center">
-                <p className="text-sm font-code leading-3 text-foreground">
-                  Powered by OpenAI GPT-4o.
-                </p>
-              </div>
-            </CardFooter>
-          </div>
-        </main>
-
-        {/* ---------- BETA DISCLAIMER ---------- */}
-        <div className="text-center w-full flex justify-center mb-8">
-          <div className="inline-block sketch-border p-4 bg-card/80 rounded-lg max-w-2xl">
-            <p className="text-sm font-code text-foreground leading-relaxed">
-              <span className="font-bold text-foreground">🚧 Beta Version Disclaimer 🚧</span> <br />
-              This platform is currently in beta testing. Features, content, and performance are still being actively developed and improved. Users may occasionally encounter incomplete features, inaccuracies, or unexpected behavior.
-            </p>
-          </div>
+          <p className="text-sm text-muted-foreground -mt-16">
+            <TextDecode 
+              text="education + technology = opportunity" 
+              delay={500}
+              duration={1000}
+            />
+          </p>
         </div>
-
-        {/* ---------- FOOTER ---------- */}
-        <footer className="text-center w-full flex justify-center">
-          <div className="inline-block sketch-border p-4 bg-card/80 rounded-lg">
-            <p className="font-bold text-foreground">© 2025 Nesta Technology</p>
-          </div>
-        </footer>
-      </div>
-    </div>
-  )
+      </main>
+      <MinimalFooter />
+    </>
+  );
 }

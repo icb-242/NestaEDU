@@ -1,32 +1,33 @@
-import type React from "react"
-import type { Metadata } from "next"
-import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
-import { ExamProvider } from "@/contexts/exam-context"
+import type { Metadata } from "next";
+import { GeistSans } from 'geist/font/sans';
+import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
-  title: "Nesta Education - AI-Powered Learning Platform",
-  description: "AI-powered education platform aligned to BJC & BGCSE Math and Science curriculum",
-    generator: 'v0.dev'
-}
+  title: "Nesta Education - AI-Powered Learning for Bahamian Students",
+  description:
+    "Nesta Education blends AI-powered tutoring and BJC/BGCSE practice exams—built for students in The Bahamas.",
+};
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-      </head>
+    <html lang="en" className={`${GeistSans.variable} scroll-smooth`} suppressHydrationWarning>
       <body className="font-sans antialiased">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <ExamProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="relative min-h-screen bg-gradient">
             {children}
-          </ExamProvider>
+          </div>
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }

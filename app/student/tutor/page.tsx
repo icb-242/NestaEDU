@@ -3,24 +3,26 @@
 import type React from "react"
 import { useState, useEffect, useRef } from "react"
 
-// Type declarations for Web Speech API
+// (Removed) Web Speech API declarations and dictation features
+
+import { useChat } from "ai/react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Textarea } from "@/components/ui/textarea"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Separator } from "@/components/ui/separator"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Send, ImageIcon, CalculatorIcon, Sigma, Bot, Loader2, X, BookOpen, FlaskConical, ArrowRight, MessageSquare, Clock, Trash2, Mic, MicOff } from "lucide-react"
+
+// Web Speech API type declarations
 declare global {
   interface Window {
     webkitSpeechRecognition: any
     SpeechRecognition: any
   }
 }
-
-import { useChat } from "ai/react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Textarea } from "@/components/ui/textarea"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Send, ImageIcon, CalculatorIcon, Sigma, Bot, Loader2, X, BookOpen, FlaskConical, ArrowRight, Mic, MicOff, MessageSquare, Clock, Trash2 } from "lucide-react"
 import { MathKeyboard } from "@/components/math-keyboard"
 import { capitalizeSubject } from "@/lib/utils"
 import { Calculator } from "@/components/calculator"
@@ -67,14 +69,20 @@ export default function AITutorPage() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [selectedSubject, setSelectedSubject] = useState<string>("general")
+  const [subjectChosen, setSubjectChosen] = useState(false)
   const [isLoadingSession, setIsLoadingSession] = useState(false)
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
   const [userProfile, setUserProfile] = useState<any>({})
   const [isRecording, setIsRecording] = useState(false)
   const [recognition, setRecognition] = useState<any>(null)
-  const [isVoiceActive, setIsVoiceActive] = useState(false)
-  const [waveformHeights, setWaveformHeights] = useState([4, 4, 4, 4, 4])
-  const [audioLevel, setAudioLevel] = useState(0)
+  const [interimTranscript, setInterimTranscript] = useState("")
+  const [waveformHeights, setWaveformHeights] = useState(Array(16).fill(2))
+  
+  // Audio analysis refs
+  const audioContextRef = useRef<AudioContext | null>(null)
+  const analyserRef = useRef<AnalyserNode | null>(null)
+  const mediaStreamRef = useRef<MediaStream | null>(null)
+  const animationFrameRef = useRef<number | null>(null)
 
   // Chat History state
   const [chatHistory, setChatHistory] = useState<ChatSession[]>([])
@@ -83,9 +91,7 @@ export default function AITutorPage() {
   const [isInitialLoad, setIsInitialLoad] = useState(true)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const audioContextRef = useRef<AudioContext | null>(null)
-  const analyserRef = useRef<AnalyserNode | null>(null)
-  const animationFrameRef = useRef<number | null>(null)
+  // (Removed) Audio and waveform refs
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const questionPrefilledRef = useRef(false)
@@ -97,8 +103,7 @@ export default function AITutorPage() {
     body: {
       subject: selectedSubject,
     },
-    onError: (error) => {
-      console.error("Chat error:", error)
+    onError: () => {
       toast({
         title: "Error",
         description: "Failed to send message. Please try again.",
@@ -107,7 +112,7 @@ export default function AITutorPage() {
     },
   })
 
-  // Initialize speech recognition
+  // Initialize speech recognition after useChat hook
   useEffect(() => {
     if (typeof window !== "undefined" && ("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
@@ -127,22 +132,34 @@ export default function AITutorPage() {
 
       recognition.onresult = (event) => {
         let finalTranscript = ""
+        let interimText = ""
+        
         for (let i = event.resultIndex; i < event.results.length; i++) {
           if (event.results[i].isFinal) {
             finalTranscript += event.results[i][0].transcript
+          } else {
+            interimText += event.results[i][0].transcript
           }
         }
+        
+        // Update interim transcript for real-time display
+        setInterimTranscript(interimText)
+        
+        // Add final transcript to input
         if (finalTranscript) {
           setInput((prev) => prev + " " + finalTranscript.trim())
+          setInterimTranscript("") // Clear interim text when we have final text
         }
       }
 
       recognition.onend = () => {
         setIsRecording(false)
+        setInterimTranscript("")
       }
 
       recognition.onerror = (event) => {
         setIsRecording(false)
+        setInterimTranscript("")
         toast({
           title: "Voice Recognition Error",
           description: "There was an error with voice recognition. Please try again.",
@@ -153,6 +170,63 @@ export default function AITutorPage() {
       setRecognition(recognition)
     }
   }, [toast, setInput])
+
+  // (Removed) speech recognition initialization
+
+  // (Removed) waveform starter
+
+  // Load historical session if `resume` param is provided
+  useEffect(() => {
+    const resumeId = searchParams.get("resume")
+    if (resumeId) {
+      // Switch to new chat tab when resuming a session
+      setActiveTab("new-chat")
+      setIsLoadingSession(true)
+      try {
+        // Fetch the specific session from database
+        fetch(`/api/chat-sessions?id=${resumeId}`)
+          .then(response => response.json())
+          .then(session => {
+            if (session && !session.error) {
+              setSelectedSubject(session.subject)
+              setSubjectChosen(true)
+              setCurrentSessionId(resumeId)
+              
+              // Set the messages directly
+              setMessages(session.messages || [])
+              
+              toast({
+                title: "Session Resumed",
+                description: `Continuing conversation: ${session.title}`,
+              })
+            } else {
+              toast({
+                title: "Session Not Found",
+                description: "The requested conversation could not be found.",
+                variant: "destructive",
+              })
+            }
+          })
+          .catch(() => {
+            toast({
+              title: "Error",
+              description: "Failed to load the conversation.",
+              variant: "destructive",
+            })
+          })
+          .finally(() => {
+            setIsLoadingSession(false)
+          })
+      } catch {
+        toast({
+          title: "Error",
+          description: "Failed to load the conversation.",
+          variant: "destructive",
+        })
+        setIsLoadingSession(false)
+      }
+    }
+  }, [searchParams, toast, setMessages])
 
   const loadChatHistory = async () => {
     if (isHistoryLoading) return
@@ -176,8 +250,8 @@ export default function AITutorPage() {
         sessionStorage.setItem('chatHistoryCache', JSON.stringify(chatHistory))
         sessionStorage.setItem('chatHistoryCacheTimestamp', Date.now().toString())
       }
-    } catch (error) {
-      console.error('Error loading chat history:', error)
+    } catch {
+      // History load failure is non-critical
     } finally {
       setIsHistoryLoading(false)
       setIsInitialLoad(false)
@@ -197,8 +271,7 @@ export default function AITutorPage() {
           description: "The conversation has been deleted successfully.",
         })
       }
-    } catch (error) {
-      console.error('Error deleting session:', error)
+    } catch {
       toast({
         title: "Error",
         description: "Failed to delete the conversation.",
@@ -227,6 +300,13 @@ export default function AITutorPage() {
 
   const filterSessionsBySubject = (sessions: ChatSession[], subject: string) => {
     return sessions.filter(session => session.subject === subject)
+  }
+
+
+
+  const capitalizeSubject = (subject: string) => {
+    if (subject === "Math") return subject
+    return subject.charAt(0).toUpperCase() + subject.slice(1)
   }
 
   // Load chat history when switching to that tab
@@ -352,10 +432,7 @@ export default function AITutorPage() {
     }
   }
 
-  const userInitials =
-    userProfile.firstName && userProfile.lastName
-      ? `${userProfile.firstName[0]}${userProfile.lastName[0]}`.toUpperCase()
-      : "ST"
+  // Voice recording functions
 
   // Voice recording handler
   const handleVoiceRecording = () => {
@@ -366,7 +443,15 @@ export default function AITutorPage() {
     } else {
       recognition.start()
     }
+    setIsRecording(!isRecording)
   }
+
+  const userInitials =
+    userProfile.firstName && userProfile.lastName
+      ? `${userProfile.firstName[0]}${userProfile.lastName[0]}`.toUpperCase()
+      : "ST"
+
+  // (Removed) audio analysis, waveform functions, and voice recording handler
 
   // Image upload handler
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -391,8 +476,7 @@ export default function AITutorPage() {
         title: "Image uploaded successfully",
         description: "You can now ask questions about this image.",
       })
-    } catch (error) {
-      console.error("Error uploading image:", error)
+    } catch {
       toast({
         title: "Upload failed",
         description: "Failed to upload image. Please try again.",
@@ -463,6 +547,61 @@ export default function AITutorPage() {
       )
     }
 
+    // Subject selection screen — shown when no conversation is active
+    if (messages.length === 0 && !subjectChosen && !isLoadingSession) {
+      return (
+        <div className="space-y-6 py-4">
+          <div className="text-center">
+            <p className="text-xs font-mono text-muted-foreground">&gt; select_subject</p>
+            <p className="text-sm font-mono text-muted-foreground mt-1">// choose a subject to start your session</p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {[
+              {
+                id: "math",
+                label: "Mathematics",
+                desc: "Algebra, geometry, trigonometry, calculus and more",
+                icon: <CalculatorIcon className="h-8 w-8" />,
+                color: "border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30",
+                iconColor: "bg-blue-100 text-blue-600",
+              },
+              {
+                id: "science",
+                label: "Science",
+                desc: "Biology, chemistry, physics and earth science",
+                icon: <FlaskConical className="h-8 w-8" />,
+                color: "border-green-400 hover:bg-green-50 dark:hover:bg-green-950/30",
+                iconColor: "bg-green-100 text-green-600",
+              },
+              {
+                id: "general",
+                label: "General",
+                desc: "English, social studies, or any other subject",
+                icon: <Bot className="h-8 w-8" />,
+                color: "border-gray-400 hover:bg-gray-50 dark:hover:bg-gray-900/30",
+                iconColor: "bg-gray-100 text-gray-600",
+              },
+            ].map((s) => (
+              <button
+                key={s.id}
+                onClick={() => {
+                  setSelectedSubject(s.id)
+                  setSubjectChosen(true)
+                }}
+                className={`flex flex-col items-center gap-4 p-6 rounded-xl border-2 transition-all text-left cursor-pointer ${s.color}`}
+              >
+                <div className={`p-3 rounded-full ${s.iconColor}`}>{s.icon}</div>
+                <div>
+                  <p className="font-mono font-semibold text-sm">{s.label}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{s.desc}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )
+    }
+
     return (
       <Card className="flex-1 flex flex-col min-h-0">
         <CardContent className="flex-1 p-0">
@@ -475,9 +614,9 @@ export default function AITutorPage() {
                   >
                     {getSubjectIcon()}
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">Welcome to your {getSubjectTitle()}!</h3>
-                  <p className="text-muted-foreground max-w-md mx-auto">
-                    Ask me questions, upload images of problems, or start a conversation about what you're studying.
+                  <p className="text-xs font-mono text-muted-foreground mb-2">// {selectedSubject} tutor ready</p>
+                  <p className="text-sm text-muted-foreground max-w-md mx-auto">
+                    Ask me a question, upload an image of a problem, or start with what you're studying.
                   </p>
                 </div>
               )}
@@ -496,7 +635,6 @@ export default function AITutorPage() {
                   </div>
                   {message.role === "user" && (
                     <Avatar className="h-8 w-8 mt-1">
-                      <AvatarImage src={userProfile?.avatar || ""} />
                       <AvatarFallback className="bg-green-100 text-green-600">{userInitials}</AvatarFallback>
                     </Avatar>
                   )}
@@ -536,17 +674,44 @@ export default function AITutorPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-3">
+          {/* Voice recording indicator */}
+          {isRecording && (
+            <div className="flex items-center gap-2 p-3 bg-secondary/20 dark:bg-secondary/10 border border-border rounded-lg">
+              <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-[pulse_1.5s_ease-in-out_infinite]" />
+              <span className="text-sm font-medium">Listening</span>
+            </div>
+          )}
+
+          <form onSubmit={(e) => {
+            if (isRecording) {
+              recognition?.stop()
+            }
+            handleSubmit(e)
+          }} className="space-y-3">
             <div className="relative">
               <Textarea
                 ref={textareaRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
+                value={input + (interimTranscript ? " " + interimTranscript : "")}
+                onChange={(e) => {
+                  const newValue = e.target.value
+                  if (interimTranscript) {
+                    // Remove interim text when user types
+                    const withoutInterim = newValue.replace(" " + interimTranscript, "")
+                    setInput(withoutInterim)
+                  } else {
+                    setInput(newValue)
+                  }
+                }}
                 placeholder="Ask me anything about your studies..."
-                className="min-h-[80px] pr-16 resize-none text-base"
+                className={`min-h-[80px] pr-16 resize-none text-base ${
+                  isRecording ? 'ring-2 ring-blue-300 dark:ring-blue-600' : ''
+                }`}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault()
+                    if (isRecording) {
+                      recognition?.stop()
+                    }
                     handleSubmit(e)
                   }
                 }}
@@ -697,16 +862,20 @@ export default function AITutorPage() {
       <div className="space-y-6">
         {/* Subject Filter Tabs */}
         <div className="flex justify-center gap-2">
-          {["math", "science", "general"].map((subject) => (
-            <Button
-              key={subject}
-              variant={historyActiveTab === subject ? "default" : "outline"}
-              onClick={() => setHistoryActiveTab(subject)}
-              className="capitalize"
-            >
-              {subject === "math" ? capitalizeSubject("Math") : capitalizeSubject(subject)}
-            </Button>
-          ))}
+          {["math", "science", "general"].map((subject) => {
+            const subjectSessions = filterSessionsBySubject(chatHistory, subject)
+            const subjectCount = subjectSessions.length
+            return (
+              <Button
+                key={subject}
+                variant={historyActiveTab === subject ? "default" : "outline"}
+                onClick={() => setHistoryActiveTab(subject)}
+                className="capitalize"
+              >
+                {subject === "math" ? capitalizeSubject("Math") : capitalizeSubject(subject)} ({subjectCount})
+              </Button>
+            )
+          })}
         </div>
 
         {/* Loading indicator */}
@@ -764,18 +933,18 @@ export default function AITutorPage() {
         <Button
           variant={activeTab === "new-chat" ? "default" : "outline"}
           size="lg"
-          className="flex items-center gap-2 px-6 py-3"
+          className="flex items-center gap-2 px-6 py-3 font-mono"
           onClick={() => setActiveTab("new-chat")}
         >
-          <span role="img" aria-label="New Chat">💬</span> New Chat
+          &gt; new session
         </Button>
         <Button
           variant={activeTab === "chat-history" ? "default" : "outline"}
           size="lg"
-          className="flex items-center gap-2 px-6 py-3"
+          className="flex items-center gap-2 px-6 py-3 font-mono"
           onClick={() => setActiveTab("chat-history")}
         >
-          <span role="img" aria-label="Chat History">📜</span> Chat History ({chatHistory.length})
+          &gt; history
         </Button>
       </div>
 

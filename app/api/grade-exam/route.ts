@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { generateText } from "ai"
-import { openai } from "@ai-sdk/openai"
-import { getOpenAIKey, validateEnvironment } from "../../../config/api-keys"
+import { getAIModel } from "@/lib/ai"
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,32 +9,6 @@ export async function POST(request: NextRequest) {
     if (!examData || !answers) {
       return NextResponse.json({ error: "Exam data and answers are required" }, { status: 400 })
     }
-
-    // Validate environment variables first
-    if (!validateEnvironment()) {
-      console.log("Environment validation failed, using fallback grading")
-      const fallbackGrading = generateFallbackGrading(examData, answers)
-      return NextResponse.json({
-        ...fallbackGrading,
-        isMock: true,
-        mockMessage: "Using automated grading - configuration incomplete",
-      })
-    }
-
-    // Check if OpenAI API key is available
-    const apiKey = getOpenAIKey()
-    if (!apiKey) {
-      console.log("OpenAI API key not found, using fallback grading")
-      const fallbackGrading = generateFallbackGrading(examData, answers)
-      return NextResponse.json({
-        ...fallbackGrading,
-        isMock: true,
-        mockMessage: "Using automated grading - OpenAI API key not available",
-      })
-    }
-
-    // Set the environment variable for the AI SDK
-    process.env.OPENAI_API_KEY = apiKey
 
     try {
       const prompt = `Grade this exam quickly. Write feedback directly TO the student (use "you", not "the student").
@@ -77,7 +50,7 @@ Return ONLY this JSON:
       )
 
       const gradingPromise = generateText({
-        model: openai("gpt-4o-mini"),
+        model: getAIModel('gpt-4o-mini'),
         prompt,
         temperature: 0.1,
         maxTokens: 1500,
@@ -98,8 +71,7 @@ Return ONLY this JSON:
       let gradingResults
       try {
         gradingResults = JSON.parse(cleanedText)
-      } catch (parseError) {
-        console.error("Failed to parse AI response as JSON:", parseError)
+      } catch {
         throw new Error("AI response was not valid JSON")
       }
 
@@ -110,8 +82,6 @@ Return ONLY this JSON:
 
       return NextResponse.json(gradingResults)
     } catch (aiError) {
-      console.error("OpenAI grading failed:", aiError)
-
       // Check if it's a timeout error
       const isTimeout = aiError instanceof Error && aiError.message === 'Grading timeout'
       
@@ -120,13 +90,12 @@ Return ONLY this JSON:
       return NextResponse.json({
         ...fallbackGrading,
         isMock: true,
-        mockMessage: isTimeout 
-          ? "Using automated grading - grading took too long" 
-          : "Using automated grading - OpenAI grading failed",
+        mockMessage: isTimeout
+          ? "Using automated grading - grading took too long"
+          : "Using automated grading - AI grading failed",
       })
     }
   } catch (error) {
-    console.error("Error in grade-exam route:", error)
     return NextResponse.json(
       {
         error: "Failed to grade exam",

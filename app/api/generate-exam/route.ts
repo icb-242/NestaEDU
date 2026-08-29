@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { generateText } from "ai"
-import { openai } from "@ai-sdk/openai"
-import { getOpenAIKey, validateEnvironment } from "../../../config/api-keys"
+import { getAIModel } from "@/lib/ai"
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,48 +9,6 @@ export async function POST(request: NextRequest) {
     if (!subject) {
       return NextResponse.json({ error: "Subject is required" }, { status: 400 })
     }
-
-    // Validate environment variables first
-    if (!validateEnvironment()) {
-      return NextResponse.json(
-        {
-          error: "Configuration error",
-          message: "The exam generation service is not properly configured. Please check environment variables.",
-          isMock: true,
-          debug: {
-            environment: process.env.NODE_ENV,
-            hasOpenAIKey: !!process.env.OPENAI_API_KEY,
-            hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-            hasSupabaseAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-            hasSupabaseServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-            hasJwtSecret: !!process.env.JWT_SECRET
-          }
-        },
-        { status: 500 },
-      )
-    }
-
-    // Check if OpenAI API key is available
-    const apiKey = getOpenAIKey()
-    
-    if (!apiKey) {
-      console.error("OpenAI API key not found")
-      return NextResponse.json(
-        {
-          error: "OpenAI API key not configured",
-          isMock: true,
-          mockMessage: "Using mock exam - OpenAI API key not available. Please check environment variables.",
-          debug: {
-            hasEnvVar: !!process.env.OPENAI_API_KEY,
-            envVarLength: process.env.OPENAI_API_KEY?.length || 0
-          }
-        },
-        { status: 500 },
-      )
-    }
-
-    // Set the environment variable for the AI SDK
-    process.env.OPENAI_API_KEY = apiKey
 
     // Determine exam details based on subject
     const getExamConfig = (subject: string) => {
@@ -359,30 +316,6 @@ QUESTION STYLE GUIDELINES:
 - Short answer questions should require explanations across scientific fields
 - Include questions that test application of scientific principles to real-world scenarios`
 
-        case "bgcse-math":
-          return `
-SPECIAL INSTRUCTIONS FOR BGCSE MATHEMATICS:
-Generate questions that mirror the style and difficulty of official BGCSE Mathematics past papers (1999-2023).
-
-MATHEMATICS-SPECIFIC REQUIREMENTS:
-- Include questions on algebra and algebraic manipulation
-- Cover trigonometry and trigonometric functions
-- Include coordinate geometry and analytical geometry
-- Test understanding of functions and graphs
-- Include calculus basics (differentiation and integration)
-- Cover statistics and probability
-- Include geometric proofs and constructions
-- Test mathematical reasoning and problem-solving
-- Questions may be recycled between exams but numbers should be different enough to be engaging. 
-
-QUESTION STYLE GUIDELINES:
-- Multiple choice should test mathematical concepts and calculations
-- Include questions with mathematical formulas and equations
-- Use proper mathematical notation and symbols
-- Include questions requiring interpretation of graphs and data
-- Short answer questions should require step-by-step solutions
-- Include questions that test application of mathematical principles to real-world scenarios`
-
         default:
           return ""
       }
@@ -452,7 +385,7 @@ Generate the exam now:`
 
     try {
       const { text } = await generateText({
-        model: openai("gpt-4o"),
+        model: getAIModel(),
         prompt,
         temperature: 0.7,
         maxTokens: 8000,
@@ -474,22 +407,10 @@ Generate the exam now:`
         throw new Error("Invalid exam structure - missing questions array")
       }
 
-      if (examData.questions.length !== examConfig.totalQuestions) {
-        console.warn(`Expected ${examConfig.totalQuestions} questions, got ${examData.questions.length}`)
-      }
-
-      // Validate multiple choice questions
-      examData.questions.forEach((question: any, index: number) => {
+      // Validate multiple choice questions and fix any correctAnswer mismatches
+      examData.questions.forEach((question: any) => {
         if (question.type === "multiple-choice") {
-          if (!question.options || question.options.length !== 4) {
-            console.error(`Question ${index + 1}: Must have exactly 4 options`)
-          }
-          if (!question.options.includes(question.correctAnswer)) {
-            console.error(
-              `Question ${index + 1}: Correct answer "${question.correctAnswer}" not found in options:`,
-              question.options,
-            )
-            // Fix by setting correct answer to first option
+          if (question.options && !question.options.includes(question.correctAnswer)) {
             question.correctAnswer = question.options[0]
           }
         }
@@ -497,18 +418,15 @@ Generate the exam now:`
 
       return NextResponse.json(examData)
     } catch (aiError) {
-      console.error("OpenAI generation failed:", aiError)
-
-      // Return enhanced fallback exam
+      // Return fallback exam if AI generation fails
       const fallbackExam = generateFallbackExam(subject, examConfig)
       return NextResponse.json({
         ...fallbackExam,
         isMock: true,
-        mockMessage: "Using mock exam - OpenAI generation failed",
+        mockMessage: "Using mock exam - AI generation failed",
       })
     }
   } catch (error) {
-    console.error("Error in generate-exam route:", error)
     return NextResponse.json(
       {
         error: "Failed to generate exam",

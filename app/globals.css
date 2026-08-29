@@ -32,6 +32,12 @@
     --sketch-line: 0 0% 85%;
     --sketch-shadow: 0 0% 85%;
     --paper-texture: 0 0% 99%;
+
+    /* Chart variables */
+    --chart-grid: #e1e0d9;
+    --chart-axis: #c3c2b7;
+    --chart-text: #898781;
+    --chart-surface: #fcfcfb;
   }
 
   .dark {
@@ -59,6 +65,12 @@
     --sketch-line: 0 0% 20%;
     --sketch-shadow: 0 0% 15%;
     --paper-texture: 0 0% 8%;
+
+    /* Chart variables */
+    --chart-grid: #2c2c2a;
+    --chart-axis: #383835;
+    --chart-text: #898781;
+    --chart-surface: #1a1a19;
   }
 }
 
@@ -70,62 +82,9 @@
   body {
     @apply bg-background text-foreground;
     font-family: "Courier New", "Monaco", "Consolas", "Liberation Mono", monospace;
-    /* Subtle precision grid background, theme-adaptive */
-    background-image:
-      /* Dots at intersections */
-      radial-gradient(circle at 1px 1px, hsl(var(--sketch-line)) 1.2px, transparent 0),
-      /* Vertical lines */
-      linear-gradient(90deg, hsl(var(--sketch-line)) 1px, transparent 1px),
-      /* Horizontal lines */
-      linear-gradient(0deg, hsl(var(--sketch-line)) 1px, transparent 1px);
-    background-size: 40px 40px, 40px 40px, 40px 40px;
-    background-position: 0 0, 0 0, 0 0;
-    background-attachment: fixed;
     position: relative;
   }
 
-  /* Enhanced paper texture overlay with grid */
-  body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: repeating-linear-gradient(
-        90deg,
-        transparent,
-        transparent 19px,
-        hsl(var(--sketch-line)) 20px,
-        hsl(var(--sketch-line)) 21px
-      ),
-      repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 19px,
-        hsl(var(--sketch-line)) 20px,
-        hsl(var(--sketch-line)) 21px
-      );
-    opacity: 0.02;
-    pointer-events: none;
-    z-index: -1;
-  }
-
-  /* Additional subtle texture for depth */
-  body::after {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: radial-gradient(circle at 25% 25%, hsl(var(--sketch-line)) 1px, transparent 1px),
-      radial-gradient(circle at 75% 75%, hsl(var(--sketch-line)) 1px, transparent 1px);
-    background-size: 40px 40px, 60px 60px;
-    opacity: 0.01;
-    pointer-events: none;
-    z-index: -1;
-  }
 }
 
 /* Typography Classes - Updated for architectural precision */
@@ -574,4 +533,9 @@ sup {
 
 .rotate-y-180 {
   transform: rotateY(180deg);
+}
+
+/* Text Decode Animation */
+.text-decode {
+  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
 }

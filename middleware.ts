@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyToken } from '@/lib/jwt-auth'
+import { verifyToken } from '@/lib/jwt'
 
 // Simple JWT verification without database access (for Edge Runtime)
 export async function middleware(request: NextRequest) {
@@ -77,8 +77,5 @@ export const config = {
     '/api/generate-exam',
     '/api/grade-exam',
     '/api/user/profile',
-    '/api/test-avatar',
-    '/api/debug-avatar',
-    '/api/test-me',
   ],
 } 

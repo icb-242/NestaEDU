@@ -92,6 +92,9 @@ export default function ExamPage() {
   
   // Add flag to prevent state restoration conflicts
   const [hasInitialized, setHasInitialized] = useState(false)
+  // Track whether timer warning toasts have fired
+  const fiveMinWarningFired = useRef(false)
+  const twoMinWarningFired = useRef(false)
 
   // Persist exam state to prevent timer resets on re-renders
   useEffect(() => {
@@ -102,7 +105,6 @@ export default function ExamPage() {
       try {
         const state = JSON.parse(savedState)
         if (state.examStarted && !state.showResults && state.timeRemaining > 0) {
-          console.log("Restoring exam state from localStorage:", state)
           setExamStarted(state.examStarted)
           setTimeRemaining(state.timeRemaining)
           setCurrentQuestion(state.currentQuestion || 0)
@@ -110,8 +112,7 @@ export default function ExamPage() {
           setIsTimeExpired(state.isTimeExpired || false)
           setIsTimeExpiredGrading(state.isTimeExpiredGrading || false)
         }
-      } catch (error) {
-        console.error("Error parsing saved exam state:", error)
+      } catch {
         localStorage.removeItem(`exam-state-${subject}`)
       }
     }
@@ -135,18 +136,6 @@ export default function ExamPage() {
       localStorage.removeItem(`exam-state-${subject}`)
     }
   }, [examStarted, timeRemaining, currentQuestion, answers, isTimeExpired, isTimeExpiredGrading, showResults, subject])
-
-  // Debug logging for timer state changes
-  useEffect(() => {
-    console.log("Timer state changed:", {
-      examStarted,
-      timeRemaining,
-      showResults,
-      isTimeExpired,
-      isTimeExpiredGrading,
-      subject
-    })
-  }, [examStarted, timeRemaining, showResults, isTimeExpired, isTimeExpiredGrading, subject])
 
   // Load user first name from API or localStorage
   useEffect(() => {
@@ -178,41 +167,33 @@ export default function ExamPage() {
 
   useEffect(() => {
     let timer: NodeJS.Timeout
-    
-    console.log("Timer effect - examStarted:", examStarted, "timeRemaining:", timeRemaining, "showResults:", showResults, "isTimeExpired:", isTimeExpired)
-    
-    // Only start timer if exam is started, timeRemaining is not null, greater than 0, and not showing results
+
     if (examStarted && timeRemaining !== null && timeRemaining > 0 && !showResults && !isTimeExpired) {
-      console.log("Starting timer countdown from:", timeRemaining)
+      // 5-minute warning
+      if (timeRemaining === 300 && !fiveMinWarningFired.current) {
+        fiveMinWarningFired.current = true
+        toast({ title: "> 5 minutes remaining", description: "// wrap up your answers", variant: "default" })
+      }
+      // 2-minute warning
+      if (timeRemaining === 120 && !twoMinWarningFired.current) {
+        twoMinWarningFired.current = true
+        toast({ title: "> 2 minutes remaining", description: "// submit soon", variant: "destructive" })
+      }
       timer = setTimeout(() => {
-        // Prevent setting to null or negative values
-        const newTime = Math.max(0, timeRemaining - 1)
-        console.log("Timer tick - setting timeRemaining to:", newTime)
-        setTimeRemaining(newTime)
+        setTimeRemaining(Math.max(0, timeRemaining - 1))
       }, 1000)
-    } 
-    // Only trigger expiration if exam is started, timeRemaining is exactly 0, not showing results, and not already expired
-    else if (examStarted && timeRemaining === 0 && !showResults && !isTimeExpired) {
-      console.log("Timer expired! Setting isTimeExpired to true")
+    } else if (examStarted && timeRemaining === 0 && !showResults && !isTimeExpired) {
       setIsTimeExpired(true)
-      
-      // Start grading progress immediately with time expired flag
       setIsGrading(true)
       setIsTimeExpiredGrading(true)
       setGradingProgress(0)
-      
-      // Small delay to ensure toast appears before submission
       setTimeout(() => {
-        console.log("Calling handleSubmitExam with timeExpired=true")
         handleSubmitExam(true)
       }, 100)
     }
-    
+
     return () => {
-      if (timer) {
-        console.log("Clearing timer")
-        clearTimeout(timer)
-      }
+      if (timer) clearTimeout(timer)
     }
   }, [timeRemaining, examStarted, showResults, isTimeExpired])
 
@@ -233,9 +214,6 @@ export default function ExamPage() {
   // Reset exam state only when component unmounts (not on re-renders)
   useEffect(() => {
     return () => {
-      // Only reset exam state when actually leaving the exam page
-      // This prevents resetting during re-renders
-      console.log("Component unmounting - resetting exam state")
       setExamStarted(false)
       setShowResults(false)
       // Clear localStorage when component unmounts
@@ -406,7 +384,6 @@ export default function ExamPage() {
         })
       }
     } catch (error) {
-      console.error("Error generating exam:", error)
       // Clear any existing progress interval
       if (progressInterval) {
         clearInterval(progressInterval)
@@ -425,11 +402,7 @@ export default function ExamPage() {
   }
 
   const handleAnswerChange = (questionId: number, answer: string) => {
-    if (isTimeExpired || isSubmitting) {
-      console.log("Answer change blocked - exam is locked")
-      return
-    }
-    console.log("Answer change allowed - setting answer for question", questionId)
+    if (isTimeExpired || isSubmitting) return
     setAnswers((prev) => ({
       ...prev,
       [questionId]: answer,
@@ -569,16 +542,12 @@ export default function ExamPage() {
       })
 
       if (saveResponse.ok) {
-        console.log("Saved exam result to database")
         // Dispatch event to update dashboard and other listeners
         window.dispatchEvent(new Event("chatSessionUpdated"))
         // Dispatch event to update exam results count
         window.dispatchEvent(new Event("examCompleted"))
-      } else {
-        console.error("Failed to save exam result to database")
       }
     } catch (error) {
-      console.error("Error grading exam:", error)
       
       // Clear the progress interval if it exists
       if (progressInterval) {
@@ -601,14 +570,10 @@ export default function ExamPage() {
   }, [examData, answers, subject, timeRemaining, toast, setIsGrading, setGradingProgress, setExamResults, setShowResults])
 
   const startExam = () => {
-    console.log("Starting exam - setting examStarted to true")
     setExamStarted(true)
-    setHasInitialized(true) // Mark as initialized to prevent state restoration conflicts
+    setHasInitialized(true)
     const examInfo = getExamInfo()
-    // Set proper exam duration in seconds
-    const examTimeInSeconds = examInfo.timeLimit * 60
-    console.log("Setting timeRemaining to:", examTimeInSeconds, "seconds (", examInfo.timeLimit, "minutes)")
-    setTimeRemaining(examTimeInSeconds)
+    setTimeRemaining(examInfo.timeLimit * 60)
     toast({
       title: "Exam Started",
       description: `You have ${examInfo.timeLimit} minutes to complete the exam. Good luck!`,
@@ -882,55 +847,67 @@ export default function ExamPage() {
       <div className="space-y-6 max-w-4xl mx-auto px-2 pt-6 sm:pt-10">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight leading-tight mb-1">Exam Results</h1>
-            <p className="text-muted-foreground text-base leading-snug">{examInfo.title} Practice Exam Results</p>
+            <p className="text-xs font-mono text-muted-foreground">// {examInfo.title}</p>
+            <h1 className="text-lg font-mono font-bold tracking-tight mt-1">&gt; exam_results</h1>
           </div>
           <div className="flex gap-2">
-            <Button onClick={generateExam} variant="outline">
+            <Button onClick={generateExam} variant="outline" className="font-mono text-xs">
               <RefreshCw className="mr-2 h-4 w-4" />
-              Take New Exam
+              new exam
             </Button>
-            <Button 
+            <Button
               variant="outline"
+              className="font-mono text-xs"
               onClick={() => router.push("/student/practice-exam")}
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Exams
+              back
             </Button>
           </div>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CheckCircle className="h-6 w-6 text-green-600" />
-              Overall Score
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center space-y-2">
-              <div className="text-4xl font-bold text-primary">
-                {examResults.totalScore}/{examResults.maxScore}
-              </div>
-              <div className="text-2xl font-semibold text-green-600">{examResults.percentage}%</div>
-              <Badge variant={examResults.percentage >= 70 ? "default" : "secondary"} className="mt-2">
-                {examResults.percentage >= 90
-                  ? "Excellent"
-                  : examResults.percentage >= 80
-                    ? "Good"
-                    : examResults.percentage >= 70
-                      ? "Satisfactory"
-                      : "Needs Improvement"}
-              </Badge>
-              <p className="text-muted-foreground mt-4">{personalizedFeedback}</p>
+        <Card className="border-l-4 border-l-primary">
+          <CardContent className="p-6">
+            <p className="text-xs font-mono text-muted-foreground mb-3">// score</p>
+            <div className="font-mono space-y-1">
+              <p className="text-4xl font-bold tracking-tight">
+                {examResults.percentage}%
+                <span className={`ml-3 text-xl ${
+                  examResults.percentage >= 90 ? 'text-green-500' :
+                  examResults.percentage >= 80 ? 'text-blue-500' :
+                  examResults.percentage >= 70 ? 'text-yellow-500' :
+                  'text-red-500'
+                }`}>
+                  {examResults.percentage >= 90 ? '— EXCELLENT' :
+                   examResults.percentage >= 80 ? '— GOOD' :
+                   examResults.percentage >= 70 ? '— SATISFACTORY' :
+                   '— NEEDS IMPROVEMENT'}
+                </span>
+              </p>
+              <p className="text-sm text-muted-foreground">
+                score: {examResults.totalScore}/{examResults.maxScore} pts
+              </p>
+              {(() => {
+                const wrong = examResults.questionResults.filter(r => !r.isCorrect).map(r => r.questionId)
+                return wrong.length > 0 ? (
+                  <p className="text-sm text-yellow-600 dark:text-yellow-400">
+                    review: Q{wrong.join(', Q')}
+                  </p>
+                ) : null
+              })()}
             </div>
+            {personalizedFeedback && (
+              <p className="text-xs text-muted-foreground mt-4 border-t pt-3 font-mono">
+                {personalizedFeedback}
+              </p>
+            )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Question-by-Question Review</CardTitle>
-            <CardDescription>Detailed feedback for each question</CardDescription>
+            <CardTitle className="text-sm font-mono text-muted-foreground">&gt; question_review</CardTitle>
+            <CardDescription className="text-xs font-mono">// detailed feedback for each question</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {personalizedQuestionResults.map((result, index) => {
@@ -990,12 +967,12 @@ export default function ExamPage() {
         </Card>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-          <Button onClick={generateExam} variant="outline" className="w-full sm:w-auto">
+          <Button onClick={generateExam} variant="outline" className="w-full sm:w-auto font-mono text-xs">
             <RefreshCw className="mr-2 h-4 w-4" />
-            Take Another {examInfo.title} Exam
+            &gt; retry exam
           </Button>
-          <Button onClick={() => router.push("/student/practice-exam")} className="w-full sm:w-auto">Choose Different Exam</Button>
-          <Button onClick={() => router.push("/student/dashboard")} className="w-full sm:w-auto">Return to Dashboard</Button>
+          <Button onClick={() => router.push("/student/practice-exam")} variant="outline" className="w-full sm:w-auto font-mono text-xs">&gt; choose subject</Button>
+          <Button onClick={() => router.push("/student/dashboard")} className="w-full sm:w-auto font-mono text-xs">&gt; dashboard</Button>
         </div>
       </div>
     )
@@ -1017,9 +994,15 @@ export default function ExamPage() {
                 </p>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                <div className="flex items-center justify-center gap-2 text-lg font-mono bg-muted/50 rounded-lg px-3 py-2">
+                <div className={`flex items-center justify-center gap-2 text-lg font-mono rounded-lg px-3 py-2 transition-colors ${
+                  timeRemaining !== null && timeRemaining < 120
+                    ? "bg-red-100 dark:bg-red-950 text-red-600 animate-pulse"
+                    : timeRemaining !== null && timeRemaining < 300
+                    ? "bg-amber-100 dark:bg-amber-950 text-amber-600"
+                    : "bg-muted/50"
+                }`}>
                   <Clock className="h-5 w-5" />
-                  <span className={timeRemaining !== null && timeRemaining < 300 ? "text-red-600" : ""}>{formatTime(timeRemaining)}</span>
+                  <span>{formatTime(timeRemaining)}</span>
                 </div>
                 <Button onClick={generateExam} variant="outline" size="sm" className="w-full sm:w-auto">
                   <RefreshCw className="mr-2 h-4 w-4" />

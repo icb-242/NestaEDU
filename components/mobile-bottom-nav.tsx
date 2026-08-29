@@ -3,87 +3,56 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Home, BookOpen, MessageSquare, User, FileText, GraduationCap } from "lucide-react"
-import { ExamSafeLink } from "@/components/exam-safe-link"
+import {
+  LayoutDashboard,
+  MessageSquare,
+  ClipboardList,
+  UserCircle,
+} from "lucide-react"
 
 export function MobileBottomNav() {
   const pathname = usePathname()
-  
-  // Feature flag to hide Learning tab (set to false to show)
-  const showLearningTab = false
 
-  const navigation = [
+  const links = [
     {
-      name: "Dashboard",
       href: "/student/dashboard",
-      icon: Home,
-      current: pathname === "/student/dashboard",
+      label: "Home",
+      icon: LayoutDashboard,
     },
     {
-      name: "AI Tutor",
       href: "/student/tutor",
+      label: "Study",
       icon: MessageSquare,
-      current: pathname === "/student/tutor",
     },
-    ...(showLearningTab ? [{
-      name: "Learning",
-      href: "/student/learning",
-      icon: GraduationCap,
-      current: pathname.startsWith("/student/learning"),
-    }] : []),
     {
-      name: "Exams",
       href: "/student/practice-exam",
-      icon: FileText,
-      current: pathname.startsWith("/student/practice-exam"),
+      label: "Exams",
+      icon: ClipboardList,
     },
     {
-      name: "Profile",
       href: "/student/profile",
-      icon: User,
-      current: pathname === "/student/profile",
+      label: "Profile",
+      icon: UserCircle,
     },
   ]
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
-      <div className="bg-background border-t border-border">
-        <div className="flex items-center justify-around px-2 py-1">
-          {navigation.map((item) => {
-            const Icon = item.icon
-            return (
-              <ExamSafeLink
-                key={item.name}
-                href={item.href}
-                className="flex flex-col items-center justify-center py-2 px-3 min-w-0 flex-1"
-              >
-                <div className="flex flex-col items-center justify-center w-full">
-                  <div
-                    className={cn(
-                      "flex items-center justify-center w-10 h-10 rounded-lg transition-colors mb-1",
-                      item.current
-                        ? "bg-primary/15 text-primary"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                    )}
-                  >
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <span 
-                    className={cn(
-                      "text-xs truncate",
-                      item.current 
-                        ? "font-semibold text-primary" 
-                        : "font-medium text-muted-foreground"
-                    )}
-                  >
-                    {item.name}
-                  </span>
-                </div>
-              </ExamSafeLink>
-            )
-          })}
-        </div>
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background md:hidden">
+      <div className="flex h-16 items-center justify-around px-4">
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={cn(
+              "flex flex-col items-center gap-1 text-xs font-mono text-muted-foreground transition-colors hover:text-foreground",
+              pathname === link.href && "text-foreground"
+            )}
+          >
+            <link.icon className="h-5 w-5" />
+            <span>{link.label}</span>
+          </Link>
+        ))}
       </div>
-    </div>
+    </nav>
   )
-} 
+}

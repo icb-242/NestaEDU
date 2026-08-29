@@ -19,6 +19,10 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['var(--font-geist-sans)'],
+        mono: ['var(--font-geist-sans)'], // Using Geist for monospace too for consistency
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
